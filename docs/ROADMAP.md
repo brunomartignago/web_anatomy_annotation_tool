@@ -16,7 +16,7 @@ Decisions only Bruno can make are marked **🟡 DECIDE**. Claude Code should sto
   - The README covers what it is, a link to the research page, a GIF placeholder, quick start, and the roadmap link. CONTRIBUTING explains how to propose a taxonomy class (edit the YAML and open a "taxonomy-proposal" issue).
   - 🟡 DECIDE: license. MIT is simplest. Apache-2.0 adds a patent grant. Also pick a project name (working name: `annotool`).
   - 🟡 DECIDE: dataset policy. Recommendation: publish annotations, URLs and the capture script, but **not** screenshots of third-party sites.
-- [ ] **0.3 Set up the backend skeleton**
+- [x] **0.3 Set up the backend skeleton**
   - `backend/pyproject.toml` (uv, Python ≥3.11, ruff, pytest, pydantic v2, typer, pyyaml). Provide an empty `annotool` CLI with `--version`.
   - ✅ `uv run annotool --version` and `uv run pytest` pass on Windows PowerShell.
 - [ ] **0.4 Add the taxonomy loader**

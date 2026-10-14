@@ -1,0 +1,12 @@
+# Use LF everywhere (repo and working copy) so diffs match across Windows, macOS and Linux.
+* text=auto eol=lf
+
+# PowerShell scripts keep Windows line endings.
+*.ps1 text eol=crlf
+
+# Binary files: never touch.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary

@@ -55,4 +55,5 @@ Form, Function, Component: the element axes. *Taxonomy* (attribute name) means t
 ## Notes
 - 0.1: `labels/` and `csv/` were kept in `data/legacy/converter-output/` instead of deleted (`labels/linkedin.txt` is the only trace of a LinkedIn annotation). CNN and Adobe each have two legacy files (`json/` + autosave) with no shared boxes, so 0.6 must merge them. Stitched PNG heights are padded to multiples of 893 px.
 - 0.2: Decided MIT, name `annotool`, and publish annotations + URLs + capture script but no screenshots. The README avoids absolute GitHub URLs because the GitHub account/repo path isn't set yet (the schema `$id` assumes `brunomartignago/annotool`).
+- 0.3: uv was installed via winget (0.13.1); open a new terminal if `uv` isn't on PATH. `.gitattributes` forces LF in the working copy. With Click ≥8.2, running a `no_args_is_help` command with no args exits with code 2, so test `--help` instead.
 <!-- Claude Code: append dated, one-line learnings here -->
