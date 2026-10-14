@@ -19,7 +19,7 @@ Decisions only Bruno can make are marked **🟡 DECIDE**. Claude Code should sto
 - [x] **0.3 Set up the backend skeleton**
   - `backend/pyproject.toml` (uv, Python ≥3.11, ruff, pytest, pydantic v2, typer, pyyaml). Provide an empty `annotool` CLI with `--version`.
   - ✅ `uv run annotool --version` and `uv run pytest` pass on Windows PowerShell.
-- [ ] **0.4 Add the taxonomy loader**
+- [x] **0.4 Add the taxonomy loader**
   - `taxonomy.py` loads `taxonomies/web-ui.yaml` and validates unique values, unique keys per attribute, and that presets reference existing values. It also returns active vs proposed options.
   - ✅ Tests cover the duplicate-key and unknown-preset-value error cases.
 - [ ] **0.5 Add the schema and models**
