@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/brunomartignago/annotool/schema/annotation.v1.schema.json",
+  "title": "Page annotation file (v1)",
+  "description": "One file per captured page: <project>/pages/<page_id>/annotations.json. Coordinates are image pixels, origin top-left. Exporters convert to other conventions (e.g. bottom-left origin for the research CSV).",
+  "type": "object",
+  "required": ["schema_version", "taxonomy", "page", "annotations"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "taxonomy": {
+      "type": "object",
+      "required": ["id", "version"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "examples": ["web-ui"] },
+        "version": { "type": "string", "examples": ["1.0"] }
+      }
+    },
+    "page": {
+      "type": "object",
+      "required": ["id", "image", "width", "height"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9_\\-]+$", "examples": ["www_adobe_com"] },
+        "url": { "type": "string", "format": "uri" },
+        "title": { "type": "string" },
+        "category": { "type": "string", "examples": ["News & Media"] },
+        "page_type": { "type": "string", "examples": ["home", "item list", "item detail", "cart"] },
+        "image": { "type": "string", "description": "File name relative to the page folder", "examples": ["page.png"] },
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 },
+        "viewport": {
+          "type": "object",
+          "properties": { "width": { "type": "integer" }, "height": { "type": "integer" } },
+          "additionalProperties": false
+        },
+        "captured_at": { "type": "string", "format": "date-time" },
+        "locale": { "type": "string", "examples": ["en-US", "pt-BR"] }
+      }
+    },
+    "annotations": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/annotation" }
+    },
+    "history": {
+      "type": "object",
+      "description": "Lightweight effort metrics for measuring click reduction.",
+      "additionalProperties": false,
+      "properties": {
+        "actions": { "type": "integer", "minimum": 0, "description": "Label/draw/delete actions taken on this page" },
+        "seconds_active": { "type": "number", "minimum": 0 },
+        "migrated_from": { "type": "string", "examples": ["legacy-v2"] }
+      }
+    }
+  },
+  "$defs": {
+    "annotation": {
+      "type": "object",
+      "required": ["id", "kind", "bbox", "labels", "source", "status"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "description": "Stable id (ULID). Never reuse after delete." },
+        "kind": {
+          "enum": ["element", "section", "component"],
+          "description": "section = template block (Header, Column 1…); component = group box (Card, Menu…); element = leaf."
+        },
+        "bbox": {
+          "type": "array",
+          "description": "[x, y, width, height] in image pixels, top-left origin. width/height > 0.",
+          "prefixItems": [
+            { "type": "number", "minimum": 0 },
+            { "type": "number", "minimum": 0 },
+            { "type": "number", "exclusiveMinimum": 0 },
+            { "type": "number", "exclusiveMinimum": 0 }
+          ],
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "labels": {
+          "type": "object",
+          "description": "Attribute id → option value, as defined by the taxonomy file. Missing key = not labeled yet.",
+          "additionalProperties": { "type": "string", "minLength": 1 }
+        },
+        "parent_id": {
+          "type": ["string", "null"],
+          "description": "Containing section/component, used for label inheritance."
+        },
+        "source": {
+          "enum": ["human", "dom", "rule", "prior", "model", "llm", "legacy"],
+          "description": "Who created the box."
+        },
+        "status": {
+          "enum": ["suggested", "accepted", "edited", "rejected"],
+          "description": "suggested = not reviewed; accepted = reviewed unchanged; edited = reviewed and changed. Exports skip suggested/rejected by default."
+        },
+        "label_sources": {
+          "type": "object",
+          "description": "Per attribute: where the current value came from.",
+          "additionalProperties": { "enum": ["human", "dom", "rule", "prior", "model", "llm", "legacy", "inherited", "preset"] }
+        },
+        "confidence": {
+          "type": "object",
+          "description": "Per attribute confidence of the suggestion, 0–1.",
+          "additionalProperties": { "type": "number", "minimum": 0, "maximum": 1 }
+        },
+        "dom": {
+          "type": "object",
+          "description": "Link back to the captured DOM node, when the box came from the DOM.",
+          "additionalProperties": false,
+          "properties": {
+            "index": { "type": "integer" },
+            "tag": { "type": "string" },
+            "role": { "type": "string" },
+            "selector": { "type": "string" }
+          }
+        },
+        "note": { "type": "string" },
+        "created_at": { "type": "string", "format": "date-time" },
+        "updated_at": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

@@ -1,0 +1,145 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Web UI Taxonomy — Form × Function × Component × Template section
+# Source of truth for labels, keyboard mnemonics, presets and suggestion rules.
+# Theory: https://brunomartignago.github.io/pages/research1.html
+#
+# RULES FOR EDITING THIS FILE
+# - Option `value` strings are research data. They appear verbatim in every
+#   saved annotation. NEVER rename or remove a value without writing a
+#   migration in backend/src/annotool/io/migrations/ and bumping `version`.
+# - Adding options is safe. Give each a `key` unique within its attribute.
+# - `status: proposed` = in the theory but not yet confirmed for the tool.
+#   The UI hides proposed options until Bruno flips them to `active`.
+# ─────────────────────────────────────────────────────────────────────────────
+
+id: web-ui
+version: "1.0"
+name: Web UI taxonomy (Martignago)
+description: >
+  Classifies every visible element of a web page by what it looks like (Form),
+  what it does (Function) and what it belongs to (Component), and places it in
+  a template section (Header, Columns, Panels, Footer...).
+
+attributes:
+  - id: Form
+    hotkey: f            # opens the Form picker for the selected boxes
+    question: What does it look like?
+    options:
+      - { value: Typo,  key: t }
+      - { value: Image, key: i }
+      - { value: Icon,  key: c }
+      - { value: Space, key: s }
+
+  - id: Function
+    hotkey: n
+    question: What does it do?
+    options:
+      - { value: Dropdown,     key: d }
+      - { value: Radio button, key: r }
+      - { value: Checkbox,     key: c }
+      - { value: Text input,   key: i }
+      - { value: Label,        key: a }
+      - { value: Text,         key: t }
+      - { value: Breadcrumb,   key: b }
+      - { value: Button,       key: u }
+      - { value: Link,         key: l }
+      - { value: Ad,           key: v }
+      - { value: Tag,          key: g }
+      - { value: Heading,      key: h }   # was unreachable by keyboard in v2 (index 12)
+      - { value: Illustration, key: o }
+
+  - id: Component
+    hotkey: c
+    question: What is it part of?
+    inherit_from_parent: true   # elements inside a component box inherit it
+    options:
+      - { value: Carousel,   key: o }
+      - { value: Card,       key: c }
+      - { value: Table,      key: t }
+      - { value: Search bar, key: s }
+      - { value: Banner,     key: b }
+      - { value: Menu,       key: m }
+      - { value: Filter,     key: f }
+      - { value: Tab,        key: a }
+      - { value: List item,  key: l }
+      - { value: Blank,      key: n, note: "Not part of a component" }
+
+  - id: Taxonomy            # attribute name kept for compatibility with v1/v2 data
+    label: Template section
+    hotkey: t
+    question: Which section of the page template?
+    inherit_from_parent: true   # elements inherit the section box that contains them
+    computed_by_rules: true     # see `rules.sections` — usually never typed by hand
+    options:
+      - { value: Header,      key: h }
+      - { value: Sub-header,  key: s }
+      - { value: Footer,      key: f }
+      - { value: Column 0,    key: "0", note: "Single-column section" }
+      - { value: Column 1,    key: "1" }
+      - { value: Column 2,    key: "2" }
+      - { value: Column 3,    key: "3" }
+      - { value: Column 4,    key: "4" }
+      - { value: Column 5,    key: "5", status: proposed, note: "Theory allows 0–5; v2 tool stopped at 4" }
+      - { value: Left Panel,  key: l }
+      - { value: Right Panel, key: r }
+      - { value: Left Menu,   key: m }
+      - { value: Right Menu,  key: n }
+      - { value: Overlay,     key: o, status: proposed, note: "In the theory (z-axis layer); missing from v2" }
+
+# ── One-keystroke presets ────────────────────────────────────────────────────
+# Number keys 1–9 apply a whole Form/Function/Component combo at once.
+# Seeded from the 218 complete boxes in the legacy data (mostly CNN): the top 3
+# combos cover ~2/3 of all boxes. The PriorSuggester should re-rank these from
+# the user's own data over time; this list is only the cold-start default.
+presets:
+  - { key: "1", labels: { Form: Typo,  Function: Text,    Component: Blank } }   # 65
+  - { key: "2", labels: { Form: Image, Function: Link,    Component: Blank } }   # 46
+  - { key: "3", labels: { Form: Typo,  Function: Heading, Component: Blank } }   # 37
+  - { key: "4", labels: { Form: Typo,  Function: Link,    Component: Menu } }    # 19
+  - { key: "5", labels: { Form: Typo,  Function: Link,    Component: Blank } }   # 8
+  - { key: "6", labels: { Form: Typo,  Function: Heading, Component: Menu } }    # 7
+  - { key: "7", labels: { Form: Typo,  Function: Ad,      Component: Blank } }   # 6
+  - { key: "8", labels: { Form: Image, Function: Link,    Component: Card } }    # 6
+  - { key: "9", labels: { Form: Typo,  Function: Text,    Component: Card } }    # 6
+
+# ── Rules (used by suggesters; all outputs are suggestions, never ground truth)
+rules:
+  # Template sections — straight from the theory.
+  sections:
+    panel_max_width_ratio: 0.20     # a column narrower than 20% of page width…
+    panel_positions: [first, last]  # …and first or last in its row is a Panel
+    menu_min_link_ratio: 0.50       # a Panel whose elements are ≥50% links is a Menu
+    max_columns: 5                  # Column 1..5 numbered left→right; Column 0 = single column
+    column_min_width_ratio: 0.20
+    overlay_when: [position_fixed, position_sticky_not_header, role_dialog]
+
+  # DOM → label hints, applied to elements captured from the live page.
+  # `confidence` is a prior; the UI shows low-confidence suggestions first.
+  dom_hints:
+    Function:
+      - { match: "h1,h2,h3,h4,h5,h6,[role=heading]",                         value: Heading,      confidence: 0.95 }
+      - { match: "a[href]",                                                   value: Link,         confidence: 0.85 }
+      - { match: "button,[role=button],input[type=submit],input[type=button]",value: Button,       confidence: 0.85 }
+      - { match: "select,[role=combobox],[aria-haspopup=listbox],[aria-haspopup=menu]", value: Dropdown, confidence: 0.8 }
+      - { match: "input[type=checkbox],[role=checkbox]",                      value: Checkbox,     confidence: 0.95 }
+      - { match: "input[type=radio],[role=radio]",                            value: Radio button, confidence: 0.95 }
+      - { match: "input:not([type]),input[type=text],input[type=search],input[type=email],input[type=password],input[type=tel],input[type=url],input[type=number],textarea", value: Text input, confidence: 0.9 }
+      - { match: "label",                                                     value: Label,        confidence: 0.8 }
+      - { match: "nav[aria-label*=readcrumb] *,[class*=breadcrumb] *",        value: Breadcrumb,   confidence: 0.7 }
+      - { match: "iframe[src*=doubleclick],iframe[id*=google_ads],[id^=ad-],[class*=advert],[data-ad-slot]", value: Ad, confidence: 0.6 }
+      - { match: "p,span,li,td,figcaption,blockquote",                        value: Text,         confidence: 0.5 }
+    Form:
+      - { match: "svg,i[class*=icon],[class*=icon]", max_size_px: 48,         value: Icon,         confidence: 0.8 }
+      - { match: "img,picture,video,canvas,[style*=background-image]",        value: Image,        confidence: 0.85 }
+      - { match: "text_node",                                                 value: Typo,         confidence: 0.85 }
+    Component:   # matched against ancestors, nearest wins
+      - { match: "nav,[role=navigation],[role=menu],[role=menubar]",          value: Menu,         confidence: 0.75 }
+      - { match: "table,[role=grid],[role=table]",                            value: Table,        confidence: 0.85 }
+      - { match: "[role=tablist]",                                            value: Tab,          confidence: 0.85 }
+      - { match: "form[role=search],[role=search]",                           value: Search bar,   confidence: 0.85 }
+      - { match: "[aria-roledescription=carousel],[class*=carousel],[class*=swiper],[class*=slider]", value: Carousel, confidence: 0.6 }
+      - { match: "article,[class*=card]",                                     value: Card,         confidence: 0.45 }
+    Taxonomy:    # matched against ancestors
+      - { match: "header,[role=banner]",                                      value: Header,       confidence: 0.8 }
+      - { match: "footer,[role=contentinfo]",                                 value: Footer,       confidence: 0.85 }
+    # NOTE: [role=banner] is the HTML *header landmark*, not the "Banner" component.

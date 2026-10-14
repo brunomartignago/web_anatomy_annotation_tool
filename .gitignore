@@ -1,0 +1,40 @@
+# ── Data: never commit screenshots or project data ──
+data/
+images/
+json/
+labels/
+csv/
+*.png
+*.jpg
+*.jpeg
+*.webp
+!docs/**/*.png
+!docs/**/*.webp
+!examples/**/*.png
+*.autosave.json
+.cache/
+
+# ── Python ──
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+
+# ── Node ──
+node_modules/
+frontend/dist/
+.vite/
+
+# ── Tooling / OS ──
+.env
+.env.*
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+.claude/settings.local.json
