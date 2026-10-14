@@ -11,6 +11,10 @@ dependencies = [
     "typer>=0.12",
 ]
 
+[project.urls]
+Repository = "https://github.com/brunomartignago/web_anatomy_annotation_tool"
+Research = "https://brunomartignago.github.io/pages/research1.html"
+
 [project.scripts]
 annotool = "annotool.cli:app"
 

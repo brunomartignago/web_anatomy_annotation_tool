@@ -15,7 +15,7 @@ A **local web app**. A Python backend owns capture, data, rules and suggestions.
 ## Repository layout
 
 ```
-annotool/                         ← working name, rename freely
+web_anatomy_annotation_tool/      ← GitHub repo; the Python package and CLI are `annotool`
 ├─ CLAUDE.md                      context for Claude Code
 ├─ README.md · LICENSE · CONTRIBUTING.md · .gitignore
 ├─ .github/

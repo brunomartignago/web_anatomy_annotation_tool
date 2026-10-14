@@ -15,6 +15,11 @@ See the [roadmap](docs/ROADMAP.md) for what's done and what's next.
 
 ## Quick start
 
+```bash
+git clone https://github.com/brunomartignago/web_anatomy_annotation_tool.git
+cd web_anatomy_annotation_tool
+```
+
 ### Today: the legacy tool
 
 Requires Python 3.11+ and Pillow. It currently runs on **Windows only** (it uses a Windows-specific window call, see [AUDIT #9](docs/AUDIT.md)).

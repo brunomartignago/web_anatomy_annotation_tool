@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/brunomartignago/annotool/schema/annotation.v1.schema.json",
+  "$id": "https://github.com/brunomartignago/web_anatomy_annotation_tool/schema/annotation.v1.schema.json",
   "title": "Page annotation file (v1)",
   "description": "One file per captured page: <project>/pages/<page_id>/annotations.json. Coordinates are image pixels, origin top-left. Exporters convert to other conventions (e.g. bottom-left origin for the research CSV).",
   "type": "object",
