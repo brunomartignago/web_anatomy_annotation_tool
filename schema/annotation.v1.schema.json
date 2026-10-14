@@ -74,6 +74,8 @@
             { "type": "number", "exclusiveMinimum": 0 },
             { "type": "number", "exclusiveMinimum": 0 }
           ],
+          "$comment": "`items` never applies (maxItems = prefixItems length); it is here so json-schema-to-typescript emits [number, number, number, number] instead of unknown.",
+          "items": { "type": "number" },
           "minItems": 4,
           "maxItems": 4
         },

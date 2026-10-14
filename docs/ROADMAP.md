@@ -22,7 +22,7 @@ Decisions only Bruno can make are marked **🟡 DECIDE**. Claude Code should sto
 - [x] **0.4 Add the taxonomy loader**
   - `taxonomy.py` loads `taxonomies/web-ui.yaml` and validates unique values, unique keys per attribute, and that presets reference existing values. It also returns active vs proposed options.
   - ✅ Tests cover the duplicate-key and unknown-preset-value error cases.
-- [ ] **0.5 Add the schema and models**
+- [x] **0.5 Add the schema and models**
   - `models.py` mirrors `schema/annotation.v1.schema.json`. Add a test that validates model output against the JSON Schema.
 - [ ] **0.6 Add the legacy migration**
   - `annotool migrate <legacy.json> --image <png> --out <page folder>` converts v1 and v2 files to schema v1. It normalizes inverted coords (30 boxes in the CNN file), converts `[x0,y0,x1,y1]` to `[x,y,w,h]`, drops `expanded` and `Area`, sets `source: legacy` and `status: accepted` (or `suggested` if incomplete), assigns ULIDs, and reads image size from the PNG.
