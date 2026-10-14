@@ -36,6 +36,9 @@ jobs:
       - name: Install dependencies
         run: uv sync --locked
 
+      - name: Install Chromium for capture tests
+        run: uv run --locked playwright install --with-deps chromium
+
       - name: Lint
         run: uv run --locked ruff check .
 
@@ -44,3 +47,6 @@ jobs:
 
       - name: Test
         run: uv run --locked pytest
+        env:
+          # Browser tests fail here instead of being skipped (see backend/tests/conftest.py).
+          ANNOTOOL_REQUIRE_BROWSER: "1"

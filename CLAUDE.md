@@ -28,6 +28,8 @@ Owner: Bruno (designer and researcher, comfortable with Python, works on **Windo
 ```powershell
 cd backend; uv sync; uv run pytest; uv run ruff check .; uv run annotool --help
 uv run playwright install chromium        # first time, for capture
+uv run annotool capture ../examples/urls.csv --project <name>   # or pass URLs directly
+uv run annotool migrate <legacy.json>... --image <png> --out <page folder> --meta <meta.json>
 cd frontend; pnpm install; pnpm dev; pnpm test; pnpm gen:types
 uv run annotool serve --project demo      # backend + built frontend
 ```
@@ -60,5 +62,6 @@ Form, Function, Component: the element axes. *Taxonomy* (attribute name) means t
 - 0.5: `json-schema-to-typescript` ignores `prefixItems`, so `bbox` also declares `"items": {"type": "number"}`. That doesn't change which files validate, so Bruno chose to keep `schema_version` 1.0. The "bump on schema change" rule is for changes to what files are accepted. Timestamps must carry a timezone (`AwareDatetime`), so 0.6 must add an offset to the naive legacy `timestamp` values. `test_models.py` fails if the models and the schema drift apart.
 - 0.6: Migrated pages live in `data/projects/legacy/pages/<id>/`: CNN 210 boxes, Adobe 12, Khan 1, Stack Overflow 1, for 224 total (218 accepted, 6 suggested). Each page's json/ and autosave files were merged, timestamps got −03:00, and one CNN box was clamped by 0.5 px. Legacy PNG heights are padded stitches (AUDIT #17), so don't trust normalized y on these pages. Pillow's decompression-bomb guard is off in `images.py` (screenshots are trusted and very tall).
 - 0.7: CI (`.github/workflows/ci.yml`) runs on Python 3.11, the minimum we support, with `uv sync --locked`, so commit `backend/uv.lock` whenever dependencies change or CI fails. Add a frontend job once `frontend/` exists.
+- 1.1: Adobe (Akamai, 403) and Stack Overflow (Cloudflare) block headless Chromium. We don't evade bot walls: 1.2 flags them, and `capture` already warns on HTTP ≥ 400. CNN, MDN and the Guardian capture with sticky headers once. Scroll with `behavior: 'instant'` and wait for `scrollY === 0`, because pages with `scroll-behavior: smooth` (MDN) otherwise draw sticky headers mid-page. Guardian images stay grey placeholders (lazy-load/consent). Revisit in 1.2/1.4. Playwright's sync API allows one instance per thread, so CLI browser tests live in their own module.
 - GitHub: `origin` = https://github.com/brunomartignago/web_anatomy_annotation_tool (public). The repo name differs from the package/CLI name `annotool`, and that's intentional. Push to `main` after each committed roadmap item.
 <!-- Claude Code: append dated, one-line learnings here -->

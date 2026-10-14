@@ -32,7 +32,7 @@ Decisions only Bruno can make are marked **🟡 DECIDE**. Claude Code should sto
 
 ## Phase 1: Capture v2 (Playwright)
 
-- [ ] **1.1 Full-page capture**
+- [x] **1.1 Full-page capture**
   - `annotool capture examples/urls.csv --project <name>` uses Playwright Chromium at a 1920×1080 viewport. It scrolls to trigger lazy loading, then takes one screenshot with `full_page=True` (no stitching). It writes `page.png` and `meta.json` into a page folder, with the page id taken from the hostname plus an optional path slug.
   - ✅ The Adobe and CNN captures have no repeated sticky headers. The metadata file name matches the PNG.
 - [ ] **1.2 Detect blocked and consent pages**

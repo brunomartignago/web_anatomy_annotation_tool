@@ -45,12 +45,17 @@ def _fail(message: str) -> typer.Exit:
     return typer.Exit(code=1)
 
 
-def _find_default_taxonomy() -> Path | None:
-    """`taxonomies/web-ui.yaml` in the current folder or any parent (e.g. from backend/)."""
+def _find_repo_root() -> Path | None:
+    """The folder holding `taxonomies/web-ui.yaml`: the current one or a parent (e.g. backend/)."""
     for folder in [Path.cwd(), *Path.cwd().parents]:
         if (folder / DEFAULT_TAXONOMY).is_file():
-            return folder / DEFAULT_TAXONOMY
+            return folder
     return None
+
+
+def _find_default_taxonomy() -> Path | None:
+    root = _find_repo_root()
+    return root / DEFAULT_TAXONOMY if root else None
 
 
 def _page_id_from_image(image: Path) -> str:
@@ -141,3 +146,71 @@ def migrate(
         f"({accepted} accepted, {count - accepted} suggested) "
         f"from {page.history.migrated_from} -> {target}"
     )
+
+
+@app.command()
+def capture(
+    sources: Annotated[
+        list[str],
+        typer.Argument(
+            help="URLs (https://...) and/or URL-list CSV files, e.g. examples/urls.csv."
+        ),
+    ],
+    project: Annotated[str, typer.Option(help="Project name (folder under data/projects/).")],
+    data_dir: Annotated[
+        Path | None, typer.Option(file_okay=False, help="Default: data/ in the repo root.")
+    ] = None,
+    force: Annotated[
+        bool, typer.Option(help="Recapture pages that already have annotations.json.")
+    ] = False,
+) -> None:
+    """Take full-page screenshots (1920x1080 viewport) and write page.png + meta.json."""
+    from annotool.capture.browser import Capturer
+    from annotool.capture.urls import UrlListError, entries_from_sources
+    from annotool.project import ensure_project, page_dir
+
+    try:
+        entries = entries_from_sources(sources)
+    except (UrlListError, OSError) as exc:
+        raise _fail(str(exc)) from exc
+    if data_dir is None:
+        root = _find_repo_root()
+        if root is None:
+            raise _fail("can't find the repo's data/ folder. Pass --data-dir.")
+        data_dir = root / "data"
+    try:
+        ensure_project(data_dir, project, sources=sources)
+    except ValueError as exc:
+        raise _fail(str(exc)) from exc
+
+    failed: list[str] = []
+    try:
+        capturer = Capturer().__enter__()
+    except Exception as exc:
+        raise _fail(
+            f"can't start Chromium ({exc}). Run: uv run playwright install chromium"
+        ) from exc
+    try:
+        for n, entry in enumerate(entries, start=1):
+            prefix = f"[{n}/{len(entries)}] {entry.page_id}"
+            folder = page_dir(data_dir, project, entry.page_id)
+            if (folder / "annotations.json").exists() and not force:
+                typer.echo(f"{prefix}: skipped (has annotations.json; use --force to recapture)")
+                continue
+            try:
+                meta = capturer.capture(entry, folder)
+            except Exception as exc:  # one bad page must not stop the batch
+                failed.append(entry.page_id)
+                typer.echo(f"{prefix}: failed: {str(exc).splitlines()[0]}")
+                continue
+            typer.echo(f"{prefix}: {meta.width}x{meta.height} px in {meta.duration_s:.1f}s")
+            if meta.http_status and meta.http_status >= 400:
+                # Usually a bot wall or "Access Denied" page. Roadmap 1.2 flags these properly.
+                typer.echo(f"{prefix}: warning: HTTP {meta.http_status} ({meta.title})")
+    finally:
+        capturer.__exit__(None, None, None)
+
+    typer.echo(f"Done: {len(entries) - len(failed)} of {len(entries)} pages -> {data_dir}")
+    if failed:
+        typer.echo(f"{len(failed)} failed: {', '.join(failed)}")
+        raise typer.Exit(code=1)
