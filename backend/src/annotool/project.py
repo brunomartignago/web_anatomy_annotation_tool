@@ -40,9 +40,26 @@ def ensure_project(
             "taxonomy": taxonomy,
             "sources": sources or [],
             "created_at": datetime.now().astimezone().isoformat(timespec="seconds"),
+            # CSS selectors `capture` clicks to dismiss consent banners, first visible wins.
+            # Prefer "Reject all" / "Necessary only" buttons, e.g. "#onetrust-reject-all-handler".
+            "consent_clicks": [],
         }
         config.write_text(yaml.safe_dump(data, sort_keys=False), encoding="utf-8")
     return folder
+
+
+def load_project_config(data_dir: Path, name: str) -> dict[str, Any]:
+    """`project.yaml` as a dict ({} if missing)."""
+    config = project_dir(data_dir, name) / PROJECT_FILE
+    if not config.exists():
+        return {}
+    data = yaml.safe_load(config.read_text(encoding="utf-8")) or {}
+    if not isinstance(data, dict):
+        raise ValueError(f"{config} must be a mapping")
+    clicks = data.get("consent_clicks") or []
+    if not isinstance(clicks, list) or not all(isinstance(c, str) for c in clicks):
+        raise ValueError(f"{config}: consent_clicks must be a list of CSS selectors")
+    return data
 
 
 def write_json_atomic(path: Path, data: Any) -> None:

@@ -163,16 +163,27 @@ def capture(
     force: Annotated[
         bool, typer.Option(help="Recapture pages that already have annotations.json.")
     ] = False,
+    retry_blocked: Annotated[
+        bool,
+        typer.Option(help="Only capture pages that were blocked or failed last time."),
+    ] = False,
 ) -> None:
-    """Take full-page screenshots (1920x1080 viewport) and write page.png + meta.json."""
-    from annotool.capture.browser import Capturer
-    from annotool.capture.urls import UrlListError, entries_from_sources
-    from annotool.project import ensure_project, page_dir
+    """Take full-page screenshots (1920x1080 viewport) and write page.png + meta.json.
 
+    Pages showing a bot wall, error page or blank screen are flagged `blocked` in
+    meta.json. Consent banners are dismissed with project.yaml › consent_clicks.
+    """
+    from annotool.capture.browser import META_NAME, Capturer
+    from annotool.capture.urls import UrlListError, entries_from_sources
+    from annotool.project import ensure_project, load_project_config, page_dir, project_dir
+
+    notes: list[str] = []
     try:
-        entries = entries_from_sources(sources)
+        entries = entries_from_sources(sources, notes=notes)
     except (UrlListError, OSError) as exc:
         raise _fail(str(exc)) from exc
+    for note in notes:
+        typer.echo(f"Note: {note}")
     if data_dir is None:
         root = _find_repo_root()
         if root is None:
@@ -180,9 +191,12 @@ def capture(
         data_dir = root / "data"
     try:
         ensure_project(data_dir, project, sources=sources)
+        consent_clicks = load_project_config(data_dir, project).get("consent_clicks") or []
     except ValueError as exc:
         raise _fail(str(exc)) from exc
 
+    captured: list[str] = []
+    blocked: list[str] = []
     failed: list[str] = []
     try:
         capturer = Capturer().__enter__()
@@ -197,20 +211,39 @@ def capture(
             if (folder / "annotations.json").exists() and not force:
                 typer.echo(f"{prefix}: skipped (has annotations.json; use --force to recapture)")
                 continue
+            if retry_blocked and not _was_blocked_or_failed(folder / META_NAME):
+                continue
             try:
-                meta = capturer.capture(entry, folder)
+                meta = capturer.capture(entry, folder, consent_clicks=consent_clicks)
             except Exception as exc:  # one bad page must not stop the batch
                 failed.append(entry.page_id)
                 typer.echo(f"{prefix}: failed: {str(exc).splitlines()[0]}")
                 continue
-            typer.echo(f"{prefix}: {meta.width}x{meta.height} px in {meta.duration_s:.1f}s")
-            if meta.http_status and meta.http_status >= 400:
-                # Usually a bot wall or "Access Denied" page. Roadmap 1.2 flags these properly.
-                typer.echo(f"{prefix}: warning: HTTP {meta.http_status} ({meta.title})")
+            captured.append(entry.page_id)
+            status = f"{meta.width}x{meta.height} px in {meta.duration_s:.1f}s"
+            if meta.blocked:
+                blocked.append(entry.page_id)
+                status = f"BLOCKED ({'; '.join(meta.blocked_reasons)})"
+            typer.echo(f"{prefix}: {status}")
+            for warning in meta.warnings:
+                typer.echo(f"{prefix}: warning: {warning}")
     finally:
         capturer.__exit__(None, None, None)
 
-    typer.echo(f"Done: {len(entries) - len(failed)} of {len(entries)} pages -> {data_dir}")
+    typer.echo(
+        f"Done: {len(captured)} captured, {len(blocked)} blocked, {len(failed)} failed "
+        f"-> {project_dir(data_dir, project)}"
+    )
+    if blocked:
+        typer.echo(f"Blocked: {', '.join(blocked)} (retry later with --retry-blocked)")
     if failed:
-        typer.echo(f"{len(failed)} failed: {', '.join(failed)}")
+        typer.echo(f"Failed: {', '.join(failed)}")
         raise typer.Exit(code=1)
+
+
+def _was_blocked_or_failed(meta_path: Path) -> bool:
+    """True if the last capture was blocked, or there is no successful capture yet."""
+    try:
+        return bool(json.loads(meta_path.read_text(encoding="utf-8")).get("blocked"))
+    except (OSError, ValueError):
+        return True

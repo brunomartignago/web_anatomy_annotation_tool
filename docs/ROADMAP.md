@@ -35,7 +35,7 @@ Decisions only Bruno can make are marked **🟡 DECIDE**. Claude Code should sto
 - [x] **1.1 Full-page capture**
   - `annotool capture examples/urls.csv --project <name>` uses Playwright Chromium at a 1920×1080 viewport. It scrolls to trigger lazy loading, then takes one screenshot with `full_page=True` (no stitching). It writes `page.png` and `meta.json` into a page folder, with the page id taken from the hostname plus an optional path slug.
   - ✅ The Adobe and CNN captures have no repeated sticky headers. The metadata file name matches the PNG.
-- [ ] **1.2 Detect blocked and consent pages**
+- [x] **1.2 Detect blocked and consent pages**
   - Flag pages with a tiny file size, near-uniform color, height equal to one viewport, or known consent/captcha selectors as `meta.blocked = true` with a reason. Add `--retry-blocked`, and accept an optional cookie-banner click list in `project.yaml`.
   - ✅ Running against the old list flags most of: bestbuy, homedepot, tesla, crunchyroll, hotels, amazon, loc.gov.
 - [ ] **1.3 DOM extraction**

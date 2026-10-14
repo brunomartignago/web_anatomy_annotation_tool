@@ -31,17 +31,25 @@ python legacy/annotation_tool_v2.py
 
 Open a screenshot with Ctrl+O, draw boxes with D, and label them in the left panel. Annotations autosave next to the image as `<image>.autosave.json`.
 
-### Planned: the new tool
+### The new tool (in progress)
 
-These commands will work as the roadmap progresses (Phase 0–2):
+Capturing pages works today. Requires [uv](https://docs.astral.sh/uv/).
 
 ```bash
 cd backend
 uv sync
 uv run playwright install chromium
 uv run annotool capture ../examples/urls.csv --project demo
-uv run annotool serve --project demo
 ```
+
+Each page lands in `data/projects/demo/pages/<page id>/` as `page.png` plus `meta.json`. Pages that show a bot check, region block or error page instead of the real site get `"blocked": true` with the reasons. Recapture them later with `--retry-blocked`. To dismiss cookie banners before the screenshot, list the button selectors in `data/projects/demo/project.yaml`, preferably the "Reject all" ones:
+
+```yaml
+consent_clicks:
+  - "#onetrust-reject-all-handler"
+```
+
+The annotation UI (`annotool serve`) comes in Phase 2 of the [roadmap](docs/ROADMAP.md).
 
 ## How it's organized
 

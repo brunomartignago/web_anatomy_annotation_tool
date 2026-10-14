@@ -78,9 +78,22 @@ def test_sources_mix_urls_and_csv_files(tmp_path):
     assert [e.url for e in entries] == ["https://www.adobe.com", "https://www.bbc.com"]
 
 
-def test_duplicate_page_ids_are_an_error(tmp_path):
+def test_repeated_url_keeps_the_first_row_and_notes_it(tmp_path):
+    # examples/urls.csv lists Adobe under two categories.
+    csv = tmp_path / "urls.csv"
+    csv.write_text(
+        "Category,Website URL\nDesign,https://www.adobe.com\nTech,https://www.adobe.com/\n",
+        encoding="utf-8",
+    )
+    notes: list[str] = []
+    entries = entries_from_sources([str(csv)], notes=notes)
+    assert entries == [UrlEntry(url="https://www.adobe.com", category="Design")]
+    assert len(notes) == 1 and "www_adobe_com" in notes[0] and "Tech" in notes[0]
+
+
+def test_different_urls_with_the_same_page_id_are_an_error():
     with pytest.raises(UrlListError, match="www_adobe_com"):
-        entries_from_sources(["https://www.adobe.com", "https://www.adobe.com/"])
+        entries_from_sources(["https://www.adobe.com/?a=1", "https://www.adobe.com/#b"])
 
 
 def test_source_that_is_neither_url_nor_file_is_an_error():
