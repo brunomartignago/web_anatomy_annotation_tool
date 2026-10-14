@@ -1,0 +1,5066 @@
+{
+  "schema_version": "1.0",
+  "taxonomy": {
+    "id": "web-ui",
+    "version": "1.0"
+  },
+  "page": {
+    "id": "edition_cnn_com",
+    "url": "https://edition.cnn.com",
+    "title": "Breaking News, Latest News and Videos | CNN",
+    "image": "page.png",
+    "width": 1920,
+    "height": 8037,
+    "viewport": {
+      "width": 1920,
+      "height": 893
+    },
+    "captured_at": "2025-06-09T09:28:51-03:00",
+    "locale": "en"
+  },
+  "annotations": [
+    {
+      "id": "01M4XS73YJ8F5EE9FF80P58A42",
+      "kind": "element",
+      "bbox": [
+        473.0151940256198,
+        2.4830193912106027,
+        970.8605819633456,
+        250.78495851227083
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Dropdown",
+        "Component": "Menu",
+        "Taxonomy": "Header"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJ8TP9KQXJFRKB086M",
+      "kind": "element",
+      "bbox": [
+        271.89062333756095,
+        274.3736427287716,
+        32.279252085737824,
+        42.21132965058024
+      ],
+      "labels": {
+        "Form": "Icon",
+        "Function": "Link",
+        "Component": "Menu",
+        "Taxonomy": "Header"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJJRZD140B4G2WWYK1",
+      "kind": "element",
+      "bbox": [
+        305.4113851189041,
+        275.61515242437684,
+        68.2830332582916,
+        40.96981995497498
+      ],
+      "labels": {
+        "Form": "Icon",
+        "Function": "Link",
+        "Component": "Menu",
+        "Taxonomy": "Header"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJRG0Y60MBQ2V4YAF7",
+      "kind": "element",
+      "bbox": [
+        374.93592807280095,
+        275.61515242437684,
+        43.452839346185556,
+        40.96981995497498
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Link",
+        "Component": "Menu",
+        "Taxonomy": "Header"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJBJKGFPBEJK8CN20X",
+      "kind": "element",
+      "bbox": [
+        419.6302771145918,
+        274.3736427287716,
+        60.833975084659755,
+        42.21132965058024
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Link",
+        "Component": "Menu",
+        "Taxonomy": "Header"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJ9WHKX5JP1SV1PKWV",
+      "kind": "element",
+      "bbox": [
+        482.94727159046215,
+        275.61515242437684,
+        72.00756234510754,
+        39.728310259369664
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Link",
+        "Component": "Menu",
+        "Taxonomy": "Header"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJ0HCR5K9VFX0VDDPQ",
+      "kind": "element",
+      "bbox": [
+        558.6793630223856,
+        275.61515242437684,
+        85.66416899676574,
+        39.728310259369664
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Link",
+        "Component": "Menu",
+        "Taxonomy": "Header"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJWH8W5ZWBCZ80QNC4",
+      "kind": "element",
+      "bbox": [
+        648.0680611059672,
+        275.61515242437684,
+        67.04152356268628,
+        39.728310259369664
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Link",
+        "Component": "Menu",
+        "Taxonomy": "Header"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJT50BDHRM4Y4GGZXV",
+      "kind": "element",
+      "bbox": [
+        718.8341137554694,
+        273.13213303316627,
+        122.90945986492488,
+        43.452839346185556
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Link",
+        "Component": "Menu",
+        "Taxonomy": "Header"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJRJJGRJG7HCDAZ5B5",
+      "kind": "element",
+      "bbox": [
+        844.2265930116048,
+        274.3736427287716,
+        54.626426606633345,
+        40.96981995497492
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Link",
+        "Component": "Menu",
+        "Taxonomy": "Header"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJP6VJ95W69P4EDN96",
+      "kind": "element",
+      "bbox": [
+        901.3360390094487,
+        275.61515242437684,
+        63.31699447587039,
+        39.728310259369664
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Link",
+        "Component": "Menu",
+        "Taxonomy": "Header"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJ0NDBHPJJCMGJNN33",
+      "kind": "element",
+      "bbox": [
+        968.3775625721349,
+        275.61515242437684,
+        68.28303325829154,
+        40.96981995497498
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Link",
+        "Component": "Menu",
+        "Taxonomy": "Header"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJXVDN4982WY2D1ARA",
+      "kind": "element",
+      "bbox": [
+        1040.3851249172424,
+        275.61515242437684,
+        78.21511082313395,
+        40.96981995497498
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Dropdown",
+        "Component": "Menu",
+        "Taxonomy": "Header"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJ6DQGDN04XPCHPE5F",
+      "kind": "element",
+      "bbox": [
+        1246.4757343877225,
+        273.13213303316627,
+        76.97360112752858,
+        42.21132965058024
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Link",
+        "Component": "Menu",
+        "Taxonomy": "Header"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJ3AKQJM44781VT7DR",
+      "kind": "element",
+      "bbox": [
+        1334.6229227756987,
+        274.3736427287716,
+        79.45662051873933,
+        42.21132965058024
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Link",
+        "Component": "Menu",
+        "Taxonomy": "Header"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJKC17HQMBT08W4F3S",
+      "kind": "element",
+      "bbox": [
+        1426.494640250491,
+        274.3736427287716,
+        81.93963990994985,
+        42.21132965058024
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Link",
+        "Component": "Menu",
+        "Taxonomy": "Header"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJX57PC86E3C48HD3Z",
+      "kind": "element",
+      "bbox": [
+        1517.124848029678,
+        275.61515242437684,
+        38.48680056376429,
+        40.96981995497498
+      ],
+      "labels": {
+        "Form": "Icon",
+        "Function": "Link",
+        "Component": "Menu",
+        "Taxonomy": "Header"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJBX7R92DQS8J7213X",
+      "kind": "element",
+      "bbox": [
+        1566.78523585389,
+        274.3736427287716,
+        84.42265930116059,
+        43.452839346185556
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Button",
+        "Component": "Menu",
+        "Taxonomy": "Header"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJKDM0XD0JMKKQH8SQ",
+      "kind": "element",
+      "bbox": [
+        306.6528948145094,
+        356.31328263872143,
+        168.84531860232096,
+        24.83019391210604
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJ1SGNXYZ293DHSMZM",
+      "kind": "element",
+      "bbox": [
+        477.98123280804094,
+        353.83026324751086,
+        176.2943767759528,
+        24.83019391210604
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJV5KSB7CETK3JJBXX",
+      "kind": "element",
+      "bbox": [
+        658.0001386708096,
+        355.0717729431162,
+        235.88684216500724,
+        22.347174520895408
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJ3FWNTW2BZBH4MJM6",
+      "kind": "element",
+      "bbox": [
+        897.6115099226328,
+        351.3472438563002,
+        254.5094875990868,
+        27.313213303316672
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJ37CEQJD9XX4WDDZQ",
+      "kind": "element",
+      "bbox": [
+        1160.8115653909567,
+        353.83026324751086,
+        115.46040169129287,
+        22.347174520895408
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJ799T8RKE4333GYD0",
+      "kind": "element",
+      "bbox": [
+        1282.4795155602762,
+        356.31328263872143,
+        153.94720225505716,
+        22.347174520895464
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJR7WKBEEAYEMRWRED",
+      "kind": "element",
+      "bbox": [
+        1441.3927565977547,
+        352.58875355190554,
+        175.0528670803476,
+        26.071703607711356
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJD3AZ0A02X2C4B1V7",
+      "kind": "element",
+      "bbox": [
+        268.16609425074506,
+        413.4227286365653,
+        518.9510527630159,
+        73.2490720407128
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJ1AHGQS22F4Q0CGGB",
+      "kind": "element",
+      "bbox": [
+        270.6491136419557,
+        502.811426720147,
+        554.9548339355697,
+        312.86044329253593
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJ7G06480VF25QGHN8",
+      "kind": "element",
+      "bbox": [
+        851.6756511852367,
+        409.6981995497494,
+        444.46047102669775,
+        253.2679779034815
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJ1HQZXTPZBH80NMZ5",
+      "kind": "element",
+      "bbox": [
+        1319.7248064284352,
+        410.9397092453547,
+        325.27554024858887,
+        183.74343494958453
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJZD7B5B5RBBWT30VR",
+      "kind": "element",
+      "bbox": [
+        854.1586705764472,
+        672.8982550180733,
+        358.796302029932,
+        69.5245429538968
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJ043QEMV1BF9DK42W",
+      "kind": "element",
+      "bbox": [
+        1318.48329673283,
+        608.3397508465976,
+        250.7849585122708,
+        19.864155129684832
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJMYQVFG6X4VXBFXKF",
+      "kind": "element",
+      "bbox": [
+        855.4001802720526,
+        757.3209143192338,
+        265.6830748595345,
+        22.34717452089535
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJPP5JG964RYVVX2G2",
+      "kind": "element",
+      "bbox": [
+        859.1247093588685,
+        797.0492245786033,
+        407.21518015853883,
+        40.96981995497504
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJD0359CEFP80B7FNV",
+      "kind": "element",
+      "bbox": [
+        1320.9663161240405,
+        654.2756095839937,
+        324.0340305529835,
+        183.74343494958464
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJBXGWF9HVMFKC5CP9",
+      "kind": "element",
+      "bbox": [
+        1322.207825819646,
+        847.9511220984207,
+        306.6528948145094,
+        48.41887812860682
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJXZE7PXE8VP2DGFS1",
+      "kind": "element",
+      "bbox": [
+        273.13213303316627,
+        844.2265930116048,
+        485.4302909816728,
+        45.93585873739619
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJRNKA7YNFK5NS0ES2",
+      "kind": "element",
+      "bbox": [
+        275.61515242437684,
+        943.547368660029,
+        475.4982134168304,
+        16.13962604286894
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJSAGFA9QKDKC6WW9P",
+      "kind": "element",
+      "bbox": [
+        275.61515242437684,
+        979.5511498325826,
+        546.2642660663325,
+        34.76227147694851
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJHHW8DV6G44FAH0B5",
+      "kind": "element",
+      "bbox": [
+        273.13213303316627,
+        1032.9360667436106,
+        358.796302029932,
+        22.34717452089535
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJM8HHTPBT1YBVAR9K",
+      "kind": "element",
+      "bbox": [
+        851.6756511852367,
+        861.6077287500791,
+        444.46047102669775,
+        249.54344881666543
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJK4YESHCH374T5H8E",
+      "kind": "element",
+      "bbox": [
+        1318.48329673283,
+        907.5435874874752,
+        130.35851803855644,
+        86.90567869237111
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJCAG4VGAPATHBPZTN",
+      "kind": "element",
+      "bbox": [
+        1460.0154020318341,
+        903.8190584006593,
+        188.7094737320058,
+        98.07926595281879
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJ8Y2YDSDH2ANC5MAZ",
+      "kind": "element",
+      "bbox": [
+        1319.7248064284352,
+        1030.4530473524,
+        131.60002773416204,
+        79.45662051873933
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJGH6PTG494FTKFTXS",
+      "kind": "element",
+      "bbox": [
+        1460.0154020318341,
+        1026.7285182655842,
+        187.46796403640064,
+        88.14718838797626
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJBN29FT66RPPM380X",
+      "kind": "element",
+      "bbox": [
+        1317.2417870372246,
+        1138.4643908700612,
+        134.08304712537256,
+        75.73209143192344
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJ32620C4ZJVYGA4PV",
+      "kind": "element",
+      "bbox": [
+        1461.2569117274395,
+        1140.947410261272,
+        182.50192525397938,
+        38.48680056376429
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJ1RYC78AKYSRVW0R4",
+      "kind": "element",
+      "bbox": [
+        1460.0154020318341,
+        1236.54365682288,
+        177.53588647155811,
+        84.42265930116059
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJT8BBTZXRETVBPQH1",
+      "kind": "element",
+      "bbox": [
+        1460.0154020318341,
+        1345.7965100361466,
+        184.9849446451899,
+        63.31699447587016
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJ1QJ04ZK6PC2EQDRW",
+      "kind": "element",
+      "bbox": [
+        1316.0002773416193,
+        1237.7851665184853,
+        136.56606651658308,
+        74.49058173631806
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YJTQF8K9XXSM40QMXA",
+      "kind": "element",
+      "bbox": [
+        1318.48329673283,
+        1348.2795294273571,
+        130.35851803855644,
+        70.76605264950217
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKF378KW6CT8RC6Q2D",
+      "kind": "element",
+      "bbox": [
+        1318.48329673283,
+        1445.1172856845706,
+        132.8415374297672,
+        74.49058173631806
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKXAXYEM7FC7PVJYGY",
+      "kind": "element",
+      "bbox": [
+        1462.4984214230449,
+        1447.6003050757813,
+        175.05286708034737,
+        80.69813021434447
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YK9T5K2WWVZQF10Z58",
+      "kind": "element",
+      "bbox": [
+        855.4001802720526,
+        1124.807784218403,
+        414.6642383321706,
+        45.935858737396075
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YK2SP5DWB7Z5544SA4",
+      "kind": "element",
+      "bbox": [
+        857.8831996632631,
+        1185.6417593030626,
+        415.905748027776,
+        40.96981995497504
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKE1NQ1NWYY8Y3AJ3S",
+      "kind": "element",
+      "bbox": [
+        270.6491136419557,
+        1076.3889060897961,
+        269.4076039463503,
+        152.70569255945202
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YK2EWC9W5KW19HSR2S",
+      "kind": "element",
+      "bbox": [
+        562.4038921092015,
+        1075.1473963941908,
+        268.166094250745,
+        153.9472022550574
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YK61ZVV8EJZ01E52PY",
+      "kind": "element",
+      "bbox": [
+        273.13213303316627,
+        1241.5096956053012,
+        240.8528809474284,
+        60.83397508465987
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKXNFTMMNE137K3GHN",
+      "kind": "element",
+      "bbox": [
+        559.9208727179908,
+        1237.7851665184853,
+        225.95476460016482,
+        44.69434904179093
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKSA3623DN478A7J7X",
+      "kind": "element",
+      "bbox": [
+        270.6491136419557,
+        1329.6568839932777,
+        269.4076039463503,
+        155.18871195066254
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKC7J3B81GTCYQNBH6",
+      "kind": "element",
+      "bbox": [
+        559.9208727179908,
+        1328.4153742976723,
+        270.64911364195564,
+        156.4302216462679
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKE9FRN35Y6KM2CDVF",
+      "kind": "element",
+      "bbox": [
+        270.6491136419557,
+        1494.7776735087828,
+        258.23401668590265,
+        38.48680056376429
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKEZCT5HJ506J2C9HE",
+      "kind": "element",
+      "bbox": [
+        559.9208727179908,
+        1493.5361638131774,
+        266.92458455513975,
+        43.452839346185556
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKFJZNWT7AXA9TF1BY",
+      "kind": "element",
+      "bbox": [
+        850.4341414896313,
+        1250.2002634745384,
+        446.9434904179085,
+        252.02646820787618
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKZZX3B78WYW4GW8GK",
+      "kind": "element",
+      "bbox": [
+        850.4341414896313,
+        1512.1588092472568,
+        440.73594193988185,
+        72.00756234510754
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKS2S43EBW34SE5PWC",
+      "kind": "element",
+      "bbox": [
+        269.4076039463504,
+        1654.9324242418666,
+        183.74343494958458,
+        26.071703607711243
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKXCBS3ZBC9X2N0392",
+      "kind": "element",
+      "bbox": [
+        270.6491136419557,
+        1692.1777151100255,
+        330.2415790310101,
+        184.9849446451899
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YK16ES7ZFZ1TAFK6R6",
+      "kind": "element",
+      "bbox": [
+        620.7548478026506,
+        1659.8984630242878,
+        675.3812744092838,
+        383.626495942038
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKK1GKHWDAD72Q3X3N",
+      "kind": "element",
+      "bbox": [
+        1335.864432471304,
+        1656.173933937472,
+        300.445346336483,
+        252.02646820787595
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKGEV688T416T8NFVT",
+      "kind": "element",
+      "bbox": [
+        266.92458455513975,
+        1887.094737320058,
+        316.5849723793518,
+        103.04530473524005
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKWXCFV5FTKFABDW54",
+      "kind": "element",
+      "bbox": [
+        266.92458455513975,
+        2014.9702359674038,
+        312.86044329253593,
+        62.075484780265015
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKR90K5C33MB2BS3FA",
+      "kind": "element",
+      "bbox": [
+        269.4076039463504,
+        2105.600443746591,
+        307.89440451011467,
+        40.96981995497481
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YK566XGATSP8CG6BBA",
+      "kind": "element",
+      "bbox": [
+        269.4076039463504,
+        2172.6419673092773,
+        331.4830887266154,
+        43.452839346185556
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKSJTHQWKVM13PFRX7",
+      "kind": "element",
+      "bbox": [
+        269.4076039463504,
+        2242.166510263174,
+        307.89440451011467,
+        49.66038782421174
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKZKQ4TSW465QVYCQQ",
+      "kind": "element",
+      "bbox": [
+        266.92458455513975,
+        2311.691053217071,
+        295.47930755406173,
+        42.21132965058041
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YK14HR07S3TJWFB45N",
+      "kind": "element",
+      "bbox": [
+        620.7548478026506,
+        2065.872133487221,
+        672.8982550180733,
+        45.9358587373963
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKGP76BZM74BQJ662H",
+      "kind": "element",
+      "bbox": [
+        763.5284627972602,
+        2135.396676441118,
+        530.1246400234637,
+        47.17736843300145
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKQ099YGW2EZ8CQPQC",
+      "kind": "element",
+      "bbox": [
+        619.5133381070453,
+        2140.3627152235395,
+        134.08304712537245,
+        74.49058173631784
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YK51V2YV1ZXQTXSYWJ",
+      "kind": "element",
+      "bbox": [
+        621.9963574982559,
+        2238.4419811763582,
+        131.60002773416193,
+        74.49058173631784
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKVXC3VP9J2ZGJ8293",
+      "kind": "element",
+      "bbox": [
+        764.7699724928656,
+        2238.4419811763582,
+        355.0717729431161,
+        21.105664825290205
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YK1B37YVZRD0PNTJTQ",
+      "kind": "element",
+      "bbox": [
+        1318.48329673283,
+        1946.6872027091124,
+        131.6000277341618,
+        76.97360112752858
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKFWKQW5SYSC6WFM4Y",
+      "kind": "element",
+      "bbox": [
+        1461.2569117274395,
+        1949.170222100323,
+        178.7773961671635,
+        83.18114960555522
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKCGYD3VF3BRVPG96V",
+      "kind": "element",
+      "bbox": [
+        1319.7248064284352,
+        2055.9400559223786,
+        131.60002773416204,
+        76.97360112752904
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKRBH2CKDS9H6Q5NEN",
+      "kind": "element",
+      "bbox": [
+        1458.773892336229,
+        2057.1815656179842,
+        176.29437677595274,
+        80.69813021434447
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKPWGQ5WZA75D43RXX",
+      "kind": "element",
+      "bbox": [
+        1318.48329673283,
+        2163.95139944004,
+        131.6000277341618,
+        76.97360112752858
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKPYA7RAK1EGC47V60",
+      "kind": "element",
+      "bbox": [
+        1461.2569117274395,
+        2163.95139944004,
+        177.53588647155811,
+        83.18114960555522
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YK98ZP512A4AT7Y61Z",
+      "kind": "element",
+      "bbox": [
+        270.6491136419557,
+        3065.287438449489,
+        331.48308872661545,
+        188.70947373200534
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKFDZZPH3F90AFABN3",
+      "kind": "element",
+      "bbox": [
+        271.89062333756095,
+        3262.6874800507317,
+        292.99628816285116,
+        48.41887812860659
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKXMXEZH0NHNC9Q7NA",
+      "kind": "element",
+      "bbox": [
+        270.6491136419557,
+        3335.9365520914444,
+        135.32455682097782,
+        78.21511082313418
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKVEGPV3GPWTXCYJ55",
+      "kind": "element",
+      "bbox": [
+        412.18121894096,
+        3337.1780617870495,
+        178.77739616716337,
+        106.76983382205617
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKZ8029G2YP86QCEQ3",
+      "kind": "element",
+      "bbox": [
+        270.6491136419557,
+        3466.295070130001,
+        132.8415374297672,
+        79.45662051873933
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKPXHF55VQGZXG9JXD",
+      "kind": "element",
+      "bbox": [
+        412.18121894096,
+        3466.295070130001,
+        172.56984768913685,
+        83.18114960555522
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKGJHA14C4ERQTQNNP",
+      "kind": "element",
+      "bbox": [
+        269.4076039463504,
+        3579.2724524300834,
+        132.84153742976724,
+        72.00756234510754
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YK0ZAQ2BPCNEXNGF4A",
+      "kind": "element",
+      "bbox": [
+        415.9057480277759,
+        3575.5479233432675,
+        173.81135738474217,
+        86.90567869237111
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YK35HYN5N9C4KSVWZ6",
+      "kind": "element",
+      "bbox": [
+        621.9963574982559,
+        3065.287438449489,
+        676.6227841048893,
+        383.62649594203776
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YK6FN9XR87PE5BZFFN",
+      "kind": "element",
+      "bbox": [
+        1319.7248064284352,
+        3067.7704578406992,
+        329.00006933540476,
+        183.74343494958475
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YK0EZP919TAKF80R5A",
+      "kind": "element",
+      "bbox": [
+        1319.7248064284352,
+        3263.928989746337,
+        319.06799177056246,
+        70.7660526495024
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKY99EPBEPEKM95YZB",
+      "kind": "element",
+      "bbox": [
+        1318.48329673283,
+        3362.0082556991556,
+        131.6000277341618,
+        74.49058173631829
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YK9H13M0285E8HNGCC",
+      "kind": "element",
+      "bbox": [
+        1460.0154020318341,
+        3360.7667460035505,
+        178.7773961671635,
+        65.8000138670809
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKD1B8VDWRDTB82KXC",
+      "kind": "element",
+      "bbox": [
+        1317.2417870372246,
+        3456.3629925651585,
+        135.3245568209777,
+        80.69813021434447
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKRQ993W2JWCQXT72B",
+      "kind": "element",
+      "bbox": [
+        1458.773892336229,
+        3458.8460119563692,
+        170.08682829792633,
+        100.56228534402953
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKPKF8G686EFS02983",
+      "kind": "element",
+      "bbox": [
+        1318.48329673283,
+        3576.7894330388726,
+        132.8415374297672,
+        86.90567869237111
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKBR0EZYG6DH9WJZTY",
+      "kind": "element",
+      "bbox": [
+        1462.4984214230449,
+        3586.721510603715,
+        140.29059560339897,
+        89.38869808358186
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKS1X72HX5VY2W07G5",
+      "kind": "element",
+      "bbox": [
+        624.4793768894665,
+        3476.2271476948436,
+        552.4718145443592,
+        24.830193912106097
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKPWP6Z0K2H9X56D6Q",
+      "kind": "element",
+      "bbox": [
+        617.0303187158347,
+        3527.129045214661,
+        140.29059560339908,
+        63.31699447587016
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKKPMJV1D14EGNV2C1",
+      "kind": "element",
+      "bbox": [
+        766.0114821884708,
+        3524.64602582345,
+        523.9170915454372,
+        27.313213303316843
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKNG62W9JXMMH2482Z",
+      "kind": "element",
+      "bbox": [
+        619.5133381070453,
+        3619.000762689453,
+        137.80757621218845,
+        84.42265930116037
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKV79XM5CF802333PB",
+      "kind": "element",
+      "bbox": [
+        764.7699724928656,
+        3623.966801471874,
+        530.1246400234637,
+        23.58868421650095
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKK22VKP1ETAB56XMK",
+      "kind": "element",
+      "bbox": [
+        270.6491136419557,
+        3767.981926162089,
+        273.1321330331662,
+        23.58868421650095
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Ad",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKQSDW9SPQYVAP8DKA",
+      "kind": "element",
+      "bbox": [
+        269.4076039463504,
+        3805.227217030248,
+        448.18500011351375,
+        250.7849585122708
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Ad",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKGAARA0ZR3WTNZKX9",
+      "kind": "element",
+      "bbox": [
+        269.4076039463504,
+        4072.151801585388,
+        399.76612198490693,
+        47.17736843300099
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Ad",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YK2R0JNE3BWNTFFV2R",
+      "kind": "element",
+      "bbox": [
+        736.2152494939436,
+        3802.744197639038,
+        446.9434904179085,
+        254.5094875990867
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Ad",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKAK3434FH12184VHA",
+      "kind": "element",
+      "bbox": [
+        1204.2644047371423,
+        3803.985707334643,
+        446.9434904179084,
+        253.26797790348155
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Ad",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKEESATBJGB1VP3Q8Q",
+      "kind": "element",
+      "bbox": [
+        734.9737397983383,
+        4072.151801585388,
+        392.31706381127515,
+        45.9358587373963
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Ad",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKYZYE5XYHY5ZYMWN2",
+      "kind": "element",
+      "bbox": [
+        1203.022895041537,
+        4073.393311280993,
+        391.0755541156698,
+        47.17736843300145
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Ad",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKYVQWFEDNHBK7KWV8",
+      "kind": "element",
+      "bbox": [
+        268.16609425074506,
+        4250.929197752552,
+        271.89062333756095,
+        36.00378117255332
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YK6BJN2Y5SJD8GJ539",
+      "kind": "element",
+      "bbox": [
+        269.4076039463504,
+        4305.555624359185,
+        193.675512514427,
+        21.10566482529066
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YKDBHVN262M59PCHW0",
+      "kind": "element",
+      "bbox": [
+        734.9737397983383,
+        4305.555624359185,
+        158.91324103747854,
+        23.58868421650095
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YK9VN3MXW7B9QYC7S3",
+      "kind": "element",
+      "bbox": [
+        1277.513476777855,
+        4308.038643750395,
+        297.96232694527225,
+        32.279252085738335
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Ad",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YK0ZRSAS6DY4D7WAXF",
+      "kind": "element",
+      "bbox": [
+        1276.2719670822496,
+        4342.8009152273435,
+        297.96232694527225,
+        292.99628816285167
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Ad",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YK8N9T3BT2E1464PG5",
+      "kind": "element",
+      "bbox": [
+        1277.513476777855,
+        4638.280222781405,
+        296.7208172496669,
+        157.67173134187306
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Ad",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMNXSKFN190B9B92ZG",
+      "kind": "element",
+      "bbox": [
+        1278.7549864734603,
+        4795.9519541232785,
+        295.4793075540615,
+        112.97738230008235
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Ad",
+        "Component": "Card",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMYE3RNFXB1K78JY8V",
+      "kind": "element",
+      "bbox": [
+        270.6491136419557,
+        4345.283934618555,
+        444.4604710266978,
+        248.30193912106006
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YM4FTDR3PC5CGV3HSD",
+      "kind": "element",
+      "bbox": [
+        738.6982688851542,
+        4344.042424922949,
+        441.97745163548734,
+        247.06042942545446
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMB9DJGBHN5ARNX5T0",
+      "kind": "element",
+      "bbox": [
+        268.16609425074506,
+        4602.276441608851,
+        428.320844983829,
+        52.143407215423395
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMNKSF10KX1Q3G63XQ",
+      "kind": "element",
+      "bbox": [
+        733.7322301027331,
+        4602.276441608851,
+        414.6642383321706,
+        53.384916911028085
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMV4RNQWRMY0VZ62K0",
+      "kind": "element",
+      "bbox": [
+        269.4076039463504,
+        4680.491552431986,
+        440.73594193988197,
+        63.31699447587016
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YM2WJ33NZ3TJ57Q0RP",
+      "kind": "element",
+      "bbox": [
+        734.9737397983383,
+        4674.284003953959,
+        427.07933528822355,
+        49.660387824212194
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YM7WJN5A888ZANSC3E",
+      "kind": "element",
+      "bbox": [
+        269.4076039463504,
+        4764.914211733146,
+        415.90574802777587,
+        47.1773684330019
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YM1Y2A8BP9GRBERA8B",
+      "kind": "element",
+      "bbox": [
+        266.92458455513975,
+        4835.680264382649,
+        445.7019807223031,
+        44.6943490417907
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMPQ3T695HPR3FAPJT",
+      "kind": "element",
+      "bbox": [
+        733.7322301027331,
+        4746.291566299066,
+        423.35480620140777,
+        43.45283934618601
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMHA8S0JWV6M5HD0MF",
+      "kind": "element",
+      "bbox": [
+        736.2152494939436,
+        4818.299128644174,
+        433.28688376625007,
+        65.80001386708136
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMA19Z4HASZPJPY203",
+      "kind": "element",
+      "bbox": [
+        270.6491136419557,
+        4997.076524811338,
+        173.81135738474217,
+        24.830193912105642
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YM7K7Q8A64F9GQ1GSX",
+      "kind": "element",
+      "bbox": [
+        736.2152494939436,
+        4998.318034506943,
+        76.9736011275287,
+        24.830193912105642
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMKS7CQBM5C9N73M9D",
+      "kind": "element",
+      "bbox": [
+        1201.7813853459315,
+        4997.076524811338,
+        76.97360112752881,
+        26.071703607711243
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YM92MTBES1713X0B08",
+      "kind": "element",
+      "bbox": [
+        270.6491136419557,
+        5035.563325375102,
+        444.4604710266978,
+        252.02646820787595
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YME2VM0VTYRZ5BEA2F",
+      "kind": "element",
+      "bbox": [
+        738.6982688851542,
+        5035.563325375102,
+        443.2189613310925,
+        250.78495851227035
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMEGEGWDY27PX9Z479",
+      "kind": "element",
+      "bbox": [
+        1203.022895041537,
+        5036.804835070707,
+        444.46047102669786,
+        247.06042942545537
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMVA9CK28E06GJN3R3",
+      "kind": "element",
+      "bbox": [
+        269.4076039463504,
+        5295.03885175661,
+        427.07933528822366,
+        78.21511082313373
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YM7NNZ51RGTK9FB1S4",
+      "kind": "element",
+      "bbox": [
+        734.9737397983383,
+        5292.5558323653995,
+        444.46047102669786,
+        33.520761781343026
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMZW8PFMBPS0DSWP1K",
+      "kind": "element",
+      "bbox": [
+        1203.022895041537,
+        5300.004890539031,
+        415.90574802777587,
+        80.69813021434402
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMP35PDZ42ARR9QWZN",
+      "kind": "element",
+      "bbox": [
+        269.4076039463504,
+        5394.359627405034,
+        432.0453740706448,
+        44.6943490417907
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YM024PGT7DJFZCA18Z",
+      "kind": "element",
+      "bbox": [
+        269.4076039463504,
+        5463.8841703589305,
+        446.9434904179084,
+        47.1773684330019
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YM1SJY6RP59ZTGZHY7",
+      "kind": "element",
+      "bbox": [
+        266.92458455513975,
+        5530.925693921617,
+        271.890623337561,
+        32.279252085738335
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YM9WJ0WK5VXBDNHWBF",
+      "kind": "element",
+      "bbox": [
+        271.89062333756095,
+        5581.827591441434,
+        357.5547923343268,
+        49.660387824212194
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YM0PKTH8HR9SGVH0JE",
+      "kind": "element",
+      "bbox": [
+        734.9737397983383,
+        5343.457729885216,
+        404.7321607673282,
+        48.41887812860659
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMRR3QQSNT51W93P0C",
+      "kind": "element",
+      "bbox": [
+        733.7322301027331,
+        5412.982272839114,
+        425.8378255926183,
+        44.6943490417907
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMVP5918T8WK32RFTP",
+      "kind": "element",
+      "bbox": [
+        739.9397785807595,
+        5477.540777010589,
+        425.8378255926183,
+        52.143407215422485
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMYMHBKVFB2XSSPEMH",
+      "kind": "element",
+      "bbox": [
+        1201.7813853459315,
+        5395.601137100639,
+        445.70198072230323,
+        47.1773684330019
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMSAPWE4SN7S28756G",
+      "kind": "element",
+      "bbox": [
+        1199.298365954721,
+        5463.8841703589305,
+        398.52461228930156,
+        49.660387824212194
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YM1T6PASA1DDESK979",
+      "kind": "element",
+      "bbox": [
+        1201.7813853459315,
+        5532.167203617222,
+        398.5246122893018,
+        47.1773684330019
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YM82284774BAPEDTWT",
+      "kind": "element",
+      "bbox": [
+        268.16609425074506,
+        5852.47670508339,
+        126.63398895174072,
+        32.279252085738335
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMPA78R73HSPVHEBMR",
+      "kind": "element",
+      "bbox": [
+        736.2152494939436,
+        5851.235195387785,
+        223.4717452089543,
+        28.554722998921534
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YM76M154P6CECEAX3P",
+      "kind": "element",
+      "bbox": [
+        1201.7813853459315,
+        5858.684253561417,
+        65.8000138670809,
+        21.10566482528975
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMVVGDZ4E4SRZV0010",
+      "kind": "element",
+      "bbox": [
+        275.61515242437684,
+        5904.620112298812,
+        435.76990315746076,
+        235.8868421650077
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YM7DBA790RTN3YZ413",
+      "kind": "element",
+      "bbox": [
+        737.456759189549,
+        5892.20501534276,
+        445.7019807223031,
+        247.06042942545446
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMK8EGNYD5F99TEWRV",
+      "kind": "element",
+      "bbox": [
+        1203.022895041537,
+        5892.20501534276,
+        444.46047102669786,
+        250.78495851227035
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YM8BQGX50ERMEB0V9R",
+      "kind": "element",
+      "bbox": [
+        270.6491136419557,
+        6154.163561115478,
+        435.76990315746065,
+        48.41887812860659
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YM5Y4V8TNE2MXBAPXF",
+      "kind": "element",
+      "bbox": [
+        269.4076039463504,
+        6228.654142851797,
+        429.5623546794342,
+        45.93585873739539
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMRKJZ672X90N7Q8H2",
+      "kind": "element",
+      "bbox": [
+        264.44156516392917,
+        6298.178685805693,
+        410.93970924535466,
+        42.21132965058041
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMJCNZMG6SYSRA9R3C",
+      "kind": "element",
+      "bbox": [
+        268.16609425074506,
+        6366.461719063985,
+        413.4227286365653,
+        36.00378117255332
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YM6GDAQ8XBT5P6ASHK",
+      "kind": "element",
+      "bbox": [
+        734.9737397983383,
+        6154.163561115478,
+        407.2151801585387,
+        49.660387824212194
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMF6TP9EVZSMM4X8X6",
+      "kind": "element",
+      "bbox": [
+        736.2152494939436,
+        6227.412633156191,
+        441.9774516354872,
+        43.4528393461851
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMJ283291EZYPJF26P",
+      "kind": "element",
+      "bbox": [
+        733.7322301027331,
+        6295.695666414483,
+        441.9774516354872,
+        42.21132965058041
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMCYJZEK0S0DGPMWC9",
+      "kind": "element",
+      "bbox": [
+        737.456759189549,
+        6366.461719063985,
+        342.65667598706307,
+        40.96981995497481
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMMB0NQXZBHDW6ZMWR",
+      "kind": "element",
+      "bbox": [
+        1203.022895041537,
+        6151.680541724268,
+        437.0114128530661,
+        50.901897519816885
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMY7XB1S7KE91R0HF2",
+      "kind": "element",
+      "bbox": [
+        1201.7813853459315,
+        6226.1711234605855,
+        444.46047102669786,
+        48.41887812860659
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMV0BJ8Q06Z3N620EW",
+      "kind": "element",
+      "bbox": [
+        1199.298365954721,
+        6294.454156718877,
+        434.52839346185533,
+        49.660387824212194
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMVWG8CA1E7EWNTE97",
+      "kind": "element",
+      "bbox": [
+        1194.3323271722998,
+        6361.495680281563,
+        459.3585873739614,
+        49.660387824212194
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YM8KTFMSD3V5VQGRA0",
+      "kind": "element",
+      "bbox": [
+        266.92458455513975,
+        6459.574946234382,
+        346.3812050738791,
+        32.279252085738335
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMKE81JMYYD3TR8YCZ",
+      "kind": "element",
+      "bbox": [
+        268.16609425074506,
+        6511.718353449805,
+        258.23401668590265,
+        142.7736149946095
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Card",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMR952XKP8138XBARN",
+      "kind": "element",
+      "bbox": [
+        548.7472854575432,
+        6511.718353449805,
+        256.99250699029733,
+        144.01512469021418
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Card",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMYF4X3NBEDQDD6088",
+      "kind": "element",
+      "bbox": [
+        829.3284766643412,
+        6512.95986314541,
+        258.2340166859026,
+        142.7736149946095
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Card",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YME0MCSJWJQJ1V7SD5",
+      "kind": "element",
+      "bbox": [
+        269.4076039463504,
+        6660.699516922441,
+        245.81891972984965,
+        40.96981995497481
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Card",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMVE8NC2CGAEMMT1GS",
+      "kind": "element",
+      "bbox": [
+        546.2642660663325,
+        6664.424046009257,
+        209.81513855729588,
+        23.58868421650095
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Card",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YM7M7EYCDNCYN78N0N",
+      "kind": "element",
+      "bbox": [
+        825.6039475775253,
+        6660.699516922441,
+        188.7094737320058,
+        40.96981995497481
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Card",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMTMATPXXR5C13RJJV",
+      "kind": "element",
+      "bbox": [
+        270.6491136419557,
+        6735.190098658759,
+        255.750997294692,
+        146.49814408142538
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Card",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMKZHHJERPXNS3X82M",
+      "kind": "element",
+      "bbox": [
+        547.5057757619378,
+        6733.948588963154,
+        258.2340166859027,
+        147.73965377703007
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Card",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMVPRG869QHV0GDJEA",
+      "kind": "element",
+      "bbox": [
+        828.086966968736,
+        6737.67311804997,
+        258.2340166859027,
+        144.01512469021418
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Card",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YM6SPX996KSQ2ZEX2Q",
+      "kind": "element",
+      "bbox": [
+        269.4076039463504,
+        6889.137300913817,
+        218.50570642653298,
+        37.24529086815892
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Card",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMBMPDAA3B62RYDH5M",
+      "kind": "element",
+      "bbox": [
+        549.9887951531484,
+        6891.620320305027,
+        234.64533246940198,
+        37.24529086815892
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Card",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YM0AYTT22K0G5F5NCT",
+      "kind": "element",
+      "bbox": [
+        826.8454572731306,
+        6890.378810609422,
+        218.50570642653304,
+        26.071703607711243
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Card",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YM2JMHFTWGE9M70SAJ",
+      "kind": "element",
+      "bbox": [
+        265.6830748595345,
+        7198.273215119537,
+        327.7585596397995,
+        38.48680056376361
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YM2GRFCBP6K0G4A5MV",
+      "kind": "element",
+      "bbox": [
+        269.4076039463504,
+        7252.89964172617,
+        816.9133797082883,
+        460.6000970695668
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Link",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMTBP2THPY1625TEPR",
+      "kind": "element",
+      "bbox": [
+        270.6491136419557,
+        7740.812952099053,
+        806.9813021434459,
+        47.17736843300099
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YM7VN4W2Q023G1C1PG",
+      "kind": "element",
+      "bbox": [
+        1107.4266484799286,
+        7256.6241708129855,
+        520.1925624586213,
+        42.21132965058041
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YM5GYBWNJMDWXRPMFX",
+      "kind": "element",
+      "bbox": [
+        1106.1851387843235,
+        7322.424184680067,
+        468.04915524319836,
+        23.58868421650004
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMC4W4PG1DQ4KHM03Z",
+      "kind": "element",
+      "bbox": [
+        1106.1851387843235,
+        7373.326082199884,
+        525.1586012410423,
+        40.96981995497481
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YM2EVZXRY5BRGK5TXZ",
+      "kind": "element",
+      "bbox": [
+        1107.4266484799286,
+        7439.126096066965,
+        536.3321885014902,
+        47.17736843300099
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMDF2FMSP8WV2CEM3Z",
+      "kind": "element",
+      "bbox": [
+        1106.1851387843235,
+        7508.6506390208615,
+        540.0567175883059,
+        42.21132965058041
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMM4PEFB711K4A49J6",
+      "kind": "element",
+      "bbox": [
+        1107.4266484799286,
+        7574.450652887943,
+        531.366149719069,
+        48.41887812860659
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMKYSJ843SAE5YQYSR",
+      "kind": "element",
+      "bbox": [
+        1103.7021193931128,
+        7645.216705537445,
+        542.5397369795166,
+        45.9358587373963
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Text",
+        "Component": "Blank",
+        "Taxonomy": "Column 0"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMEDP4HVNPGG800MW6",
+      "kind": "element",
+      "bbox": [
+        269.4076039463504,
+        7899.726193136532,
+        1376.834252426279,
+        50.901897519816885
+      ],
+      "labels": {
+        "Form": "Space",
+        "Function": "Text input",
+        "Component": "Search bar",
+        "Taxonomy": "Footer"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YM339SZV43WX5B10HC",
+      "kind": "element",
+      "bbox": [
+        269.4076039463504,
+        7982.907342742087,
+        49.66038782421202,
+        19.86415512968415
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Menu",
+        "Taxonomy": "Footer"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMWQPZA5Y5PB30XNZ7",
+      "kind": "element",
+      "bbox": [
+        270.6491136419557,
+        8018.9111239146405,
+        42.21132965058024,
+        17.381135738474768
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Link",
+        "Component": "Menu",
+        "Taxonomy": "Footer"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMHW2523BAC73XXC6H",
+      "kind": "element",
+      "bbox": [
+        465.56613585198795,
+        7982.907342742087,
+        91.87171747479226,
+        18.62264543407946
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Menu",
+        "Taxonomy": "Footer"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMXY014ETY1WWV4QH2",
+      "kind": "element",
+      "bbox": [
+        660.4831580620203,
+        7984.148852437692,
+        76.9736011275287,
+        18.62264543407946
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Menu",
+        "Taxonomy": "Footer"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMGDWZC9QGDQKH6DZ3",
+      "kind": "element",
+      "bbox": [
+        859.1247093588685,
+        7981.665833046482,
+        68.28303325829154,
+        21.10566482528975
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Menu",
+        "Taxonomy": "Footer"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMT2CKX1EMK5Z825PC",
+      "kind": "element",
+      "bbox": [
+        1055.283241264506,
+        7981.665833046482,
+        54.62642660663346,
+        19.86415512968506
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Menu",
+        "Taxonomy": "Footer"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMJGPSYWTEE5W0N1HJ",
+      "kind": "element",
+      "bbox": [
+        1251.4417731701437,
+        7982.907342742087,
+        117.94342108250362,
+        18.62264543407946
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Menu",
+        "Taxonomy": "Footer"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMHKGZ22N6FY33BPDW",
+      "kind": "element",
+      "bbox": [
+        1450.0833244669918,
+        7980.424323350876,
+        39.728310259369664,
+        19.86415512968506
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Heading",
+        "Component": "Menu",
+        "Taxonomy": "Footer"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YMEE1Z6HX6Z3VDA5EV",
+      "kind": "element",
+      "bbox": [
+        464.32462615638264,
+        8018.9111239146405,
+        48.418878128606764,
+        16.139626042869168
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Link",
+        "Component": "Menu",
+        "Taxonomy": "Footer"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YME9MRA262G5KPS9GV",
+      "kind": "element",
+      "bbox": [
+        661.7246677576255,
+        8018.9111239146405,
+        37.24529086815903,
+        18.088876085359516
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Link",
+        "Component": "Menu",
+        "Taxonomy": "Footer"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YNBQAB2B1Y05RFSHNP",
+      "kind": "element",
+      "bbox": [
+        857.8831996632631,
+        8017.669614219035,
+        89.38869808358174,
+        17.381135738474768
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Link",
+        "Component": "Menu",
+        "Taxonomy": "Footer"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YNCCCK7SJGAPYVX8QH",
+      "kind": "element",
+      "bbox": [
+        1052.8002218732954,
+        8013.945085132219,
+        106.76983382205594,
+        21.10566482529066
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Link",
+        "Component": "Menu",
+        "Taxonomy": "Footer"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YNDNGSC3N9CKQBNPYN",
+      "kind": "element",
+      "bbox": [
+        1252.6832828657489,
+        8018.9111239146405,
+        50.90189751981734,
+        16.139626042869168
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Link",
+        "Component": "Menu",
+        "Taxonomy": "Footer"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YN0XQ15CJWZZ5VCFBC",
+      "kind": "element",
+      "bbox": [
+        1447.6003050757813,
+        8018.9111239146405,
+        65.8000138670809,
+        16.139626042869168
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Link",
+        "Component": "Menu",
+        "Taxonomy": "Footer"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YN7FD0CM55X9SSR067",
+      "kind": "element",
+      "bbox": [
+        272.1327474728687,
+        411.222818403446,
+        515.2380018819647,
+        79.82560592537476
+      ],
+      "labels": {
+        "Form": "Typo",
+        "Function": "Radio button",
+        "Component": "Card",
+        "Taxonomy": "Sub-header"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YNGR3ERMMS5VYSV7DB",
+      "kind": "element",
+      "bbox": [
+        268.5043108398971,
+        503.14321310539276,
+        561.1981992329381,
+        315.6739870685276
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Dropdown",
+        "Component": "Card",
+        "Taxonomy": "Header"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YNK2XBDKVBKY71YSY8",
+      "kind": "element",
+      "bbox": [
+        851.4731298706646,
+        411.222818403446,
+        443.87874810019036,
+        247.9431699197247
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Dropdown",
+        "Component": "Card",
+        "Taxonomy": "Header"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    },
+    {
+      "id": "01M4XS73YNVYYVF20CBR0GFWZT",
+      "kind": "element",
+      "bbox": [
+        1318.3319766463414,
+        410.0133395257888,
+        330.18773360041405,
+        183.84078940389344
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Dropdown",
+        "Component": "Card",
+        "Taxonomy": "Header"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    }
+  ],
+  "history": {
+    "migrated_from": "legacy-v1+legacy-v2"
+  }
+}

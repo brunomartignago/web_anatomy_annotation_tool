@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0",
+  "taxonomy": {
+    "id": "web-ui",
+    "version": "1.0"
+  },
+  "page": {
+    "id": "stackoverflow_com",
+    "url": "https://stackoverflow.com",
+    "title": "Newest Questions - Stack Overflow",
+    "image": "page.png",
+    "width": 1920,
+    "height": 3572,
+    "viewport": {
+      "width": 1920,
+      "height": 893
+    },
+    "captured_at": "2025-06-09T09:33:45-03:00",
+    "locale": "en"
+  },
+  "annotations": [
+    {
+      "id": "01M4XS76XAYD6D56EN0K3WCJCS",
+      "kind": "element",
+      "bbox": [
+        631.2513141073839,
+        370.95235820667637,
+        553.267011529844,
+        40.04599321549347
+      ],
+      "labels": {
+        "Form": "Image",
+        "Function": "Radio button",
+        "Component": "Card",
+        "Taxonomy": "Sub-header"
+      },
+      "source": "legacy",
+      "status": "accepted",
+      "label_sources": {
+        "Form": "legacy",
+        "Function": "legacy",
+        "Component": "legacy",
+        "Taxonomy": "legacy"
+      }
+    }
+  ],
+  "history": {
+    "migrated_from": "legacy-v2"
+  }
+}
