@@ -42,7 +42,15 @@ uv run playwright install chromium
 uv run annotool capture ../examples/urls.csv --project demo
 ```
 
-Each page lands in `data/projects/demo/pages/<page id>/` as `page.png` plus `meta.json`. Pages that show a bot check, region block or error page instead of the real site get `"blocked": true` with the reasons. Recapture them later with `--retry-blocked`. To dismiss cookie banners before the screenshot, list the button selectors in `data/projects/demo/project.yaml`, preferably the "Reject all" ones:
+Each page lands in `data/projects/demo/pages/<page id>/` as `page.png` plus `meta.json`. Pages that show a bot check, region block or error page instead of the real site get `"blocked": true` with the reasons. Recapture them later with `--retry-blocked`.
+
+Many sites block automated browsers. For those, use **assisted capture**: a visible browser opens each blocked page, you handle whatever it asks for (choose a country, tick "I'm not a robot"), then press Enter in the terminal and the tool captures that page. `s` skips a page, `q` stops. The tool never solves these checks itself.
+
+```bash
+uv run annotool capture ../examples/urls.csv --project demo --retry-blocked --assist --browser msedge
+```
+
+`--browser chrome` or `--browser msedge` uses the browser installed on your computer instead of Playwright's bundled Chromium. To dismiss cookie banners before the screenshot, list the button selectors in `data/projects/demo/project.yaml`, preferably the "Reject all" ones:
 
 ```yaml
 consent_clicks:

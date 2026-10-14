@@ -109,6 +109,11 @@ def test_consent_clicks_come_from_project_yaml(chromium_available, tmp_path):
     assert meta_of(data_dir, "file-news")["consent_clicked"] == "#reject"
 
 
+def test_rejects_unknown_browser(tmp_path):
+    result = run_capture("https://example.com", tmp_path / "data", "--browser", "firefox")
+    assert result.exit_code != 0
+
+
 def test_rejects_bad_project_name(tmp_path):
     result = run_capture("https://example.com", tmp_path / "data", "--project", "My Project")
     assert result.exit_code == 1

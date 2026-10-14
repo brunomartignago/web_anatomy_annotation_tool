@@ -7,7 +7,7 @@ import json
 import re
 import shutil
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Literal
 
 import typer
 
@@ -20,6 +20,8 @@ app = typer.Typer(
 )
 
 DEFAULT_TAXONOMY = Path("taxonomies") / "web-ui.yaml"
+
+Browser = Literal["chromium", "chrome", "msedge"]
 
 
 def _print_version(value: bool) -> None:
@@ -167,13 +169,27 @@ def capture(
         bool,
         typer.Option(help="Only capture pages that were blocked or failed last time."),
     ] = False,
+    browser: Annotated[
+        Browser,
+        typer.Option(
+            help="chromium = Playwright's bundled build; chrome / msedge = the one installed "
+            "here (use one of these for --assist if the bundled build won't open a window)."
+        ),
+    ] = "chromium",
+    assist: Annotated[
+        bool,
+        typer.Option(
+            help="Open a visible browser and wait for you to handle each page's check "
+            "(country, 'I'm not a robot'...) before capturing. Usually with --retry-blocked."
+        ),
+    ] = False,
 ) -> None:
     """Take full-page screenshots (1920x1080 viewport) and write page.png + meta.json.
 
     Pages showing a bot wall, error page or blank screen are flagged `blocked` in
     meta.json. Consent banners are dismissed with project.yaml › consent_clicks.
     """
-    from annotool.capture.browser import META_NAME, Capturer
+    from annotool.capture.browser import META_NAME, Capturer, CaptureSettings
     from annotool.capture.urls import UrlListError, entries_from_sources
     from annotool.project import ensure_project, load_project_config, page_dir, project_dir
 
@@ -197,9 +213,13 @@ def capture(
 
     captured: list[str] = []
     blocked: list[str] = []
+    skipped: list[str] = []
     failed: list[str] = []
     try:
-        capturer = Capturer().__enter__()
+        settings = CaptureSettings(
+            headless=not assist, channel=None if browser == "chromium" else browser
+        )
+        capturer = Capturer(settings).__enter__()
     except Exception as exc:
         raise _fail(
             f"can't start Chromium ({exc}). Run: uv run playwright install chromium"
@@ -214,10 +234,22 @@ def capture(
             if retry_blocked and not _was_blocked_or_failed(folder / META_NAME):
                 continue
             try:
-                meta = capturer.capture(entry, folder, consent_clicks=consent_clicks)
+                meta = capturer.capture(
+                    entry,
+                    folder,
+                    consent_clicks=consent_clicks,
+                    before_capture=_ask_person(prefix) if assist else None,
+                )
+            except _StopBatch:
+                typer.echo(f"{prefix}: stopped; later pages were not captured")
+                break
             except Exception as exc:  # one bad page must not stop the batch
                 failed.append(entry.page_id)
                 typer.echo(f"{prefix}: failed: {str(exc).splitlines()[0]}")
+                continue
+            if meta is None:
+                skipped.append(entry.page_id)
+                typer.echo(f"{prefix}: skipped")
                 continue
             captured.append(entry.page_id)
             status = f"{meta.width}x{meta.height} px in {meta.duration_s:.1f}s"
@@ -231,14 +263,36 @@ def capture(
         capturer.__exit__(None, None, None)
 
     typer.echo(
-        f"Done: {len(captured)} captured, {len(blocked)} blocked, {len(failed)} failed "
-        f"-> {project_dir(data_dir, project)}"
+        f"Done: {len(captured)} captured, {len(blocked)} blocked, {len(skipped)} skipped, "
+        f"{len(failed)} failed -> {project_dir(data_dir, project)}"
     )
     if blocked:
         typer.echo(f"Blocked: {', '.join(blocked)} (retry later with --retry-blocked)")
     if failed:
         typer.echo(f"Failed: {', '.join(failed)}")
         raise typer.Exit(code=1)
+
+
+class _StopBatch(Exception):
+    """The person typed `q` during assisted capture."""
+
+
+def _ask_person(prefix: str):
+    """Pause hook for --assist: the person handles the page, then answers in the terminal."""
+
+    def ask(page) -> bool:
+        typer.echo(
+            f"{prefix}: open in the browser window. Handle anything the page asks for there "
+            "(country, 'I'm not a robot', banners), then press Enter here to capture. "
+            "s = skip, q = quit."
+        )
+        answer = typer.prompt("", default="", show_default=False, prompt_suffix="> ")
+        answer = answer.strip().lower()
+        if answer == "q":
+            raise _StopBatch
+        return answer != "s"
+
+    return ask
 
 
 def _was_blocked_or_failed(meta_path: Path) -> bool:

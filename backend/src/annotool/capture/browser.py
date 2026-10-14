@@ -7,7 +7,7 @@ equal CSS pixels and DOM boxes captured later (roadmap 1.3) line up with the PNG
 
 import os
 import time
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -56,6 +56,11 @@ async ({ step, delayMs, maxSteps }) => {
 }
 """
 
+# HTTP status of the current document (0 for file:// pages, which becomes None).
+_NAV_STATUS_JS = """
+() => (performance.getEntriesByType('navigation')[0] || {}).responseStatus || null
+"""
+
 # Which of the given selectors match an element that is actually rendered.
 _VISIBLE_JS = """
 selectors => selectors.filter(sel => {
@@ -80,6 +85,10 @@ class CaptureSettings:
     scroll_delay_ms: int = 250
     max_scroll_steps: int = 60  # 60 x 1080 px ≈ 65,000 px of page
     settle_ms: int = 1000
+    headless: bool = True  # False for assisted capture: a visible window a person can use
+    # None = Playwright's bundled Chromium; "chrome" / "msedge" = the browser installed on
+    # this machine (same engine; useful when the bundled build won't open a window).
+    channel: str | None = None
 
 
 class ScrollInfo(BaseModel):
@@ -113,6 +122,8 @@ class CaptureMeta(BaseModel):
     blocked_reasons: list[str] = []
     warnings: list[str] = []  # usable, but check it (consent banner, short page...)
     consent_clicked: str | None = None  # selector from project.yaml › consent_clicks
+    assisted: bool = False  # a person handled the page's check before capture (--assist)
+    browser: str  # e.g. "chromium 156.0.8078.4" or "msedge 141.0..."
     user_agent: str
     tool: str = f"annotool {__version__}"
 
@@ -128,7 +139,13 @@ class Capturer:
     def __enter__(self) -> "Capturer":
         self._playwright = sync_playwright().start()
         try:
-            self._browser = self._playwright.chromium.launch()
+            self._browser = self._playwright.chromium.launch(
+                headless=self.settings.headless,
+                channel=self.settings.channel,
+                # A visible window otherwise reserves 15 px for a scrollbar, making the page
+                # 1905 px wide instead of 1920 (headless already hides scrollbars).
+                args=["--hide-scrollbars"],
+            )
         except BaseException:
             self._playwright.stop()
             raise
@@ -146,17 +163,24 @@ class Capturer:
             self._playwright.stop()
 
     def capture(
-        self, entry: UrlEntry, out_dir: Path, consent_clicks: Sequence[str] = ()
-    ) -> CaptureMeta:
+        self,
+        entry: UrlEntry,
+        out_dir: Path,
+        consent_clicks: Sequence[str] = (),
+        before_capture: Callable[[Page], bool] | None = None,
+    ) -> CaptureMeta | None:
         """Capture one page into `out_dir/page.png` and `out_dir/meta.json`.
 
         `consent_clicks`: CSS selectors to try, in order, to dismiss a consent banner before
         scrolling (searched in every frame; the first visible match is clicked).
+
+        `before_capture`: called with the loaded page before anything else happens, for
+        assisted capture: a person handles the page's check in the visible window. Return
+        False to skip the page (nothing is written, and None is returned).
         """
         if self._browser is None:
             raise RuntimeError("use Capturer as a context manager")
         s = self.settings
-        out_dir.mkdir(parents=True, exist_ok=True)
         started = time.monotonic()
         context = self._browser.new_context(
             viewport={"width": s.viewport_width, "height": s.viewport_height},
@@ -168,10 +192,17 @@ class Capturer:
             response = page.goto(
                 entry.url, wait_until="domcontentloaded", timeout=s.timeout_s * 1000
             )
-            try:
-                page.wait_for_load_state("networkidle", timeout=s.network_idle_s * 1000)
-            except PlaywrightTimeoutError:
-                pass  # busy pages (ads, analytics) never go idle; scrolling still helps
+            _wait_for_network_idle(page, s.network_idle_s)
+
+            if before_capture is not None:
+                page.bring_to_front()
+                if not before_capture(page):
+                    return None
+                # Passing a check usually loads a new document; let it finish.
+                page.wait_for_load_state("domcontentloaded", timeout=s.timeout_s * 1000)
+                _wait_for_network_idle(page, s.network_idle_s)
+                started = time.monotonic()  # time the capture, not the person
+            out_dir.mkdir(parents=True, exist_ok=True)
 
             consent_clicked = _click_first(page, consent_clicks)
             scroll = page.evaluate(
@@ -209,7 +240,9 @@ class Capturer:
             file_size = (out_dir / IMAGE_NAME).stat().st_size
 
             title = page.title() or None
-            http_status = response.status if response else None
+            # Status of the document actually captured: after an assisted check this is the
+            # real page, not the 403 wall that `goto` first received.
+            http_status = page.evaluate(_NAV_STATUS_JS) or (response.status if response else None)
             verdict = assess(
                 PageSignals(
                     http_status=http_status,
@@ -254,6 +287,8 @@ class Capturer:
                 blocked_reasons=verdict.reasons,
                 warnings=warnings,
                 consent_clicked=consent_clicked,
+                assisted=before_capture is not None,
+                browser=f"{s.channel or 'chromium'} {self._browser.version}",
                 user_agent=page.evaluate("navigator.userAgent"),
             )
         finally:
@@ -261,6 +296,13 @@ class Capturer:
 
         write_json_atomic(out_dir / META_NAME, meta.model_dump(mode="json", exclude_none=True))
         return meta
+
+
+def _wait_for_network_idle(page: Page, seconds: float) -> None:
+    try:
+        page.wait_for_load_state("networkidle", timeout=seconds * 1000)
+    except PlaywrightTimeoutError:
+        pass  # busy pages (ads, analytics) never go idle; scrolling still helps
 
 
 def _click_first(page: Page, selectors: Sequence[str]) -> str | None:
