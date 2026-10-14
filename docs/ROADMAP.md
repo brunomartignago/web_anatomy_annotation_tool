@@ -12,7 +12,7 @@ Decisions only Bruno can make are marked **🟡 DECIDE**. Claude Code should sto
   - Run `git init`, move the legacy `*.py` files to `legacy/`, and add the root `.gitignore` (already provided). Delete `claude_code/`, `labels/` and `csv/`. Move `websites/public_websites_for_dataset.csv` to `examples/urls.csv`.
   - Move `images/`, `json/` and the autosaves to `data/legacy/`, which is git-ignored.
   - ✅ `git status` shows no PNGs and nothing under `data/`. `python legacy/annotation_tool_v2.py` still launches.
-- [ ] **0.2 Write the README, LICENSE and CONTRIBUTING files**
+- [x] **0.2 Write the README, LICENSE and CONTRIBUTING files**
   - The README covers what it is, a link to the research page, a GIF placeholder, quick start, and the roadmap link. CONTRIBUTING explains how to propose a taxonomy class (edit the YAML and open a "taxonomy-proposal" issue).
   - 🟡 DECIDE: license. MIT is simplest. Apache-2.0 adds a patent grant. Also pick a project name (working name: `annotool`).
   - 🟡 DECIDE: dataset policy. Recommendation: publish annotations, URLs and the capture script, but **not** screenshots of third-party sites.
@@ -123,8 +123,8 @@ Decisions only Bruno can make are marked **🟡 DECIDE**. Claude Code should sto
 ---
 
 ### Open decisions (🟡) collected
-1. License (MIT or Apache-2.0) and project name.
-2. Dataset publishing policy: annotations + URLs only (recommended) or screenshots too.
+1. ~~License (MIT or Apache-2.0) and project name.~~ Decided in 0.2: **MIT**, name **annotool**.
+2. ~~Dataset publishing policy: annotations + URLs only (recommended) or screenshots too.~~ Decided in 0.2: **annotations, URLs and the capture script only, no screenshots**.
 3. Add `Column 5` and `Overlay` to the active taxonomy? Both are in the theory but weren't in the v2 tool.
 4. Keep Left/Right Panel vs Menu as separate labels, or compute Menu from the link ratio and show it read-only?
 5. Vision-LLM provider for Phase 6.4, if any.
