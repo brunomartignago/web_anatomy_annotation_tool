@@ -64,6 +64,8 @@ export interface AppState {
   deleteSelected: () => void
   /** Set (or with null, remove) one attribute on every selected box, as one undo step. */
   setLabel: (attrId: string, value: string | null) => void
+  /** Set several attributes at once (a preset) on every selected box, as one undo step. */
+  applyPreset: (labels: Record<string, string>) => void
   focusBox: (id: string) => void
   setPicker: (attributeId: string | null) => void
   setCheatSheet: (open: boolean) => void
@@ -259,6 +261,20 @@ export const useAppStore = create<AppState>()(
         editDoc((doc) => {
           for (const box of doc.annotations) {
             if (selected.has(box.id)) applyLabel(box, attrId, value, now)
+          }
+        })
+      },
+
+      applyPreset: (labels) => {
+        const selected = new Set(get().selectedIds)
+        if (selected.size === 0) return
+        const now = new Date().toISOString()
+        editDoc((doc) => {
+          for (const box of doc.annotations) {
+            if (!selected.has(box.id)) continue
+            for (const [attrId, value] of Object.entries(labels)) {
+              applyLabel(box, attrId, value, now)
+            }
           }
         })
       },

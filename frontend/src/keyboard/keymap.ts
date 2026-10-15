@@ -1,6 +1,7 @@
 // Label shortcuts generated from the taxonomy: an attribute's `hotkey` opens its picker,
-// then an option's `key` sets it. Two keystrokes for any active option. Nothing here
-// names a label: it all comes from the YAML.
+// then an option's `key` sets it (two keystrokes for any active option), and a digit
+// applies a whole preset (one keystroke). Nothing here names a label: it all comes from
+// the YAML.
 
 import type { Taxonomy, TaxonomyOption } from '../api/types'
 
@@ -27,15 +28,23 @@ export interface KeymapAttribute {
   options: TaxonomyOption[] // active ones only
 }
 
+export interface KeymapPreset {
+  key: string
+  labels: Record<string, string>
+}
+
 export interface Keymap {
   attributes: KeymapAttribute[]
-  /** Human-readable problems; attributes with a conflicting hotkey are left out. */
+  /** One-keystroke label combinations (digits), in YAML order. */
+  presets: KeymapPreset[]
+  /** Human-readable problems; conflicting hotkeys and invalid presets are left out. */
   conflicts: string[]
 }
 
 export type KeyAction =
   | { type: 'open'; attribute: string }
   | { type: 'set'; attribute: string; value: string }
+  | { type: 'preset'; labels: Record<string, string> }
   | { type: 'close' }
   /** The key was used up by an open picker without doing anything. */
   | { type: 'none' }
@@ -61,7 +70,25 @@ export function buildKeymap(taxonomy: Taxonomy): Keymap {
       options: attribute.options.filter((o) => o.status !== 'proposed'),
     })
   }
-  return { attributes, conflicts }
+
+  // Presets: a digit and labels that must all be active options. The server's loader
+  // checks this too; here a bad preset is dropped with a warning rather than half-applied.
+  const presets: KeymapPreset[] = []
+  for (const preset of taxonomy.presets ?? []) {
+    const problems = Object.entries(preset.labels).flatMap(([attrId, value]) => {
+      const attribute = taxonomy.attributes.find((a) => a.id === attrId)
+      const option = attribute?.options.find((o) => o.value === value)
+      return option && option.status !== 'proposed' ? [] : [`${attrId} "${value}"`]
+    })
+    if (!/^[1-9]$/.test(preset.key)) {
+      conflicts.push(`preset "${preset.key}": preset keys must be the digits 1-9`)
+    } else if (problems.length > 0) {
+      conflicts.push(`preset ${preset.key}: ${problems.join(', ')} is not an active option`)
+    } else {
+      presets.push({ key: preset.key, labels: { ...preset.labels } })
+    }
+  }
+  return { attributes, presets, conflicts }
 }
 
 /** What a key press does, given which attribute's picker is open (if any). */
@@ -70,7 +97,9 @@ export function pressKey(keymap: Keymap, picker: string | null, key: string): Ke
   const byHotkey = keymap.attributes.find((a) => a.hotkey === k)
 
   if (picker === null) {
-    return byHotkey ? { type: 'open', attribute: byHotkey.id } : { type: 'pass' }
+    if (byHotkey) return { type: 'open', attribute: byHotkey.id }
+    const preset = keymap.presets.find((p) => p.key === k)
+    return preset ? { type: 'preset', labels: preset.labels } : { type: 'pass' }
   }
 
   const open = keymap.attributes.find((a) => a.id === picker)

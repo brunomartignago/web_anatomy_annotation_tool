@@ -97,6 +97,40 @@ body {
   font-size: 0.85rem;
 }
 
+.presets {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.presets__item {
+  display: flex;
+  align-items: center;
+  padding: 0.15rem 0.4rem;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.8rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.presets__item:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.presets__item:hover:enabled {
+  border-color: var(--accent);
+}
+
+.presets__item[aria-pressed='true'] {
+  border-color: var(--accent);
+  background: rgba(79, 142, 247, 0.15);
+}
+
 .labels {
   margin: 0 0 0.6rem;
   padding: 0;
@@ -357,6 +391,7 @@ body {
 }
 
 .boxes {
+  position: relative; /* offsetTop of rows is measured from here */
   flex: 1;
   min-height: 0;
   overflow-y: auto;

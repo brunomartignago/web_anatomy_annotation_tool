@@ -49,6 +49,10 @@ export function useLabelKeys(keymap: Keymap | null): void {
           s.setLabel(action.attribute, action.value)
           s.setPicker(null)
           break
+        case 'preset':
+          if (s.selectedIds.length === 0) return
+          s.applyPreset(action.labels)
+          break
         case 'close':
           s.setPicker(null)
           break

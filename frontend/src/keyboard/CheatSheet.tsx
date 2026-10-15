@@ -33,8 +33,8 @@ export function CheatSheet({ keymap, onClose }: { keymap: Keymap; onClose: () =>
           </button>
         </header>
         <p className="cheatsheet__hint">
-          Select boxes, press an attribute key, then the option's letter. Labels apply to every
-          selected box.
+          Select boxes, press an attribute key, then the option's letter, or a digit for a whole
+          preset. Labels apply to every selected box.
         </p>
         <div className="cheatsheet__columns">
           {keymap.attributes.map((attribute) => (
@@ -54,6 +54,21 @@ export function CheatSheet({ keymap, onClose }: { keymap: Keymap; onClose: () =>
               </dl>
             </section>
           ))}
+          {keymap.presets.length > 0 && (
+            <section aria-label="Presets">
+              <h3>Presets</h3>
+              <dl>
+                {keymap.presets.map((preset) => (
+                  <div key={preset.key}>
+                    <dt>
+                      <kbd>{preset.key}</kbd>
+                    </dt>
+                    <dd>{Object.values(preset.labels).join(' · ')}</dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
+          )}
           <section aria-label="General">
             <h3>General</h3>
             <dl>

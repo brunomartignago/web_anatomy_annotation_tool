@@ -35,10 +35,17 @@ export function BoxList({ attributeIds }: { attributeIds: string[] }) {
   const listRef = useRef<HTMLOListElement>(null)
 
   // Keep the (first) selected box visible in the list, e.g. after picking it on the canvas.
+  // Scrolls only the list itself: scrollIntoView would also scroll the whole inspector and
+  // push the presets and labels out of view.
   useEffect(() => {
+    const list = listRef.current
     const first = selectedIds[0]
-    const row = first && listRef.current?.querySelector(`[data-box-id="${CSS.escape(first)}"]`)
-    if (row instanceof HTMLElement) row.scrollIntoView?.({ block: 'nearest' })
+    const row = first && list?.querySelector(`[data-box-id="${CSS.escape(first)}"]`)
+    if (!list || !(row instanceof HTMLElement)) return
+    const top = row.offsetTop // the list is the rows' offsetParent (position: relative)
+    const bottom = top + row.offsetHeight
+    if (top < list.scrollTop) list.scrollTop = top
+    else if (bottom > list.scrollTop + list.clientHeight) list.scrollTop = bottom - list.clientHeight
   }, [selectedIds])
 
   const onClick = (event: MouseEvent, id: string) => {

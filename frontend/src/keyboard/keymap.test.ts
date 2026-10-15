@@ -102,10 +102,49 @@ describe('picker state machine', () => {
   })
 })
 
+describe('presets (3.2)', () => {
+  const keymap = buildKeymap(WEB_UI)
+
+  it('come from the YAML in order, keyed 1-9', () => {
+    expect(keymap.presets.map((p) => p.key)).toEqual(['1', '2', '3', '4', '5', '6', '7', '8', '9'])
+    expect(keymap.presets[0].labels).toEqual({ Form: 'Typo', Function: 'Text', Component: 'Blank' })
+  })
+
+  it('a digit applies its preset when no picker is open', () => {
+    expect(pressKey(keymap, null, '3')).toEqual({
+      type: 'preset',
+      labels: { Form: 'Typo', Function: 'Heading', Component: 'Blank' },
+    })
+  })
+
+  it('inside a picker, digits are still option letters (t 1 = Column 1)', () => {
+    expect(pressKey(keymap, 'Taxonomy', '1')).toEqual({
+      type: 'set',
+      attribute: 'Taxonomy',
+      value: 'Column 1',
+    })
+  })
+
+  it('a digit without a preset passes through', () => {
+    expect(pressKey(keymap, null, '0')).toEqual({ type: 'pass' })
+  })
+
+  it('drops presets that use a value missing from the taxonomy', () => {
+    const custom: Taxonomy = {
+      ...WEB_UI,
+      presets: [{ key: '1', labels: { Form: 'Hologram' } }, ...WEB_UI.presets.slice(1)],
+    }
+    const { presets, conflicts } = buildKeymap(custom)
+    expect(presets.map((p) => p.key)).not.toContain('1')
+    expect(conflicts.some((c) => c.includes('Hologram'))).toBe(true)
+  })
+})
+
 describe('conflicts in a custom taxonomy', () => {
   it('reports hotkeys that collide with app keys or the preset digits', () => {
     const custom: Taxonomy = {
       ...WEB_UI,
+      presets: [],
       attributes: [
         { ...WEB_UI.attributes[0], hotkey: 'd' },
         { ...WEB_UI.attributes[1], hotkey: '3' },

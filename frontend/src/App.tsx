@@ -10,6 +10,7 @@ import { buildKeymap } from './keyboard/keymap'
 import { useLabelKeys } from './keyboard/useLabelKeys'
 import { BoxList } from './panels/BoxList'
 import { LabelPanel } from './panels/LabelPanel'
+import { PresetPanel } from './panels/PresetPanel'
 import { ProgressPanel } from './panels/ProgressPanel'
 import { useAppStore } from './state/store'
 
@@ -194,6 +195,9 @@ export default function App() {
             <aside className="app__inspector" aria-label="Inspector">
               {page && (
                 <>
+                  {keymap && keymap.presets.length > 0 && (
+                    <PresetPanel presets={keymap.presets} attributeIds={attributeIds} />
+                  )}
                   <LabelPanel attributes={attributes} hotkeys={hotkeys} />
                   <ProgressPanel attributes={attributes} />
                   <BoxList attributeIds={attributeIds} />

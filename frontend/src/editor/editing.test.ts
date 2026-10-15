@@ -126,6 +126,31 @@ describe('editing', () => {
     expect(store().history.undo).toHaveLength(1)
   })
 
+  it('a preset sets every attribute it names, on every selected box, as one step', () => {
+    store().select(['a', 'b'])
+    store().applyPreset({ Form: 'Typo', Function: 'Text', Component: 'Blank' })
+    for (const id of ['a', 'b']) {
+      const b = store().page!.annotations.annotations.find((x) => x.id === id)!
+      expect(b.labels).toEqual({ Form: 'Typo', Function: 'Text', Component: 'Blank' })
+      expect(b.label_sources).toEqual({ Form: 'human', Function: 'human', Component: 'human' })
+    }
+    expect(store().history.undo).toHaveLength(1)
+    store().undo()
+    expect(store().page!.annotations.annotations.every((b) => !b.labels.Form)).toBe(true)
+  })
+
+  it('a preset keeps attributes it does not name (e.g. the template section)', () => {
+    store().select(['a'])
+    store().setLabel('Taxonomy', 'Header')
+    store().applyPreset({ Form: 'Image', Function: 'Link', Component: 'Blank' })
+    expect(store().page!.annotations.annotations[0].labels.Taxonomy).toBe('Header')
+  })
+
+  it('a preset with nothing selected does nothing', () => {
+    store().applyPreset({ Form: 'Typo' })
+    expect(store().docVersion).toBe(0)
+  })
+
   it('opening a page starts a fresh history', () => {
     store().addBox([0, 0, 10, 10])
     store().pageLoaded('q', pageResponse([]))
