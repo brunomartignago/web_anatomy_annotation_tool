@@ -8,7 +8,7 @@ import { LabelPanel } from '../panels/LabelPanel'
 import { initialState, useAppStore } from '../state/store'
 import { loadWebUi } from '../test/webUi'
 import { CheatSheet } from './CheatSheet'
-import { buildKeymap } from './keymap'
+import { PAINT_PICKER, buildKeymap } from './keymap'
 import { useLabelKeys } from './useLabelKeys'
 
 const WEB_UI = loadWebUi()
@@ -108,6 +108,35 @@ describe('label keys', () => {
     render(<Harness canvasKeys={() => {}} />)
     const heading = screen.getByRole('button', { name: 'Heading' }) // the letter is aria-hidden
     expect(heading).toHaveTextContent('hHeading')
+  })
+
+  it('p then a digit starts painting, even with nothing selected (3.5)', () => {
+    const canvasKeys = vi.fn()
+    render(<Harness canvasKeys={canvasKeys} />)
+    press('p')
+    expect(store().picker).toBe(PAINT_PICKER)
+    press('3')
+    expect(store().paint?.key).toBe('3')
+    expect(store().picker).toBeNull()
+    expect(labels('a')).toEqual({}) // painting labels nothing until a box is clicked
+
+    press('1') // a digit while painting switches the preset
+    expect(store().paint?.key).toBe('1')
+    expect(store().history.undo).toHaveLength(0)
+
+    press('Escape') // ends painting; the canvas doesn't also clear the selection
+    expect(store().paint).toBeNull()
+    expect(canvasKeys).not.toHaveBeenCalled()
+  })
+
+  it('p ends painting too', () => {
+    render(<Harness canvasKeys={() => {}} />)
+    act(() => {
+      store().setPaint(KEYMAP.presets[0])
+    })
+    press('p')
+    expect(store().paint).toBeNull()
+    expect(store().picker).toBeNull()
   })
 
   it('? toggles the cheat sheet', () => {

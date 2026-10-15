@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 import type { BBox } from '../canvas/geometry'
 import {
   MIN_BOX_SIZE,
+  boxesCentredIn,
   boxesInRect,
   clampMove,
   handleAt,
@@ -39,6 +40,14 @@ describe('boxesInRect', () => {
     expect(boxesInRect(boxes, [140, 140, 20, 20])).toEqual(['card', 'link'])
     expect(boxesInRect(boxes, [0, 0, 2000, 3000])).toEqual(['card', 'link', 'far'])
     expect(boxesInRect(boxes, [600, 600, 10, 10])).toEqual([])
+  })
+})
+
+describe('boxesCentredIn', () => {
+  it('takes only boxes whose centre is inside, so a grazed neighbour is left alone', () => {
+    expect(boxesCentredIn(boxes, [0, 0, 120, 120])).toEqual([]) // touches the card only
+    expect(boxesCentredIn(boxes, [140, 140, 120, 60])).toEqual(['link']) // centre (200, 165)
+    expect(boxesCentredIn(boxes, [0, 0, 2000, 3000])).toEqual(['card', 'link', 'far'])
   })
 })
 

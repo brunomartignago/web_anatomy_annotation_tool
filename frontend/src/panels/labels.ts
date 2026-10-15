@@ -157,6 +157,13 @@ export function nextIncomplete(
   return null
 }
 
+/** "Typo · Text · Blank": a preset's values in taxonomy order (unknown attributes last). */
+export function presetSummary(labels: Record<string, string>, attributeIds: string[]): string {
+  const ordered = attributeIds.filter((id) => id in labels)
+  const extra = Object.keys(labels).filter((id) => !attributeIds.includes(id))
+  return [...ordered, ...extra].map((id) => labels[id]).join(' · ')
+}
+
 /** "Typo · Link · …" in taxonomy order. */
 export function boxSummary(box: Annotation, attributeIds: string[]): string {
   return attributeIds

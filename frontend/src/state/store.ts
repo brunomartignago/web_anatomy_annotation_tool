@@ -9,6 +9,7 @@ import { edit, emptyHistory, redo as redoStep, undo as undoStep } from '../edito
 import type { History } from '../editor/history'
 import { newUlid } from '../editor/ids'
 import { applyInheritance } from '../editor/inheritance'
+import type { KeymapPreset } from '../keyboard/keymap'
 import { applyLabel } from '../panels/labels'
 
 export type LoadStatus = 'idle' | 'loading' | 'ready' | 'error'
@@ -49,6 +50,8 @@ export interface AppState {
   picker: string | null
   cheatSheet: boolean
   palette: boolean
+  /** The preset being painted with (3.5): each clicked box gets it. Null when not painting. */
+  paint: KeymapPreset | null
 
   startLoading: () => void
   loaded: (taxonomy: Taxonomy, project: string, pages: PageSummary[]) => void
@@ -74,6 +77,10 @@ export interface AppState {
   setLabel: (attrId: string, value: string | null) => void
   /** Set several attributes at once (a preset) on every selected box, as one undo step. */
   applyPreset: (labels: Record<string, string>) => void
+  /** Start painting with a preset, or stop (null). */
+  setPaint: (preset: KeymapPreset | null) => void
+  /** Apply the paint preset to these boxes and select them, as one undo step. */
+  paintBoxes: (ids: string[]) => void
   focusBox: (id: string) => void
   setPicker: (attributeId: string | null) => void
   setCheatSheet: (open: boolean) => void
@@ -113,6 +120,7 @@ export const initialState = {
   picker: null as string | null,
   cheatSheet: false,
   palette: false,
+  paint: null as KeymapPreset | null,
   ...editingReset,
 }
 
@@ -145,6 +153,25 @@ export const useAppStore = create<AppState>()(
         markEdited(s)
         if (selectAfter) s.selectedIds = selectAfter
       })
+    }
+
+    /** Set every attribute a preset names on these boxes, as one undo step. */
+    const applyPresetTo = (
+      ids: string[],
+      labels: Record<string, string>,
+      selectAfter?: string[],
+    ) => {
+      const chosen = new Set(ids)
+      if (chosen.size === 0) return
+      const now = new Date().toISOString()
+      editDoc((doc) => {
+        for (const box of doc.annotations) {
+          if (!chosen.has(box.id)) continue
+          for (const [attrId, value] of Object.entries(labels)) {
+            applyLabel(box, attrId, value, now)
+          }
+        }
+      }, selectAfter)
     }
 
     const step = (fn: typeof undoStep) => {
@@ -230,6 +257,7 @@ export const useAppStore = create<AppState>()(
       setTool: (tool) =>
         set((s) => {
           s.tool = tool
+          s.paint = null // picking a tool ends painting
         }),
 
       select: (ids, mode = 'replace') =>
@@ -312,18 +340,17 @@ export const useAppStore = create<AppState>()(
         })
       },
 
-      applyPreset: (labels) => {
-        const selected = new Set(get().selectedIds)
-        if (selected.size === 0) return
-        const now = new Date().toISOString()
-        editDoc((doc) => {
-          for (const box of doc.annotations) {
-            if (!selected.has(box.id)) continue
-            for (const [attrId, value] of Object.entries(labels)) {
-              applyLabel(box, attrId, value, now)
-            }
-          }
-        })
+      applyPreset: (labels) => applyPresetTo(get().selectedIds, labels),
+
+      setPaint: (preset) =>
+        set((s) => {
+          s.paint = preset
+        }),
+
+      paintBoxes: (ids) => {
+        const { paint } = get()
+        if (!paint || ids.length === 0) return
+        applyPresetTo(ids, paint.labels, ids)
       },
 
       focusBox: (id) =>

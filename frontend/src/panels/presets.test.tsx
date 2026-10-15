@@ -49,7 +49,7 @@ describe('PresetPanel', () => {
   it('shows the nine presets from the YAML with their keys', () => {
     render(<PresetPanel presets={KEYMAP.presets} attributeIds={['Form', 'Function', 'Component']} />)
     const list = screen.getByRole('group', { name: 'Presets' })
-    const buttons = within(list).getAllByRole('button')
+    const buttons = within(list).getAllByRole('button', { name: /^Preset/ })
     expect(buttons).toHaveLength(9)
     expect(buttons[0]).toHaveAccessibleName('Preset 1: Typo · Text · Blank')
     expect(buttons[2]).toHaveAccessibleName('Preset 3: Typo · Heading · Blank')
@@ -72,6 +72,26 @@ describe('PresetPanel', () => {
     render(<PresetPanel presets={KEYMAP.presets} attributeIds={['Form', 'Function', 'Component']} />)
     expect(screen.getByRole('button', { name: /^Preset 2/ })).toHaveAttribute('aria-pressed', 'true')
     expect(screen.getByRole('button', { name: /^Preset 1/ })).toHaveAttribute('aria-pressed', 'false')
+  })
+
+  it('a brush button starts and stops painting with that preset (3.5)', async () => {
+    render(<PresetPanel presets={KEYMAP.presets} attributeIds={['Form', 'Function', 'Component']} />)
+    const brush = screen.getByRole('button', { name: 'Paint with preset 3' })
+    expect(brush).toBeEnabled() // painting needs no selection
+    await userEvent.click(brush)
+    expect(store().paint?.key).toBe('3')
+    expect(brush).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByText(/Painting preset 3/)).toBeInTheDocument()
+    await userEvent.click(brush)
+    expect(store().paint).toBeNull()
+  })
+
+  it('p shows a prompt for the preset digit', () => {
+    render(<WithKeys />)
+    act(() => {
+      fireEvent.keyDown(window, { key: 'p' })
+    })
+    expect(screen.getByText(/Paint: press a preset digit/)).toBeInTheDocument()
   })
 
   it('pressing a digit applies the preset (one keystroke)', () => {

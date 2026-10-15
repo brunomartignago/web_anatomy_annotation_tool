@@ -6,6 +6,7 @@
   --text-dim: #6b7280;
   --accent: #4f8ef7;
   --red: #f05252;
+  --paint: #db2777; /* paint mode (3.5) */
   font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
   color: var(--text);
   background: var(--bg);
@@ -103,7 +104,36 @@ body {
   gap: 0.2rem;
 }
 
+.presets__row {
+  display: flex;
+  gap: 0.2rem;
+}
+
+.presets__paint {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.7rem;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: none;
+  color: var(--text-dim);
+  cursor: pointer;
+}
+
+.presets__paint:hover {
+  border-color: var(--paint);
+  color: var(--text);
+}
+
+.presets__paint[aria-pressed='true'] {
+  border-color: var(--paint);
+  background: var(--paint);
+  color: #fff;
+}
+
 .presets__item {
+  flex: 1;
   display: flex;
   align-items: center;
   padding: 0.15rem 0.4rem;
@@ -180,6 +210,10 @@ body {
   background: var(--accent);
   color: #fff;
   font-size: 0.8rem;
+}
+
+.panel__prompt--paint {
+  background: var(--paint);
 }
 
 .app__help {
@@ -683,6 +717,31 @@ body {
 
 .stage__viewport.is-panning {
   cursor: grabbing;
+}
+
+.stage__viewport.is-painting {
+  cursor: copy;
+}
+
+.stage__painting {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-left: 0.5rem;
+  padding: 0.1rem 0.2rem 0.1rem 0.5rem;
+  border-radius: 3px;
+  background: var(--paint);
+  color: #fff;
+  font-size: 0.8rem;
+}
+
+.stage__painting button {
+  padding: 0 0.4rem;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
 }
 
 .stage__draft {

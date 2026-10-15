@@ -157,6 +157,37 @@ describe('editing', () => {
     expect(store().history.undo).toHaveLength(1)
   })
 
+  describe('paint mode (3.5)', () => {
+    const preset = { key: '2', labels: { Form: 'Image', Function: 'Link', Component: 'Blank' } }
+
+    it('each paint applies the preset to those boxes only, selects them, one undo step each', () => {
+      store().setPaint(preset)
+      expect(store().paint).toEqual(preset)
+      store().paintBoxes(['a'])
+      store().paintBoxes(['b', 'c'])
+      const labels = store().page!.annotations.annotations.map((b) => b.labels.Function)
+      expect(labels).toEqual(['Link', 'Link', 'Link'])
+      expect(store().selectedIds).toEqual(['b', 'c'])
+      expect(store().history.undo).toHaveLength(2)
+      store().undo()
+      expect(store().page!.annotations.annotations[1].labels).toEqual({})
+      expect(store().paint).toEqual(preset) // undo doesn't end painting
+    })
+
+    it('painting nothing, or without a preset, records nothing', () => {
+      store().paintBoxes(['a']) // not painting
+      store().setPaint(preset)
+      store().paintBoxes([])
+      expect(store().history.undo).toHaveLength(0)
+    })
+
+    it('picking a tool ends painting', () => {
+      store().setPaint(preset)
+      store().setTool('select')
+      expect(store().paint).toBeNull()
+    })
+  })
+
   it('a preset with nothing selected does nothing', () => {
     store().applyPreset({ Form: 'Typo' })
     expect(store().docVersion).toBe(0)

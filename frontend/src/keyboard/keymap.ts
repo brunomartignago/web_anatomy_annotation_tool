@@ -1,7 +1,7 @@
 // Label shortcuts generated from the taxonomy: an attribute's `hotkey` opens its picker,
 // then an option's `key` sets it (two keystrokes for any active option), and a digit
 // applies a whole preset (one keystroke). Nothing here names a label: it all comes from
-// the YAML.
+// the YAML. `p` then a digit paints with that preset: each clicked box gets it (3.5).
 
 import type { Taxonomy, TaxonomyOption } from '../api/types'
 
@@ -12,6 +12,7 @@ export const RESERVED_KEYS = new Set([
   'x', // delete
   '?', // cheat sheet
   '/', // command palette
+  'p', // paint with a preset (3.5)
   '[', // previous page
   ']', // next page
   '+',
@@ -42,10 +43,15 @@ export interface Keymap {
   conflicts: string[]
 }
 
+/** The `picker` value while `p` waits for the digit of the preset to paint with. */
+export const PAINT_PICKER = '#paint'
+
 export type KeyAction =
   | { type: 'open'; attribute: string }
   | { type: 'set'; attribute: string; value: string }
-  | { type: 'preset'; labels: Record<string, string> }
+  | { type: 'preset'; preset: KeymapPreset }
+  /** Start painting with this preset (`p` then its digit). */
+  | { type: 'paint'; preset: KeymapPreset }
   | { type: 'close' }
   /** The key was used up by an open picker without doing anything. */
   | { type: 'none' }
@@ -97,10 +103,18 @@ export function pressKey(keymap: Keymap, picker: string | null, key: string): Ke
   const k = key.length === 1 ? key.toLowerCase() : key
   const byHotkey = keymap.attributes.find((a) => a.hotkey === k)
 
+  const preset = keymap.presets.find((p) => p.key === k)
+
   if (picker === null) {
     if (byHotkey) return { type: 'open', attribute: byHotkey.id }
-    const preset = keymap.presets.find((p) => p.key === k)
-    return preset ? { type: 'preset', labels: preset.labels } : { type: 'pass' }
+    if (k === 'p') return { type: 'open', attribute: PAINT_PICKER }
+    return preset ? { type: 'preset', preset } : { type: 'pass' }
+  }
+
+  if (picker === PAINT_PICKER) {
+    if (k === 'Escape' || k === 'p') return { type: 'close' }
+    if (k.length !== 1) return { type: 'pass' }
+    return preset ? { type: 'paint', preset } : { type: 'none' }
   }
 
   const open = keymap.attributes.find((a) => a.id === picker)

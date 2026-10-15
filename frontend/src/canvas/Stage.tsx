@@ -7,6 +7,7 @@ import { stripUrl } from '../api/client'
 import type { PageResponse } from '../api/types'
 import { saveNow } from '../editor/autosave'
 import {
+  boxesCentredIn,
   boxesInRect,
   clampMove,
   handleAt,
@@ -17,7 +18,7 @@ import {
 } from '../editor/geometry'
 import type { Handle } from '../editor/geometry'
 import { isContainer } from '../editor/inheritance'
-import { nextIncomplete } from '../panels/labels'
+import { nextIncomplete, presetSummary } from '../panels/labels'
 import { useAppStore } from '../state/store'
 import type { SaveState, Tool } from '../state/store'
 import {
@@ -53,6 +54,7 @@ type Gesture =
   | { kind: 'pan'; x: number; y: number; left: number; top: number }
   | { kind: 'draw' | 'section' | 'select'; x: number; y: number; start: Point; shift: boolean }
   | { kind: 'move'; x: number; y: number; start: Point; origin: Record<string, BBox> }
+  | { kind: 'paint'; x: number; y: number; start: Point }
   | { kind: 'resize'; x: number; y: number; start: Point; id: string; handle: Handle; origin: BBox }
 
 /** Screen px around an edge of the selected box that grab it for resizing. */
@@ -123,18 +125,30 @@ function ownValues(box: Annotation, inheritable: string[]): string {
 export function Stage({ project, pageId, page, attributeIds }: StageProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const worldRef = useRef<HTMLDivElement>(null)
-  const { zoom, tool, selectedIds, saveState, saveError, focus } = useAppStore(
+  const { zoom, tool, paint, selectedIds, saveState, saveError, focus } = useAppStore(
     useShallow((s) => ({
       zoom: s.zoom,
       tool: s.tool,
+      paint: s.paint,
       selectedIds: s.selectedIds,
       saveState: s.saveState,
       saveError: s.saveError,
       focus: s.focus,
     })),
   )
-  const { setZoom, setTool, select, focusBox, addBox, setBBoxes, deleteSelected, undo, redo } =
-    useAppStore.getState()
+  const {
+    setZoom,
+    setTool,
+    select,
+    focusBox,
+    addBox,
+    setBBoxes,
+    setPaint,
+    paintBoxes,
+    deleteSelected,
+    undo,
+    redo,
+  } = useAppStore.getState()
   const canUndo = useAppStore((s) => s.history.undo.length > 0)
   const canRedo = useAppStore((s) => s.history.redo.length > 0)
   const coordsRef = useRef<HTMLSpanElement>(null)
@@ -373,6 +387,9 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
       event.preventDefault()
       el.style.cursor = ''
       gesture.current = { kind: 'pan', ...base, left: el.scrollLeft, top: el.scrollTop }
+    } else if (event.button === 0 && useAppStore.getState().paint) {
+      // Painting (3.5) wins over every tool: a click or a band applies the preset.
+      gesture.current = { kind: 'paint', ...base, start: toPage(event) }
     } else if (event.button === 0) {
       const start = toPage(event)
       const grabbed = event.shiftKey ? null : handleUnder(start)
@@ -415,9 +432,9 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
   const updateCursor = (p: Point) => {
     const el = containerRef.current
     if (!el) return
-    const grabbed = handleUnder(p)
+    const grabbed = paint ? null : handleUnder(p)
     if (grabbed) el.style.cursor = HANDLE_CURSORS[grabbed.handle]
-    else if (tool === 'select' && hitTest(boxes, p.x, p.y)) el.style.cursor = 'move'
+    else if (!paint && tool === 'select' && hitTest(boxes, p.x, p.y)) el.style.cursor = 'move'
     else el.style.cursor = ''
   }
 
@@ -465,7 +482,18 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
         select(hit ? [hit] : [])
       }
     }
-    if (g.kind === 'move' || g.kind === 'resize') {
+    if (g.kind === 'paint') {
+      // Presets label elements: section and component boxes are never painted.
+      const paintable = boxes.filter((b) => !isContainer(b) && b.status !== 'rejected')
+      if (isClick) {
+        const hit = hitTest(paintable, end.x, end.y)
+        if (hit) paintBoxes([hit])
+      } else {
+        const rect = rectFromDrag(g.start, end, page.annotations.page)
+        // Centres, not touches: painting overwrites labels, so grazed neighbours are spared.
+        if (rect) paintBoxes(boxesCentredIn(paintable, rect))
+      }
+    } else if (g.kind === 'move' || g.kind === 'resize') {
       const moved = draftFor(g, event.clientX, event.clientY)
       if (moved) setBBoxes(moved)
       else if (tool === 'select') clickSelect(false) // a click on a box still just selects it
@@ -513,7 +541,7 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
   const viewportClass = [
     'stage__viewport',
     gestureKind === 'pan' && 'is-panning',
-    tool !== 'select' && 'is-drawing',
+    paint ? 'is-painting' : tool !== 'select' && 'is-drawing',
   ]
     .filter(Boolean)
     .join(' ')
@@ -586,6 +614,19 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
         <button type="button" title="Fit width (Ctrl+0)" onClick={fitWidth}>
           Fit
         </button>
+        {paint && (
+          <span className="stage__painting" role="note">
+            Painting {paint.key}: {presetSummary(paint.labels, attributeIds)}
+            <button
+              type="button"
+              aria-label="Stop painting"
+              title="Stop painting (Esc)"
+              onClick={() => setPaint(null)}
+            >
+              ×
+            </button>
+          </span>
+        )}
       </div>
       <div
         ref={containerRef}
@@ -691,7 +732,9 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
           {Math.round(zoom * 100)}% · {boxes.length} boxes · {pageWidth}×{pageHeight} px
         </span>
         <span className="stage__tool">
-          {TOOL_LABELS[tool]}
+          {paint
+            ? `Paint ${paint.key}: ${presetSummary(paint.labels, attributeIds)} (Esc exits)`
+            : TOOL_LABELS[tool]}
           {selectedIds.length > 0 && ` · ${selectedIds.length} selected`}
         </span>
         <span ref={coordsRef} className="stage__coords" aria-label="Cursor position" />

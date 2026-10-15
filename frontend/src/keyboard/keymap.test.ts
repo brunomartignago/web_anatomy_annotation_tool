@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import type { Taxonomy } from '../api/types'
 import { loadWebUi } from '../test/webUi'
-import { RESERVED_KEYS, buildKeymap, pressKey } from './keymap'
+import { PAINT_PICKER, RESERVED_KEYS, buildKeymap, pressKey } from './keymap'
 
 // The real taxonomy: shortcuts must come from it, and the ✅ is checked against it.
 const WEB_UI = loadWebUi()
@@ -113,7 +113,7 @@ describe('presets (3.2)', () => {
   it('a digit applies its preset when no picker is open', () => {
     expect(pressKey(keymap, null, '3')).toEqual({
       type: 'preset',
-      labels: { Form: 'Typo', Function: 'Heading', Component: 'Blank' },
+      preset: { key: '3', labels: { Form: 'Typo', Function: 'Heading', Component: 'Blank' } },
     })
   })
 
@@ -137,6 +137,30 @@ describe('presets (3.2)', () => {
     const { presets, conflicts } = buildKeymap(custom)
     expect(presets.map((p) => p.key)).not.toContain('1')
     expect(conflicts.some((c) => c.includes('Hologram'))).toBe(true)
+  })
+})
+
+describe('paint picker (3.5)', () => {
+  const keymap = buildKeymap(WEB_UI)
+
+  it('p opens the paint picker, then a digit picks the preset to paint with', () => {
+    expect(pressKey(keymap, null, 'p')).toEqual({ type: 'open', attribute: PAINT_PICKER })
+    expect(pressKey(keymap, PAINT_PICKER, '2')).toEqual({
+      type: 'paint',
+      preset: { key: '2', labels: keymap.presets[1].labels },
+    })
+  })
+
+  it('Escape or p again closes it; other keys are used up', () => {
+    expect(pressKey(keymap, PAINT_PICKER, 'Escape')).toEqual({ type: 'close' })
+    expect(pressKey(keymap, PAINT_PICKER, 'P')).toEqual({ type: 'close' })
+    expect(pressKey(keymap, PAINT_PICKER, 'f')).toEqual({ type: 'none' })
+    expect(pressKey(keymap, PAINT_PICKER, '0')).toEqual({ type: 'none' }) // no preset 0
+    expect(pressKey(keymap, PAINT_PICKER, 'Tab')).toEqual({ type: 'pass' })
+  })
+
+  it('p is reserved, so no attribute can take it', () => {
+    expect(RESERVED_KEYS.has('p')).toBe(true)
   })
 })
 

@@ -298,6 +298,69 @@ describe('Stage editing', () => {
     expect(store().history.undo).toHaveLength(0)
   })
 
+  // 3.5: paint mode. Box a is at screen y 50-75, c at 100-125, b far below.
+  const PAINT = { key: '2', labels: { Form: 'Image', Function: 'Link', Component: 'Blank' } }
+  const labelsOf = (id: string) => store().page!.annotations.annotations.find((b) => b.id === id)!.labels
+
+  it('in paint mode a click paints the box under it, and nothing is drawn', () => {
+    const { click, getByRole } = editing()
+    act(() => {
+      store().setPaint(PAINT)
+    })
+    expect(getByRole('status')).toHaveTextContent('Paint 2: Image · Link · Blank (Esc exits)')
+    click(50, 60)
+    expect(labelsOf('a')).toMatchObject(PAINT.labels)
+    expect(labelsOf('c')).toEqual({ Form: 'Typo' })
+    expect(boxIds()).toEqual(['a', 'b', 'c'])
+    click(50, 110)
+    expect(labelsOf('c')).toMatchObject(PAINT.labels)
+    expect(store().history.undo).toHaveLength(2)
+    expect(store().paint).toEqual(PAINT) // stays on until Esc
+  })
+
+  it('a paint drag that only grazes a box leaves its labels alone', () => {
+    act(() => {
+      store().setPaint(PAINT)
+    })
+    const { drag } = editing()
+    drag([0, 0], [200, 60]) // page y 0-120 touches box a (y 100-150), not its centre
+    expect(labelsOf('a')).toEqual(COMPLETE)
+    expect(store().history.undo).toHaveLength(0)
+  })
+
+  it('in paint mode a drag paints every element box centred in it, skipping sections', () => {
+    act(() => {
+      store().addBox([0, 0, 1920, 400], 'section')
+      store().setPaint(PAINT)
+    })
+    const { drag } = editing()
+    drag([0, 0], [200, 130])
+    expect(labelsOf('a')).toMatchObject(PAINT.labels)
+    expect(labelsOf('c')).toMatchObject(PAINT.labels)
+    const section = store().page!.annotations.annotations.find((b) => b.kind === 'section')!
+    expect(section.labels).toEqual({})
+  })
+
+  it('a click on a section in paint mode paints nothing', () => {
+    act(() => {
+      store().addBox([1000, 0, 900, 400], 'section')
+      store().setPaint(PAINT)
+    })
+    const { click } = editing()
+    const before = store().history.undo.length
+    click(700, 60) // page (1400, 120): only the section is there
+    expect(store().history.undo).toHaveLength(before)
+  })
+
+  it('the toolbar shows what is painting, with a way out', async () => {
+    act(() => {
+      store().setPaint(PAINT)
+    })
+    const { getByRole } = editing()
+    await userEvent.click(getByRole('button', { name: 'Stop painting' }))
+    expect(store().paint).toBeNull()
+  })
+
   it('shows the tool, selection and save state', () => {
     const { getByRole, click, key } = editing()
     expect(getByRole('status')).toHaveTextContent('Draw (D)')

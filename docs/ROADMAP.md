@@ -79,8 +79,9 @@ Decisions only Bruno can make are marked **🟡 DECIDE**. Claude Code should sto
 - [x] **3.4b Keep children in sync when a section moves or resizes**
   - Needs move and resize handles for boxes first (2.4 only draws, selects and deletes). Moving or resizing a section re-runs inheritance, so elements that leave it lose its inherited labels and elements that enter it gain them.
   - ✅ In select mode, dragging a box moves it (or the whole selection). The single selected box can be resized from any edge or corner in any tool. Each move or resize is one undo step and stays on the page. Tests cover boxes leaving and entering a section, a section shrinking and undo.
-- [ ] **3.5 Sticky labels / paint mode**
+- [x] **3.5 Sticky labels / paint mode**
   - Pick a preset, then each click on a box applies it. Esc exits.
+  - ✅ `p` then a digit (or the brush next to a preset) starts painting, with no selection needed. Each click paints the element box under it, as one undo step. A drag paints the element boxes whose centre is inside the band. Section and component boxes are never painted. A digit switches the preset, and Esc, `p`, the toolbar × or picking a tool stops painting. The toolbar, status bar and preset panel show the preset being painted.
 - [ ] **3.6 Select similar**
   - Shortcut Shift+A selects boxes with the same DOM signature (tag + role + class stem) or, failing that, the same size within 4 px in the same row or column.
 - [ ] **3.7 Effort metrics**

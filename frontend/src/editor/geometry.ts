@@ -32,6 +32,16 @@ export function boxesInRect(boxes: Boxed[], [rx, ry, rw, rh]: BBox): string[] {
     .map((box) => box.id)
 }
 
+/**
+ * Ids of the boxes whose centre lies in the rectangle, in file order. Used where a band
+ * writes labels (painting): a box the band only grazes is left alone.
+ */
+export function boxesCentredIn(boxes: Boxed[], rect: BBox): string[] {
+  return boxes
+    .filter(({ bbox: [x, y, w, h] }) => contains(rect, x + w / 2, y + h / 2))
+    .map((box) => box.id)
+}
+
 const round = (v: number) => Math.round(v * 10) / 10
 
 /** The box a drag from `a` to `b` draws: normalized, clamped to the page, or null if tiny. */

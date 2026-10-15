@@ -2,14 +2,15 @@ import { useEffect } from 'react'
 
 import { useAppStore } from '../state/store'
 import type { Keymap } from './keymap'
-import { pressKey } from './keymap'
+import { PAINT_PICKER, pressKey } from './keymap'
 
 const isTyping = (target: EventTarget | null) =>
   target instanceof HTMLElement &&
   (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName))
 
 /**
- * Label shortcuts (attribute hotkey, then option letter) and the `?` cheat sheet.
+ * Label shortcuts (attribute hotkey, then option letter), presets and painting, and the
+ * `?` cheat sheet.
  * Listens in the capture phase so that, inside a picker, a letter like "d" sets Dropdown
  * instead of reaching the canvas as "draw tool". Keys it doesn't use pass through.
  */
@@ -42,12 +43,20 @@ export function useLabelKeys(keymap: Keymap | null): void {
         return
       }
 
+      // Painting (3.5): Esc or p stops it, before anything else uses those keys.
+      if (s.paint && s.picker === null && (event.key === 'Escape' || event.key.toLowerCase() === 'p')) {
+        consume()
+        s.setPaint(null)
+        return
+      }
+
       const action = pressKey(keymap, s.picker, event.key)
       switch (action.type) {
         case 'pass':
           return
         case 'open':
-          if (s.selectedIds.length === 0) return // nothing to label
+          // Painting needs no selection; labeling does.
+          if (action.attribute !== PAINT_PICKER && s.selectedIds.length === 0) return
           s.setPicker(action.attribute)
           break
         case 'set':
@@ -55,8 +64,16 @@ export function useLabelKeys(keymap: Keymap | null): void {
           s.setPicker(null)
           break
         case 'preset':
+          if (s.paint) {
+            s.setPaint(action.preset) // while painting, a digit switches the preset
+            break
+          }
           if (s.selectedIds.length === 0) return
-          s.applyPreset(action.labels)
+          s.applyPreset(action.preset.labels)
+          break
+        case 'paint':
+          s.setPaint(action.preset)
+          s.setPicker(null)
           break
         case 'close':
           s.setPicker(null)
