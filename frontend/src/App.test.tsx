@@ -82,6 +82,20 @@ describe('App', () => {
     expect(adobe).toHaveAttribute('aria-current', 'true')
   })
 
+  it('] and [ move through the page queue', async () => {
+    mockServer()
+    render(<App />)
+    const cnn = await screen.findByRole('button', { name: /edition_cnn_com/ })
+    const adobe = screen.getByRole('button', { name: /www_adobe_com/ })
+    expect(cnn).toHaveAttribute('aria-current', 'true')
+    await userEvent.keyboard(']')
+    expect(adobe).toHaveAttribute('aria-current', 'true')
+    await userEvent.keyboard(']') // already the last page
+    expect(adobe).toHaveAttribute('aria-current', 'true')
+    await userEvent.keyboard('[[') // user-event syntax for a literal "["
+    expect(cnn).toHaveAttribute('aria-current', 'true')
+  })
+
   it('explains how to start the server when the API is unreachable', async () => {
     mockServer(false)
     render(<App />)

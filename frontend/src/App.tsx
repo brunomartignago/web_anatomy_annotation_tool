@@ -5,10 +5,13 @@ import { api } from './api/client'
 import type { PageSummary } from './api/types'
 import { Stage } from './canvas/Stage'
 import { saveNow, useAutosave } from './editor/autosave'
+import { BoxList } from './panels/BoxList'
+import { LabelPanel } from './panels/LabelPanel'
+import { ProgressPanel } from './panels/ProgressPanel'
 import { useAppStore } from './state/store'
 
-// The shell: loads the served project, lists its pages and shows the open one on the
-// canvas. The label panel and page queue (2.5) plug in here.
+// The shell: page queue on the left, the canvas in the middle, labels / progress / box
+// list on the right.
 export default function App() {
   const {
     status,
@@ -37,11 +40,27 @@ export default function App() {
       saveError: s.saveError,
     })),
   )
-  const { startLoading, loaded, failed, openPage, pageLoading, pageLoaded, pageFailed } =
+  const { startLoading, loaded, failed, openPage, stepPage, pageLoading, pageLoaded, pageFailed } =
     useAppStore.getState()
-  const attributeIds = useMemo(() => taxonomy?.attributes.map((a) => a.id) ?? [], [taxonomy])
+  const attributes = useMemo(() => taxonomy?.attributes ?? [], [taxonomy])
+  const attributeIds = useMemo(() => attributes.map((a) => a.id), [attributes])
 
   useAutosave()
+
+  // Page queue: `]` next page, `[` previous (the page being left is saved first).
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      const target = event.target
+      if (target instanceof HTMLElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)) {
+        return
+      }
+      if (event.ctrlKey || event.metaKey || event.altKey) return
+      if (event.key === ']') stepPage(1)
+      else if (event.key === '[') stepPage(-1)
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [stepPage])
 
   /** After a save conflict: drop local edits and load the version on disk. */
   const reloadPage = async () => {
@@ -140,6 +159,15 @@ export default function App() {
                 />
               )}
             </section>
+            <aside className="app__inspector" aria-label="Inspector">
+              {page && (
+                <>
+                  <LabelPanel attributes={attributes} />
+                  <ProgressPanel attributes={attributes} />
+                  <BoxList attributeIds={attributeIds} />
+                </>
+              )}
+            </aside>
           </>
         )}
       </main>

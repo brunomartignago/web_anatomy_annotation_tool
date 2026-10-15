@@ -105,6 +105,27 @@ describe('editing', () => {
     expect(store().selectedIds).toEqual(['c'])
   })
 
+  it('labels every selected box in one undo step', () => {
+    store().select(['a', 'c'])
+    store().setLabel('Form', 'Typo')
+    const labels = store().page!.annotations.annotations.map((b) => b.labels.Form)
+    expect(labels).toEqual(['Typo', undefined, 'Typo'])
+    expect(store().page!.annotations.annotations[0].status).toBe('edited') // was legacy
+    expect(store().docVersion).toBe(1)
+
+    store().undo()
+    expect(store().page!.annotations.annotations.every((b) => !b.labels.Form)).toBe(true)
+  })
+
+  it('labeling with nothing selected, or to the same value, records nothing', () => {
+    store().setLabel('Form', 'Typo')
+    expect(store().docVersion).toBe(0)
+    store().select(['a'])
+    store().setLabel('Form', 'Typo')
+    store().setLabel('Form', 'Typo')
+    expect(store().history.undo).toHaveLength(1)
+  })
+
   it('opening a page starts a fresh history', () => {
     store().addBox([0, 0, 10, 10])
     store().pageLoaded('q', pageResponse([]))

@@ -26,6 +26,7 @@ import type { BBox } from './geometry'
 const OVERSCAN_PX = 800
 /** A press that moves less than this (screen px) is a click, not a drag. */
 const CLICK_SLOP_PX = 4
+const TAG_HEIGHT = 14
 
 interface StageProps {
   project: string
@@ -55,13 +56,14 @@ const SAVE_LABELS: Record<SaveState, string> = {
 export function Stage({ project, pageId, page, attributeIds }: StageProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const worldRef = useRef<HTMLDivElement>(null)
-  const { zoom, tool, selectedIds, saveState, saveError } = useAppStore(
+  const { zoom, tool, selectedIds, saveState, saveError, focus } = useAppStore(
     useShallow((s) => ({
       zoom: s.zoom,
       tool: s.tool,
       selectedIds: s.selectedIds,
       saveState: s.saveState,
       saveError: s.saveError,
+      focus: s.focus,
     })),
   )
   const { setZoom, setTool, select, addBox, deleteSelected, undo, redo } = useAppStore.getState()
@@ -110,6 +112,20 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
     pendingScroll.current = null
     readView()
   }, [zoom, readView])
+
+  // Scroll a box picked in the box list into the middle of the view.
+  useEffect(() => {
+    const el = containerRef.current
+    const target = focus && page.annotations.annotations.find((b) => b.id === focus.id)
+    if (!el || !target) return
+    const [x, y, w, h] = target.bbox
+    const z = useAppStore.getState().zoom
+    el.scrollTop = Math.max(0, (y + h / 2) * z - el.clientHeight / 2)
+    el.scrollLeft = Math.max(0, (x + w / 2) * z - el.clientWidth / 2)
+    readView()
+    // Only when a new focus request arrives, not on every edit of the page.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focus])
 
   /** Zoom to `newZoom`, keeping the page point under (anchorX, anchorY) still. */
   const zoomTo = useCallback(
@@ -361,6 +377,8 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
               const isSelected = selected.has(box.id)
               const color = boxColor(completeness(box.labels, attributeIds), isSelected)
               const tag = String(i + 1)
+              // Tags sit just above the box so they don't cover its content (inside if no room).
+              const tagY = y * zoom >= TAG_HEIGHT ? y * zoom - TAG_HEIGHT : y * zoom
               return (
                 <g key={box.id} data-box-id={box.id} data-selected={isSelected || undefined}>
                   <rect
@@ -374,12 +392,12 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
                   />
                   <rect
                     x={x * zoom}
-                    y={y * zoom}
+                    y={tagY}
                     width={tag.length * 7 + 6}
-                    height={14}
+                    height={TAG_HEIGHT}
                     fill={color}
                   />
-                  <text x={x * zoom + 3} y={y * zoom + 11} className="stage__tag">
+                  <text x={x * zoom + 3} y={tagY + 11} className="stage__tag">
                     {tag}
                   </text>
                 </g>

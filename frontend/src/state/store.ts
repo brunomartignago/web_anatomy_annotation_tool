@@ -8,6 +8,7 @@ import { clampZoom } from '../canvas/geometry'
 import { edit, emptyHistory, redo as redoStep, undo as undoStep } from '../editor/history'
 import type { History } from '../editor/history'
 import { newUlid } from '../editor/ids'
+import { applyLabel } from '../panels/labels'
 
 export type LoadStatus = 'idle' | 'loading' | 'ready' | 'error'
 export type Tool = 'draw' | 'select'
@@ -39,6 +40,8 @@ export interface AppState {
   savedVersion: number
   saveState: SaveState
   saveError: string | null
+  /** A request for the canvas to scroll a box into view (the nonce repeats requests). */
+  focus: { id: string; nonce: number } | null
 
   startLoading: () => void
   loaded: (taxonomy: Taxonomy, project: string, pages: PageSummary[]) => void
@@ -56,6 +59,9 @@ export interface AppState {
   select: (ids: string[], mode?: SelectMode) => void
   addBox: (bbox: BBox) => string | null
   deleteSelected: () => void
+  /** Set (or with null, remove) one attribute on every selected box, as one undo step. */
+  setLabel: (attrId: string, value: string | null) => void
+  focusBox: (id: string) => void
   undo: () => void
   redo: () => void
 
@@ -72,6 +78,7 @@ const editingReset = {
   savedVersion: 0,
   saveState: 'saved' as SaveState,
   saveError: null,
+  focus: null as { id: string; nonce: number } | null,
 }
 
 export const initialState = {
@@ -236,6 +243,22 @@ export const useAppStore = create<AppState>()(
           doc.annotations = doc.annotations.filter((a) => !selected.has(a.id))
         }, [])
       },
+
+      setLabel: (attrId, value) => {
+        const selected = new Set(get().selectedIds)
+        if (selected.size === 0) return
+        const now = new Date().toISOString()
+        editDoc((doc) => {
+          for (const box of doc.annotations) {
+            if (selected.has(box.id)) applyLabel(box, attrId, value, now)
+          }
+        })
+      },
+
+      focusBox: (id) =>
+        set((s) => {
+          s.focus = { id, nonce: (s.focus?.nonce ?? 0) + 1 }
+        }),
 
       undo: () => step(undoStep),
       redo: () => step(redoStep),
