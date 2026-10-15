@@ -71,7 +71,7 @@ Decisions only Bruno can make are marked **🟡 DECIDE**. Claude Code should sto
   - ✅ Every option, including Heading and Right Menu, takes at most 2 keystrokes.
 - [x] **3.2 Presets**
   - `1`–`9` apply the YAML presets to all selected boxes, and the presets are shown in the panel.
-- [ ] **3.3 Command palette**
+- [x] **3.3 Command palette**
   - `/` opens fuzzy search across all values and presets (for example, "hea" → Heading).
 - [ ] **3.4 Sections and inheritance**
   - Add a "section" draw mode (Shift+D). `kind=section` boxes carry Taxonomy. Elements inside inherit Taxonomy (and Component from `kind=component` boxes) with `label_sources: inherited`. Moving or resizing a section updates its children. An explicit human label always wins over inheritance.

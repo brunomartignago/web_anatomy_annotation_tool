@@ -29,6 +29,11 @@ export function useLabelKeys(keymap: Keymap | null): void {
         s.setCheatSheet(!s.cheatSheet)
         return
       }
+      if (event.key === '/' && !s.cheatSheet && !s.palette) {
+        consume() // or the "/" would be typed into the palette's search box
+        s.setPalette(true)
+        return
+      }
       if (s.cheatSheet) {
         if (event.key === 'Escape') {
           consume()

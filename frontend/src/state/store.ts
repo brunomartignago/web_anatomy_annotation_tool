@@ -45,6 +45,7 @@ export interface AppState {
   /** Attribute whose keyboard picker is open (its hotkey was pressed), if any. */
   picker: string | null
   cheatSheet: boolean
+  palette: boolean
 
   startLoading: () => void
   loaded: (taxonomy: Taxonomy, project: string, pages: PageSummary[]) => void
@@ -69,6 +70,7 @@ export interface AppState {
   focusBox: (id: string) => void
   setPicker: (attributeId: string | null) => void
   setCheatSheet: (open: boolean) => void
+  setPalette: (open: boolean) => void
   undo: () => void
   redo: () => void
 
@@ -103,6 +105,7 @@ export const initialState = {
   tool: 'draw' as Tool,
   picker: null as string | null,
   cheatSheet: false,
+  palette: false,
   ...editingReset,
 }
 
@@ -292,6 +295,12 @@ export const useAppStore = create<AppState>()(
       setCheatSheet: (open) =>
         set((s) => {
           s.cheatSheet = open
+        }),
+
+      setPalette: (open) =>
+        set((s) => {
+          s.palette = open
+          if (open) s.picker = null
         }),
 
       undo: () => step(undoStep),

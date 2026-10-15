@@ -11,6 +11,7 @@ export const RESERVED_KEYS = new Set([
   's', // select tool
   'x', // delete
   '?', // cheat sheet
+  '/', // command palette
   '[', // previous page
   ']', // next page
   '+',

@@ -6,7 +6,9 @@ import type { PageSummary } from './api/types'
 import { Stage } from './canvas/Stage'
 import { saveNow, useAutosave } from './editor/autosave'
 import { CheatSheet } from './keyboard/CheatSheet'
+import { CommandPalette } from './keyboard/CommandPalette'
 import { buildKeymap } from './keyboard/keymap'
+import { buildCommands } from './keyboard/palette'
 import { useLabelKeys } from './keyboard/useLabelKeys'
 import { BoxList } from './panels/BoxList'
 import { LabelPanel } from './panels/LabelPanel'
@@ -30,9 +32,11 @@ export default function App() {
     saveState,
     saveError,
     cheatSheet,
+    palette,
   } = useAppStore(
     useShallow((s) => ({
       cheatSheet: s.cheatSheet,
+      palette: s.palette,
       status: s.status,
       error: s.error,
       taxonomy: s.taxonomy,
@@ -51,6 +55,7 @@ export default function App() {
   const attributes = useMemo(() => taxonomy?.attributes ?? [], [taxonomy])
   const attributeIds = useMemo(() => attributes.map((a) => a.id), [attributes])
   const keymap = useMemo(() => (taxonomy ? buildKeymap(taxonomy) : null), [taxonomy])
+  const commands = useMemo(() => (keymap ? buildCommands(keymap) : []), [keymap])
   const hotkeys = useMemo(
     () => Object.fromEntries((keymap?.attributes ?? []).map((a) => [a.id, a.hotkey])),
     [keymap],
@@ -151,6 +156,12 @@ export default function App() {
       )}
       {keymap && cheatSheet && (
         <CheatSheet keymap={keymap} onClose={() => useAppStore.getState().setCheatSheet(false)} />
+      )}
+      {palette && (
+        <CommandPalette
+          commands={commands}
+          onClose={() => useAppStore.getState().setPalette(false)}
+        />
       )}
 
       <main className="app__main">

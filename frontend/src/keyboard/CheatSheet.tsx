@@ -12,6 +12,7 @@ const GENERAL: [string, string][] = [
   ['+ / - / Ctrl+0', 'Zoom in / out / fit width'],
   ['Ctrl+wheel', 'Zoom around the cursor'],
   ['Middle-drag, Space+drag', 'Pan'],
+  ['/', 'Search any label or preset'],
   ['?', 'Show / hide this sheet'],
 ]
 

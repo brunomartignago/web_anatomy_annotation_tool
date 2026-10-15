@@ -194,6 +194,85 @@ body {
   cursor: pointer;
 }
 
+.palette__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 12vh;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.palette {
+  width: min(36rem, 92vw);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.palette__input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 1rem;
+  outline: none;
+}
+
+.palette__hint {
+  margin: 0;
+  padding: 0.5rem 1rem;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+}
+
+.palette__results {
+  max-height: 22rem;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0.25rem;
+  list-style: none;
+}
+
+.palette__item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.palette__item[aria-selected='true'] {
+  background: rgba(79, 142, 247, 0.2);
+}
+
+.palette__title {
+  color: var(--text);
+}
+
+.palette__detail {
+  flex: 1;
+  color: var(--text-dim);
+  font-size: 0.8rem;
+}
+
+.palette__shortcut {
+  padding: 0 0.3rem;
+  border-radius: 2px;
+  background: var(--border);
+  color: var(--text-dim);
+  font: 600 0.75rem ui-monospace, monospace;
+}
+
 .cheatsheet__backdrop {
   position: fixed;
   inset: 0;
