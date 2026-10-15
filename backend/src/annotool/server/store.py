@@ -79,7 +79,11 @@ Completeness = Literal["empty", "partial", "complete"]
 
 
 class Progress(BaseModel):
-    """Box counts for one page. Rejected boxes are left out of every count."""
+    """Counts of the boxes to label on one page: element boxes that aren't rejected.
+
+    Section and component boxes are containers that pass labels on to the boxes inside
+    them, not work to label, so they're left out like rejected boxes.
+    """
 
     boxes: int = 0
     empty: int = 0  # no attribute labeled
@@ -99,7 +103,7 @@ def completeness(labels: dict[str, str], attribute_ids: list[str]) -> Completene
 def page_progress(page: PageFile | None, attribute_ids: list[str]) -> Progress:
     progress = Progress(labeled=dict.fromkeys(attribute_ids, 0))
     for box in page.annotations if page else []:
-        if box.status == "rejected":
+        if box.status == "rejected" or box.kind != "element":
             continue
         progress.boxes += 1
         state = completeness(box.labels, attribute_ids)

@@ -121,6 +121,39 @@ describe('LabelPanel', () => {
     expect(labelsOf('b').Form).toBeUndefined()
     expect(screen.queryByRole('button', { name: 'Clear Form' })).not.toBeInTheDocument()
   })
+
+  it('switches the box kind; a section passes its Template section on (3.4a)', async () => {
+    useAppStore.setState({
+      taxonomy: { id: 'web-ui', version: '1.0', name: 'test', presets: [], rules: {}, attributes: ATTRIBUTES },
+    })
+    load([box('c', {}), { ...box('sec', { Taxonomy: 'Footer' }), bbox: [0, 0, 100, 100] }])
+    store().select(['sec'])
+    render(<LabelPanel attributes={ATTRIBUTES} />)
+    const kinds = screen.getByRole('group', { name: 'Box kind' })
+    expect(within(kinds).getByRole('button', { name: 'Element' })).toHaveAttribute('aria-pressed', 'true')
+    await userEvent.click(within(kinds).getByRole('button', { name: 'Section' }))
+    expect(store().page!.annotations.annotations[1].kind).toBe('section')
+    expect(within(kinds).getByRole('button', { name: 'Section' })).toHaveAttribute('aria-pressed', 'true')
+    expect(labelsOf('c').Taxonomy).toBe('Footer')
+  })
+
+  it('marks inherited values and offers no clear button for them', () => {
+    load([
+      {
+        ...box('c', { Taxonomy: 'Header' }),
+        label_sources: { Taxonomy: 'inherited' },
+      },
+    ])
+    store().select(['c'])
+    render(<LabelPanel attributes={ATTRIBUTES} />)
+    const section = screen.getByRole('group', { name: 'Template section' })
+    expect(within(section).getByText('inherited')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Clear Template section' })).not.toBeInTheDocument()
+    expect(within(section).getByRole('button', { name: 'Header' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
+  })
 })
 
 describe('ProgressPanel', () => {
@@ -158,5 +191,14 @@ describe('BoxList', () => {
       'aria-current',
       'true',
     )
+  })
+
+  it('names section rows, which only show under All', async () => {
+    load([box('c', {}), { ...box('sec', { Taxonomy: 'Header' }), kind: 'section' }])
+    render(<BoxList attributeIds={IDS} />)
+    expect(screen.getByRole('button', { name: 'Section 2: Header' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'All 2' })).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Empty 1' }))
+    expect(screen.queryByRole('button', { name: /Section 2/ })).not.toBeInTheDocument()
   })
 })

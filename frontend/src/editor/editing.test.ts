@@ -151,6 +151,60 @@ describe('editing', () => {
     expect(store().docVersion).toBe(0)
   })
 
+  describe('with inheritance (3.4a)', () => {
+    const taxonomy = {
+      id: 'web-ui',
+      version: '1.0',
+      name: 'test',
+      presets: [],
+      rules: {},
+      attributes: ['Form', 'Function', 'Component', 'Taxonomy'].map((id) => ({
+        id,
+        label: id,
+        hotkey: id[0].toLowerCase(),
+        options: [],
+        inherit_from_parent: id === 'Component' || id === 'Taxonomy',
+        computed_by_rules: false,
+      })),
+    }
+    beforeEach(() => {
+      useAppStore.setState({ taxonomy })
+    })
+
+    it('labeling a section labels the boxes inside it, as one undo step', () => {
+      const sectionId = store().addBox([0, 0, 1920, 400], 'section')! // around a, b (y 0, 100)
+      store().setLabel('Taxonomy', 'Header')
+      const labelsOf = (id: string) => store().page!.annotations.annotations.find((x) => x.id === id)!
+      expect(labelsOf('a').labels.Taxonomy).toBe('Header')
+      expect(labelsOf('a').label_sources?.Taxonomy).toBe('inherited')
+      expect(labelsOf('a').parent_id).toBe(sectionId)
+      expect(labelsOf('c').labels.Taxonomy).toBe('Header') // c is at y 200, still inside
+
+      store().undo() // undoes the section label and everything it passed on
+      expect(labelsOf('a').labels.Taxonomy).toBeUndefined()
+      expect(labelsOf(sectionId).labels.Taxonomy).toBeUndefined()
+    })
+
+    it('a box drawn inside a labeled section inherits right away', () => {
+      store().addBox([0, 0, 1920, 400], 'section')
+      store().setLabel('Taxonomy', 'Footer')
+      const id = store().addBox([10, 50, 100, 30])!
+      const added = store().page!.annotations.annotations.find((x) => x.id === id)!
+      expect(added.labels.Taxonomy).toBe('Footer')
+    })
+
+    it('turning a box into a component passes its Component on', () => {
+      store().select(['a'])
+      store().applyPreset({ Component: 'Card' })
+      const id = store().addBox([10, 10, 50, 30])! // inside box a (0,0,100,50)
+      store().select(['a'])
+      store().setKind('component')
+      const child = store().page!.annotations.annotations.find((x) => x.id === id)!
+      expect(child.labels.Component).toBe('Card')
+      expect(child.label_sources?.Component).toBe('inherited')
+    })
+  })
+
   it('opening a page starts a fresh history', () => {
     store().addBox([0, 0, 10, 10])
     store().pageLoaded('q', pageResponse([]))

@@ -8,10 +8,13 @@ import { clampZoom } from '../canvas/geometry'
 import { edit, emptyHistory, redo as redoStep, undo as undoStep } from '../editor/history'
 import type { History } from '../editor/history'
 import { newUlid } from '../editor/ids'
+import { applyInheritance } from '../editor/inheritance'
 import { applyLabel } from '../panels/labels'
 
 export type LoadStatus = 'idle' | 'loading' | 'ready' | 'error'
-export type Tool = 'draw' | 'select'
+/** draw: element boxes · section: template-section boxes (Shift+D) · select. */
+export type Tool = 'draw' | 'section' | 'select'
+export type BoxKind = Annotation['kind']
 /** saved: on disk · pending: edited, waiting for autosave · conflict: changed elsewhere. */
 export type SaveState = 'saved' | 'pending' | 'saving' | 'error' | 'conflict'
 export type SelectMode = 'replace' | 'add' | 'toggle'
@@ -61,7 +64,9 @@ export interface AppState {
 
   setTool: (tool: Tool) => void
   select: (ids: string[], mode?: SelectMode) => void
-  addBox: (bbox: BBox) => string | null
+  addBox: (bbox: BBox, kind?: BoxKind) => string | null
+  /** Make the selected boxes elements, sections or components (one undo step). */
+  setKind: (kind: BoxKind) => void
   deleteSelected: () => void
   /** Set (or with null, remove) one attribute on every selected box, as one undo step. */
   setLabel: (attrId: string, value: string | null) => void
@@ -116,11 +121,20 @@ function markEdited(s: { saveState: SaveState }) {
 
 export const useAppStore = create<AppState>()(
   immer((set, get) => {
-    /** Apply an edit to the open page's annotations, recording it for undo. */
+    /**
+     * Apply an edit to the open page's annotations, recording it for undo. Inherited labels
+     * are recomputed in the same step, so a section relabel and its children are one undo.
+     */
     const editDoc = (recipe: (doc: PageAnnotationFileV1) => void, selectAfter?: string[]) => {
-      const { page, history } = get()
+      const { page, history, taxonomy } = get()
       if (!page) return
-      const result = edit(page.annotations, history, recipe)
+      const inheritable = (taxonomy?.attributes ?? [])
+        .filter((a) => a.inherit_from_parent)
+        .map((a) => a.id)
+      const result = edit(page.annotations, history, (doc) => {
+        recipe(doc)
+        if (inheritable.length > 0) applyInheritance(doc, inheritable)
+      })
       if (result.history === history) return // nothing changed
       set((s) => {
         s.page!.annotations = result.doc
@@ -232,11 +246,11 @@ export const useAppStore = create<AppState>()(
           }
         }),
 
-      addBox: (bbox) => {
+      addBox: (bbox, kind = 'element') => {
         if (!get().page) return null
         const box: Annotation = {
           id: newUlid(),
-          kind: 'element',
+          kind,
           bbox,
           labels: {},
           source: 'human',
@@ -247,6 +261,20 @@ export const useAppStore = create<AppState>()(
           doc.annotations.push(box)
         }, [box.id])
         return box.id
+      },
+
+      setKind: (kind) => {
+        const selected = new Set(get().selectedIds)
+        if (selected.size === 0) return
+        const now = new Date().toISOString()
+        editDoc((doc) => {
+          for (const box of doc.annotations) {
+            if (selected.has(box.id) && box.kind !== kind) {
+              box.kind = kind
+              box.updated_at = now
+            }
+          }
+        })
       },
 
       deleteSelected: () => {

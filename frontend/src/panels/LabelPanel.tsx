@@ -4,6 +4,7 @@ import { useShallow } from 'zustand/react/shallow'
 import type { Annotation } from '../api/annotation'
 import type { TaxonomyAttribute } from '../api/types'
 import { useAppStore } from '../state/store'
+import type { BoxKind } from '../state/store'
 import { labelState } from './labels'
 
 const NO_BOXES: Annotation[] = []
@@ -50,8 +51,12 @@ export function LabelPanel({
           {pickerLabel}: press a letter · Esc cancels
         </p>
       )}
+      {count > 0 && <KindSwitch boxes={boxes} selectedIds={selectedIds} />}
       {attributes.map((attribute) => {
         const state = labelState(boxes, selectedIds, attribute.id)
+        const labeled = Object.values(state.counts).reduce((a, b) => a + b, 0)
+        // Inherited values come back from the section, so × only clears values set here.
+        const allInherited = labeled > 0 && state.inherited === labeled
         // Proposed options stay hidden (web-ui.yaml) unless a selected box already uses one.
         const options = attribute.options.filter(
           (o) => o.status === 'active' || state.counts[o.value],
@@ -75,7 +80,15 @@ export function LabelPanel({
                 </kbd>
               )}
               {state.kind === 'mixed' && <span className="labels__mixed">mixed</span>}
-              {state.kind !== 'none' && (
+              {allInherited && (
+                <span
+                  className="labels__inherited"
+                  title="Passed on by the section or component around the box. Pick a value to override it."
+                >
+                  inherited
+                </span>
+              )}
+              {state.kind !== 'none' && !allInherited && (
                 <button
                   type="button"
                   className="labels__clear"
@@ -123,5 +136,43 @@ export function LabelPanel({
         )
       })}
     </section>
+  )
+}
+
+const KINDS: { kind: BoxKind; label: string; title: string }[] = [
+  { kind: 'element', label: 'Element', title: 'A box to label (counts towards progress)' },
+  {
+    kind: 'section',
+    label: 'Section',
+    title: 'A template section: boxes inside inherit its Template section',
+  },
+  {
+    kind: 'component',
+    label: 'Component',
+    title: 'A component (e.g. a card): boxes inside inherit its Component',
+  },
+]
+
+/** Element / Section / Component for the selected boxes; pressed when they all share it. */
+function KindSwitch({ boxes, selectedIds }: { boxes: Annotation[]; selectedIds: string[] }) {
+  const { setKind } = useAppStore.getState()
+  const selected = new Set(selectedIds)
+  const kinds = new Set(boxes.filter((b) => selected.has(b.id)).map((b) => b.kind))
+  const shared = kinds.size === 1 ? [...kinds][0] : null
+  return (
+    <div className="kind-switch" role="group" aria-label="Box kind">
+      {KINDS.map(({ kind, label, title }) => (
+        <button
+          key={kind}
+          type="button"
+          className="kind-switch__option"
+          aria-pressed={shared === kind}
+          title={title}
+          onClick={() => setKind(kind)}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
   )
 }

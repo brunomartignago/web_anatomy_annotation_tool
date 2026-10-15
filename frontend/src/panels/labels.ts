@@ -7,6 +7,7 @@ import type { Draft } from 'immer'
 import type { Annotation } from '../api/annotation'
 import type { TaxonomyAttribute } from '../api/types'
 import { completeness } from '../canvas/geometry'
+import { isContainer } from '../editor/inheritance'
 
 export type BoxFilter = 'all' | 'empty' | 'partial' | 'done'
 
@@ -18,6 +19,8 @@ export interface LabelState {
   counts: Record<string, number>
   /** Selected boxes without this attribute. */
   unset: number
+  /** Selected boxes whose value is inherited from a section or component box. */
+  inherited: number
 }
 
 /** The selected boxes' values for one attribute. */
@@ -25,16 +28,22 @@ export function labelState(boxes: Annotation[], selectedIds: string[], attrId: s
   const selected = new Set(selectedIds)
   const counts: Record<string, number> = {}
   let unset = 0
+  let inherited = 0
   for (const box of boxes) {
     if (!selected.has(box.id)) continue
     const value = box.labels[attrId]
-    if (value) counts[value] = (counts[value] ?? 0) + 1
-    else unset += 1
+    if (value) {
+      counts[value] = (counts[value] ?? 0) + 1
+      if (box.label_sources?.[attrId] === 'inherited') inherited += 1
+    } else {
+      unset += 1
+    }
   }
   const values = Object.keys(counts)
-  if (values.length === 0) return { kind: 'none', value: null, counts, unset }
-  if (values.length === 1 && unset === 0) return { kind: 'single', value: values[0], counts, unset }
-  return { kind: 'mixed', value: null, counts, unset }
+  const base = { counts, unset, inherited }
+  if (values.length === 0) return { kind: 'none', value: null, ...base }
+  if (values.length === 1 && unset === 0) return { kind: 'single', value: values[0], ...base }
+  return { kind: 'mixed', value: null, ...base }
 }
 
 /**
@@ -62,6 +71,8 @@ export function applyLabel(
 }
 
 const live = (boxes: Annotation[]) => boxes.filter((b) => b.status !== 'rejected')
+/** Boxes that count as work to label: not rejected, and not section/component containers. */
+const liveElements = (boxes: Annotation[]) => live(boxes).filter((b) => !isContainer(b))
 
 export interface AttributeProgress {
   id: string
@@ -70,12 +81,12 @@ export interface AttributeProgress {
   total: number
 }
 
-/** Boxes with a value, per attribute. Rejected boxes don't count. */
+/** Element boxes with a value, per attribute (rejected boxes and containers don't count). */
 export function attributeProgress(
   boxes: Annotation[],
   attributes: TaxonomyAttribute[],
 ): AttributeProgress[] {
-  const counted = live(boxes)
+  const counted = liveElements(boxes)
   return attributes.map((a) => ({
     id: a.id,
     label: a.label,
@@ -86,22 +97,30 @@ export function attributeProgress(
 
 const FILTER_STATE = { empty: 'empty', partial: 'partial', done: 'complete' } as const
 
-/** Indices (into `boxes`) of the boxes shown under a filter, in file order. */
+/**
+ * Indices (into `boxes`) of the boxes shown under a filter, in file order. "All" includes
+ * section and component boxes; Empty / Partial / Done are about elements only.
+ */
 export function filterBoxes(boxes: Annotation[], attributeIds: string[], filter: BoxFilter): number[] {
   const indices: number[] = []
   boxes.forEach((box, i) => {
     if (box.status === 'rejected') return
-    if (filter === 'all' || completeness(box.labels, attributeIds) === FILTER_STATE[filter]) {
+    if (filter === 'all') indices.push(i)
+    else if (!isContainer(box) && completeness(box.labels, attributeIds) === FILTER_STATE[filter]) {
       indices.push(i)
     }
   })
   return indices
 }
 
-export function filterCounts(boxes: Annotation[], attributeIds: string[]): Record<BoxFilter, number> {
-  const counts = { all: 0, empty: 0, partial: 0, done: 0 }
-  for (const box of live(boxes)) {
-    counts.all += 1
+/** Filter counts, plus `elements`: the boxes that count towards progress. */
+export function filterCounts(
+  boxes: Annotation[],
+  attributeIds: string[],
+): Record<BoxFilter | 'elements', number> {
+  const counts = { all: live(boxes).length, elements: 0, empty: 0, partial: 0, done: 0 }
+  for (const box of liveElements(boxes)) {
+    counts.elements += 1
     const state = completeness(box.labels, attributeIds)
     counts[state === 'complete' ? 'done' : state] += 1
   }
@@ -109,8 +128,8 @@ export function filterCounts(boxes: Annotation[], attributeIds: string[]): Recor
 }
 
 /**
- * Tab / Shift+Tab (v2's "next unannotated"): the next box after the selection, in file
- * order, that isn't complete. Wraps around; rejected boxes are skipped.
+ * Tab / Shift+Tab (v2's "next unannotated"): the next element after the selection, in file
+ * order, that isn't complete. Wraps around; rejected boxes and containers are skipped.
  */
 export function nextIncomplete(
   boxes: Annotation[],
@@ -127,7 +146,11 @@ export function nextIncomplete(
   else start = direction === 1 ? Math.max(...positions) : Math.min(...positions)
   for (let step = 1; step <= n; step++) {
     const box = boxes[(((start + direction * step) % n) + n) % n]
-    if (box.status !== 'rejected' && completeness(box.labels, attributeIds) !== 'complete') {
+    if (
+      box.status !== 'rejected' &&
+      !isContainer(box) &&
+      completeness(box.labels, attributeIds) !== 'complete'
+    ) {
       return box.id
     }
   }

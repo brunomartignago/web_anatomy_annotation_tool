@@ -2,19 +2,22 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import type { MouseEvent, PointerEvent } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 
+import type { Annotation } from '../api/annotation'
 import { stripUrl } from '../api/client'
 import type { PageResponse } from '../api/types'
 import { saveNow } from '../editor/autosave'
 import { boxesInRect, hitTest, rectFromDrag } from '../editor/geometry'
+import { isContainer } from '../editor/inheritance'
 import { nextIncomplete } from '../panels/labels'
 import { useAppStore } from '../state/store'
-import type { SaveState } from '../state/store'
+import type { SaveState, Tool } from '../state/store'
 import {
   ZOOM_STEP,
   boxColor,
   boxesInView,
   clampZoom,
   completeness,
+  containerColor,
   fitWidthZoom,
   visibleStrips,
   wheelZoomFactor,
@@ -39,7 +42,7 @@ interface StageProps {
 
 type Gesture =
   | { kind: 'pan'; x: number; y: number; left: number; top: number }
-  | { kind: 'draw' | 'select'; x: number; y: number; start: Point; shift: boolean }
+  | { kind: 'draw' | 'section' | 'select'; x: number; y: number; start: Point; shift: boolean }
 
 interface Point {
   x: number
@@ -52,6 +55,20 @@ const SAVE_LABELS: Record<SaveState, string> = {
   saving: 'Saving…',
   error: 'Not saved',
   conflict: 'Not saved: changed elsewhere',
+}
+
+const TOOL_LABELS: Record<Tool, string> = {
+  draw: 'Draw (D)',
+  section: 'Section (Shift+D)',
+  select: 'Select (S)',
+}
+
+/** The inheritable values a container holds itself (not ones it inherited), joined. */
+function ownValues(box: Annotation, inheritable: string[]): string {
+  return inheritable
+    .filter((id) => box.labels[id] && box.label_sources?.[id] !== 'inherited')
+    .map((id) => box.labels[id])
+    .join(' · ')
 }
 
 /** The page canvas: lazy-loaded strips, boxes on top, zoom, pan, draw and select. */
@@ -84,6 +101,11 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
   const stripHeight = page.strips.height
   const boxes = page.annotations.annotations
   const selected = useMemo(() => new Set(selectedIds), [selectedIds])
+  const taxonomy = useAppStore((s) => s.taxonomy)
+  const inheritable = useMemo(
+    () => (taxonomy?.attributes ?? []).filter((a) => a.inherit_from_parent).map((a) => a.id),
+    [taxonomy],
+  )
 
   const readView = useCallback(() => {
     const el = containerRef.current
@@ -227,7 +249,7 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
         event.preventDefault()
         zoomTo(zoomNow / ZOOM_STEP)
       } else if (key === 'd') {
-        setTool('draw')
+        setTool(event.shiftKey ? 'section' : 'draw') // Shift+D: draw template sections
       } else if (key === 's') {
         setTool('select')
       } else if (key === 'delete' || key === 'backspace' || key === 'x') {
@@ -326,9 +348,9 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
 
     const end = toPage(event)
     const isClick = Math.hypot(event.clientX - g.x, event.clientY - g.y) < CLICK_SLOP_PX
-    if (g.kind === 'draw') {
+    if (g.kind === 'draw' || g.kind === 'section') {
       const bbox = rectFromDrag(g.start, end, page.annotations.page)
-      if (bbox) addBox(bbox)
+      if (bbox) addBox(bbox, g.kind === 'section' ? 'section' : 'element')
     } else if (isClick) {
       const hit = hitTest(boxes, end.x, end.y)
       if (g.shift) {
@@ -359,15 +381,19 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
 
   const viewTop = (view.scrollTop - OVERSCAN_PX) / zoom
   const viewBottom = (view.scrollTop + view.height + OVERSCAN_PX) / zoom
-  const visibleBoxes = useMemo(
-    () => boxesInView(boxes, viewTop, viewBottom),
-    [boxes, viewTop, viewBottom],
-  )
+  // Section and component boxes are drawn first, so the boxes inside them stay on top.
+  const visibleBoxes = useMemo(() => {
+    const inView = boxesInView(boxes, viewTop, viewBottom)
+    return [
+      ...inView.filter((i) => isContainer(boxes[i])),
+      ...inView.filter((i) => !isContainer(boxes[i])),
+    ]
+  }, [boxes, viewTop, viewBottom])
 
   const viewportClass = [
     'stage__viewport',
     gestureKind === 'pan' && 'is-panning',
-    tool === 'draw' && 'is-drawing',
+    tool !== 'select' && 'is-drawing',
   ]
     .filter(Boolean)
     .join(' ')
@@ -387,6 +413,14 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
           onClick={() => setTool('draw')}
         >
           Draw
+        </button>
+        <button
+          type="button"
+          aria-pressed={tool === 'section'}
+          title="Draw template sections (Shift+D): boxes inside inherit their section"
+          onClick={() => setTool('section')}
+        >
+          Section
         </button>
         <button
           type="button"
@@ -475,12 +509,21 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
               const box = boxes[i]
               const [x, y, w, h] = box.bbox
               const isSelected = selected.has(box.id)
-              const color = boxColor(completeness(box.labels, attributeIds), isSelected)
-              const tag = String(i + 1)
+              const container = isContainer(box)
+              const color = container
+                ? containerColor(box.kind, isSelected)
+                : boxColor(completeness(box.labels, attributeIds), isSelected)
+              // A container's tag also names what it passes on (e.g. "4 Header").
+              const tag = container ? `${i + 1} ${ownValues(box, inheritable)}`.trim() : String(i + 1)
               // Tags sit just above the box so they don't cover its content (inside if no room).
               const tagY = y * zoom >= TAG_HEIGHT ? y * zoom - TAG_HEIGHT : y * zoom
               return (
-                <g key={box.id} data-box-id={box.id} data-selected={isSelected || undefined}>
+                <g
+                  key={box.id}
+                  data-box-id={box.id}
+                  data-kind={box.kind}
+                  data-selected={isSelected || undefined}
+                >
                   <rect
                     x={x * zoom}
                     y={y * zoom}
@@ -489,6 +532,7 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
                     fill={isSelected ? 'rgba(79, 142, 247, 0.12)' : 'none'}
                     stroke={color}
                     strokeWidth={isSelected ? 3 : 2}
+                    strokeDasharray={container ? '8 4' : undefined}
                   />
                   <rect
                     x={x * zoom}
@@ -505,7 +549,13 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
             })}
             {preview && (
               <rect
-                className={gestureKind === 'draw' ? 'stage__draft' : 'stage__band'}
+                className={
+                  gestureKind === 'draw'
+                    ? 'stage__draft'
+                    : gestureKind === 'section'
+                      ? 'stage__draft stage__draft--section'
+                      : 'stage__band'
+                }
                 x={preview[0] * zoom}
                 y={preview[1] * zoom}
                 width={preview[2] * zoom}
@@ -520,7 +570,7 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
           {Math.round(zoom * 100)}% · {boxes.length} boxes · {pageWidth}×{pageHeight} px
         </span>
         <span className="stage__tool">
-          {tool === 'draw' ? 'Draw (D)' : 'Select (S)'}
+          {TOOL_LABELS[tool]}
           {selectedIds.length > 0 && ` · ${selectedIds.length} selected`}
         </span>
         <span ref={coordsRef} className="stage__coords" aria-label="Cursor position" />

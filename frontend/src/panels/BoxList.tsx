@@ -3,7 +3,8 @@ import type { MouseEvent } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 
 import type { Annotation } from '../api/annotation'
-import { boxColor, completeness } from '../canvas/geometry'
+import { boxColor, completeness, containerColor } from '../canvas/geometry'
+import { isContainer } from '../editor/inheritance'
 import { useAppStore } from '../state/store'
 import { boxSummary, filterBoxes, filterCounts } from './labels'
 import type { BoxFilter } from './labels'
@@ -15,6 +16,11 @@ const FILTERS: { id: BoxFilter; label: string }[] = [
   { id: 'partial', label: 'Partial' },
   { id: 'done', label: 'Done' },
 ]
+const KIND_NAMES: Record<Annotation['kind'], string> = {
+  element: '',
+  section: 'Section',
+  component: 'Component',
+}
 
 /** Every box on the page, filterable by completeness; a click selects and shows it. */
 export function BoxList({ attributeIds }: { attributeIds: string[] }) {
@@ -76,20 +82,28 @@ export function BoxList({ attributeIds }: { attributeIds: string[] }) {
         <ol ref={listRef} className="boxes" aria-label="Box list">
           {shown.map((i) => {
             const box = boxes[i]
-            const color = boxColor(completeness(box.labels, attributeIds), false)
+            const container = isContainer(box)
+            const color = container
+              ? containerColor(box.kind, false)
+              : boxColor(completeness(box.labels, attributeIds), false)
             const summary = boxSummary(box, attributeIds)
+            const kindName = container ? KIND_NAMES[box.kind] : ''
             return (
               <li key={box.id}>
                 <button
                   type="button"
                   className="boxes__row"
                   data-box-id={box.id}
-                  aria-label={`Box ${i + 1}: ${summary || 'unlabeled'}`}
+                  aria-label={`${kindName || 'Box'} ${i + 1}: ${summary || 'unlabeled'}`}
                   aria-current={selected.has(box.id) ? 'true' : undefined}
                   onClick={(event) => onClick(event, box.id)}
                 >
-                  <span className="boxes__dot" style={{ background: color }} />
+                  <span
+                    className={container ? 'boxes__dot boxes__dot--container' : 'boxes__dot'}
+                    style={{ background: color }}
+                  />
                   <span className="boxes__index">{i + 1}</span>
+                  {container && <span className="boxes__kind">{kindName}</span>}
                   <span className={summary ? 'boxes__summary' : 'boxes__summary is-empty'}>
                     {summary || 'unlabeled'}
                   </span>

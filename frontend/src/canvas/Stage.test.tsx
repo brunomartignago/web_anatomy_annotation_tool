@@ -345,6 +345,60 @@ describe('Stage parity with the legacy tool', () => {
     expect(tag).toBe(36) // 14 px tag, ending where the box starts
   })
 
+  it('Shift+D draws a section box (3.4a)', () => {
+    const { getByLabelText, getByRole } = render(<StoreStage />)
+    act(() => {
+      fireEvent.keyDown(window, { key: 'D', shiftKey: true })
+    })
+    expect(store().tool).toBe('section')
+    expect(getByRole('status')).toHaveTextContent('Section (Shift+D)')
+    const viewport = getByLabelText('Page canvas')
+    act(() => {
+      fireEvent.pointerDown(viewport, { button: 0, clientX: 0, clientY: 0 })
+      fireEvent.pointerMove(viewport, { clientX: 960, clientY: 200 })
+      fireEvent.pointerUp(viewport, { clientX: 960, clientY: 200 })
+    })
+    const added = store().page!.annotations.annotations.at(-1)!
+    expect(added).toMatchObject({ kind: 'section', bbox: [0, 0, 1920, 400] })
+    act(() => {
+      fireEvent.keyDown(window, { key: 'd' })
+    })
+    expect(store().tool).toBe('draw')
+  })
+
+  it('draws sections first, dashed, tagged with the value they pass on', () => {
+    useAppStore.setState({
+      taxonomy: {
+        id: 'web-ui',
+        version: '1.0',
+        name: 'test',
+        presets: [],
+        rules: {},
+        attributes: ATTRIBUTES.map((id) => ({
+          id,
+          label: id,
+          hotkey: id[0].toLowerCase(),
+          options: [],
+          inherit_from_parent: id === 'Component' || id === 'Taxonomy',
+          computed_by_rules: false,
+        })),
+      },
+    })
+    act(() => {
+      store().addBox([0, 0, 1920, 400], 'section')
+      store().setLabel('Taxonomy', 'Header')
+    })
+    const { container } = render(<StoreStage />)
+    const groups = [...container.querySelectorAll('[data-box-id]')]
+    expect(groups[0].getAttribute('data-kind')).toBe('section') // under the boxes inside it
+    const rect = groups[0].querySelector('rect')!
+    expect(rect.getAttribute('stroke-dasharray')).toBe('8 4')
+    expect(groups[0].querySelector('text')).toHaveTextContent('4 Header')
+    // Box c inherited Header, but only the section's tag names it.
+    const c = container.querySelector('[data-box-id="c"]')!
+    expect(c.querySelector('text')).toHaveTextContent(/^3$/)
+  })
+
   it('shows the cursor position in page pixels', () => {
     const { getByLabelText } = render(<StoreStage />)
     act(() => {

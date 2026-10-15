@@ -92,3 +92,12 @@ const COLORS = {
 export function boxColor(state: Completeness, selected: boolean): string {
   return selected ? COLORS.selected : COLORS[state]
 }
+
+// Containers aren't work to label, so they don't use the completeness colors.
+const CONTAINER_COLORS = { section: '#a78bfa', component: '#fb923c' }
+
+/** Stroke for a section or component box (dashed in the canvas). */
+export function containerColor(kind: 'section' | 'component' | 'element', selected: boolean): string {
+  if (selected) return COLORS.selected
+  return kind === 'component' ? CONTAINER_COLORS.component : CONTAINER_COLORS.section
+}

@@ -123,7 +123,7 @@ describe('progress and filters', () => {
     expect(filterBoxes(boxes, IDS, 'empty')).toEqual([0])
     expect(filterBoxes(boxes, IDS, 'partial')).toEqual([1])
     expect(filterBoxes(boxes, IDS, 'done')).toEqual([2])
-    expect(filterCounts(boxes, IDS)).toEqual({ all: 3, empty: 1, partial: 1, done: 1 })
+    expect(filterCounts(boxes, IDS)).toEqual({ all: 3, elements: 3, empty: 1, partial: 1, done: 1 })
   })
 
   it('Tab finds the next box that still needs labels, wrapping around (v2 parity)', () => {
@@ -144,6 +144,33 @@ describe('progress and filters', () => {
 
   it('Tab finds nothing when every box is complete', () => {
     expect(nextIncomplete([box('a', { Form: 'Typo', Function: 'Text' })], IDS, [], 1)).toBeNull()
+  })
+
+  it('section and component boxes are not unfinished work (3.4a)', () => {
+    const list = [
+      box('sec', {}, { kind: 'section' }),
+      box('card', { Form: 'Typo' }, { kind: 'component' }),
+      box('todo', {}),
+      box('done', { Form: 'Typo', Function: 'Text' }),
+    ]
+    expect(filterCounts(list, IDS)).toEqual({ all: 4, elements: 2, empty: 1, partial: 0, done: 1 })
+    expect(filterBoxes(list, IDS, 'all')).toEqual([0, 1, 2, 3]) // containers still listed
+    expect(filterBoxes(list, IDS, 'empty')).toEqual([2])
+    expect(filterBoxes(list, IDS, 'partial')).toEqual([])
+    expect(attributeProgress(list, ATTRS)[0]).toMatchObject({ labeled: 1, total: 2 })
+    expect(nextIncomplete(list, IDS, [], 1)).toBe('todo')
+  })
+
+  it('reports how many selected values are inherited', () => {
+    const list = [
+      box('a', { Taxonomy: 'Header' }, { label_sources: { Taxonomy: 'inherited' } }),
+      box('b', { Taxonomy: 'Header' }, { label_sources: { Taxonomy: 'human' } }),
+    ]
+    expect(labelState(list, ['a', 'b'], 'Taxonomy')).toMatchObject({
+      kind: 'single',
+      value: 'Header',
+      inherited: 1,
+    })
   })
 
   it('summarizes a box in taxonomy order', () => {

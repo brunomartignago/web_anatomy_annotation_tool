@@ -7,7 +7,10 @@ import { attributeProgress, filterCounts } from './labels'
 
 const NO_BOXES: Annotation[] = []
 
-/** How far labeling has got on this page: complete boxes, then each attribute. */
+/**
+ * How far labeling has got on this page: complete boxes, then each attribute. Counts
+ * element boxes only; section and component boxes are containers, not work to label.
+ */
 export function ProgressPanel({ attributes }: { attributes: TaxonomyAttribute[] }) {
   const boxes = useAppStore((s) => s.page?.annotations.annotations ?? NO_BOXES)
   const ids = useMemo(() => attributes.map((a) => a.id), [attributes])
@@ -17,7 +20,7 @@ export function ProgressPanel({ attributes }: { attributes: TaxonomyAttribute[] 
   return (
     <section className="panel" aria-label="Progress">
       <h2 className="panel__title">Progress</h2>
-      <Bar label="Complete boxes" done={counts.done} total={counts.all} strong />
+      <Bar label="Complete boxes" done={counts.done} total={counts.elements} strong />
       {rows.map((row) => (
         <Bar key={row.id} label={row.label} done={row.labeled} total={row.total} />
       ))}

@@ -368,6 +368,13 @@ body {
   font-weight: 400;
 }
 
+.labels__inherited {
+  margin-left: 0.4rem;
+  color: #a78bfa; /* the section color on the canvas */
+  font-weight: 400;
+  cursor: help;
+}
+
 .labels__clear {
   margin-left: 0.4rem;
   padding: 0 0.3rem;
@@ -469,6 +476,29 @@ body {
   opacity: 0.7;
 }
 
+.kind-switch {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 0.6rem;
+}
+
+.kind-switch__option {
+  flex: 1;
+  padding: 0.2rem 0;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: none;
+  color: var(--text-dim);
+  font: inherit;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.kind-switch__option[aria-pressed='true'] {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
 .boxes {
   position: relative; /* offsetTop of rows is measured from here */
   flex: 1;
@@ -511,10 +541,22 @@ body {
   border-radius: 50%;
 }
 
+.boxes__dot--container {
+  border-radius: 1px; /* square: a container, not a box to label */
+}
+
 .boxes__index {
   flex: none;
   min-width: 2.2em;
   color: var(--text-dim);
+}
+
+.boxes__kind {
+  flex: none;
+  color: var(--text-dim);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .boxes__summary {
@@ -648,6 +690,11 @@ body {
   stroke: var(--accent);
   stroke-width: 2;
   stroke-dasharray: 6 4;
+}
+
+.stage__draft--section {
+  fill: rgba(167, 139, 250, 0.12);
+  stroke: #a78bfa;
 }
 
 .stage__band {

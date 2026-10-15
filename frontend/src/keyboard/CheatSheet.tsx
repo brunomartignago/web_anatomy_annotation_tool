@@ -2,6 +2,7 @@ import type { Keymap } from './keymap'
 
 const GENERAL: [string, string][] = [
   ['D / S', 'Draw / select tool'],
+  ['Shift+D', 'Draw template sections (boxes inside inherit them)'],
   ['Shift+click, drag', 'Add to selection, rubber band'],
   ['Tab / Shift+Tab', 'Next / previous box that needs labels'],
   ['Delete / X', 'Delete selected boxes'],

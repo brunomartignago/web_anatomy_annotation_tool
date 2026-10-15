@@ -28,10 +28,10 @@ def taxonomy():
     return load_taxonomy(REPO / "taxonomies" / "web-ui.yaml")
 
 
-def _box(labels, status="accepted", n=0):
+def _box(labels, status="accepted", n=0, kind="element"):
     return Annotation(
         id=f"01J{n:023d}",
-        kind="element",
+        kind=kind,
         bbox=(0, 0, 10, 10),
         labels=labels,
         source="human",
@@ -132,6 +132,18 @@ def test_progress_counts_by_completeness():
     assert (progress.empty, progress.partial, progress.complete) == (1, 1, 2)
     assert progress.suggested == 1
     assert progress.labeled == {"Form": 3, "Function": 2, "Component": 2, "Taxonomy": 2}
+
+
+def test_progress_leaves_out_section_and_component_boxes():
+    page = PageFile.model_validate_json((FIXTURES / "stackoverflow_com.json").read_bytes())
+    page.annotations = [
+        _box({}, n=1),
+        _box({"Taxonomy": "Header"}, n=2, kind="section"),  # a container, not work to label
+        _box({"Component": "Card"}, n=3, kind="component"),
+    ]
+    progress = page_progress(page, ATTRS)
+    assert (progress.boxes, progress.empty, progress.partial) == (1, 1, 0)
+    assert progress.labeled == dict.fromkeys(ATTRS, 0)
 
 
 def test_progress_of_an_empty_page():
