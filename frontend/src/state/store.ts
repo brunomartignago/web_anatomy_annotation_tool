@@ -1,3 +1,4 @@
+import { produce } from 'immer'
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 
@@ -5,6 +6,7 @@ import type { Annotation, PageAnnotationFileV1 } from '../api/annotation'
 import type { PageResponse, PageSummary, Progress, Taxonomy } from '../api/types'
 import type { BBox } from '../canvas/geometry'
 import { clampZoom } from '../canvas/geometry'
+import { countAction } from '../editor/effort'
 import { similarBoxes } from '../editor/geometry'
 import { edit, emptyHistory, redo as redoStep, undo as undoStep } from '../editor/history'
 import type { History } from '../editor/history'
@@ -149,8 +151,10 @@ export const useAppStore = create<AppState>()(
         if (inheritable.length > 0) applyInheritance(doc, inheritable)
       })
       if (result.history === history) return // nothing changed
+      // Counted outside the undo step, so undoing can't lower the count.
+      const counted = produce(result.doc, countAction)
       set((s) => {
-        s.page!.annotations = result.doc
+        s.page!.annotations = counted
         s.history = result.history
         s.docVersion += 1
         markEdited(s)
@@ -182,8 +186,9 @@ export const useAppStore = create<AppState>()(
       if (!page) return
       const result = fn(page.annotations, history)
       if (!result) return
+      const counted = produce(result.doc, countAction) // undo and redo are effort too
       set((s) => {
-        s.page!.annotations = result.doc
+        s.page!.annotations = counted
         s.history = result.history
         s.docVersion += 1
         markEdited(s)

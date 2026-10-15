@@ -188,6 +188,43 @@ describe('editing', () => {
     })
   })
 
+  describe('effort counter (3.7)', () => {
+    const actions = () => store().page!.annotations.history?.actions
+
+    it('every edit, undo and redo is one action; selecting is not', () => {
+      expect(actions()).toBeUndefined() // nothing counted yet
+      store().select(['a'])
+      store().selectSimilar()
+      expect(actions()).toBeUndefined()
+      store().setLabel('Form', 'Typo') // 1
+      store().addBox([0, 0, 50, 50]) // 2
+      store().undo() // 3: undo is effort too, and never lowers the count
+      store().redo() // 4
+      expect(actions()).toBe(4)
+      expect(store().docVersion).toBe(4) // and each one is saved
+    })
+
+    it('an edit that changes nothing is not an action', () => {
+      store().select(['a'])
+      store().setLabel('Form', 'Typo')
+      store().setLabel('Form', 'Typo')
+      store().undo()
+      store().undo() // nothing left to undo
+      expect(actions()).toBe(2)
+    })
+
+    it('continues from the count already in the file', () => {
+      const loaded = store().page!
+      store().pageLoaded('p', {
+        ...loaded,
+        annotations: { ...loaded.annotations, history: { actions: 10, migrated_from: 'legacy-v2' } },
+      })
+      store().select(['b'])
+      store().deleteSelected()
+      expect(store().page!.annotations.history).toEqual({ actions: 11, migrated_from: 'legacy-v2' })
+    })
+  })
+
   it('a preset with nothing selected does nothing', () => {
     store().applyPreset({ Form: 'Typo' })
     expect(store().docVersion).toBe(0)

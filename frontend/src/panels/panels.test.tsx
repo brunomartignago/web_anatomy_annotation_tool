@@ -165,6 +165,22 @@ describe('ProgressPanel', () => {
     expect(value('Form')).toBe('2')
     expect(value('Template section')).toBe('1')
   })
+
+  it('shows effort as actions per box (3.7)', () => {
+    const loaded = store().page!
+    store().pageLoaded('p', {
+      ...loaded,
+      annotations: { ...loaded.annotations, history: { actions: 6 } },
+    })
+    render(<ProgressPanel attributes={ATTRIBUTES} />)
+    expect(screen.getByLabelText('Effort')).toHaveTextContent('6 actions · 2.0 per box')
+  })
+
+  it('shows no ratio before any box is done', () => {
+    load([])
+    render(<ProgressPanel attributes={ATTRIBUTES} />)
+    expect(screen.getByLabelText('Effort')).toHaveTextContent('0 actions · — per box')
+  })
 })
 
 describe('BoxList', () => {

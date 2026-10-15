@@ -470,6 +470,20 @@ body {
   color: var(--text);
 }
 
+.progress__effort {
+  display: flex;
+  justify-content: space-between;
+  margin: 0.6rem 0 0;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border);
+  color: var(--text-dim);
+  cursor: help;
+}
+
+.progress__effort strong {
+  color: var(--text);
+}
+
 .progress__track {
   height: 4px;
   margin-top: 0.15rem;

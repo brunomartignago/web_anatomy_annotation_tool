@@ -85,8 +85,9 @@ Decisions only Bruno can make are marked **🟡 DECIDE**. Claude Code should sto
 - [x] **3.6a Select similar by size and alignment** (3.6 was split in two)
   - Shortcut Shift+A (and a toolbar button) adds boxes of the same kind with the same size within 4 px, in the same row or column as a selected box. It repeats from each box it finds, so one card selects the whole grid.
   - ✅ Pure tests cover: size tolerance, row and column alignment, the repeated search across a grid, other kinds and rejected boxes left out, and nothing found leaves the selection as it was.
-- [ ] **3.7 Effort metrics**
+- [x] **3.7 Effort metrics**
   - Count actions per page in `history.actions` and show "actions per box" in the progress panel. This is the main KPI.
+  - ✅ One action is any command that changes the page (draw, label, preset, paint, delete, move/resize, kind change, undo, redo). Selecting doesn't count. Undo never lowers the count, and the count is saved with the page. Per box divides by the element boxes done in this tool (accepted or edited, not untouched legacy ones). `seconds_active` is still unused.
 
 ## Phase 4: Intelligence v1 (DOM + rules + priors)
 

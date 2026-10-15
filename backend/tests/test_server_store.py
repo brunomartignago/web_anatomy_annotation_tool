@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 from PIL import Image
 
-from annotool.models import Annotation, PageFile
+from annotool.models import Annotation, History, PageFile
 from annotool.server.store import (
     EMPTY_ETAG,
     InvalidPage,
@@ -264,6 +264,16 @@ def test_save_then_save_again_with_the_new_etag(store):
     etag2 = store.save("demo", "stackoverflow_com", page2, if_match=etag)
     assert etag2 != etag
     assert len(store.load("demo", "stackoverflow_com").page.annotations) == 3
+
+
+def test_save_keeps_the_effort_count(store):
+    """3.7: the front end counts actions in `history.actions`; a save must keep them."""
+    loaded = store.load("demo", "stackoverflow_com")
+    page = _with_box(loaded.page)
+    page.history = History(actions=7, migrated_from="legacy-v2")
+    store.save("demo", "stackoverflow_com", page, if_match=loaded.etag)
+    history = store.load("demo", "stackoverflow_com").page.history
+    assert (history.actions, history.migrated_from) == (7, "legacy-v2")
 
 
 def test_stale_save_is_refused_and_the_file_is_untouched(store):

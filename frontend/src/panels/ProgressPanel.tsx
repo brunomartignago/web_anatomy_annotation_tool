@@ -1,7 +1,8 @@
 import { useMemo } from 'react'
 
-import type { Annotation } from '../api/annotation'
+import type { Annotation, PageAnnotationFileV1 } from '../api/annotation'
 import type { TaxonomyAttribute } from '../api/types'
+import { effort } from '../editor/effort'
 import { useAppStore } from '../state/store'
 import { attributeProgress, filterCounts } from './labels'
 
@@ -12,7 +13,8 @@ const NO_BOXES: Annotation[] = []
  * element boxes only; section and component boxes are containers, not work to label.
  */
 export function ProgressPanel({ attributes }: { attributes: TaxonomyAttribute[] }) {
-  const boxes = useAppStore((s) => s.page?.annotations.annotations ?? NO_BOXES)
+  const page = useAppStore((s) => s.page?.annotations ?? null)
+  const boxes = page?.annotations ?? NO_BOXES
   const ids = useMemo(() => attributes.map((a) => a.id), [attributes])
   const rows = useMemo(() => attributeProgress(boxes, attributes), [boxes, attributes])
   const counts = useMemo(() => filterCounts(boxes, ids), [boxes, ids])
@@ -24,7 +26,32 @@ export function ProgressPanel({ attributes }: { attributes: TaxonomyAttribute[] 
       {rows.map((row) => (
         <Bar key={row.id} label={row.label} done={row.labeled} total={row.total} />
       ))}
+      {page && <EffortLine page={page} />}
     </section>
+  )
+}
+
+/**
+ * The main KPI (3.7): actions per box done in this tool. v2 needed at least 5 per box
+ * (draw plus 4 picks), and the target is about 1.5.
+ */
+function EffortLine({ page }: { page: PageAnnotationFileV1 }) {
+  const { actions, boxes, perBox } = effort(page)
+  return (
+    <p
+      className="progress__effort"
+      aria-label="Effort"
+      title={
+        'Actions (draws, labels, presets, deletes, moves, undo/redo) per box labeled in this ' +
+        `tool: ${actions} actions over ${boxes} boxes. v2 needed 5 or more; the target is 1.5.`
+      }
+    >
+      <span>Effort</span>
+      <span>
+        {actions} {actions === 1 ? 'action' : 'actions'} ·{' '}
+        <strong>{perBox === null ? '—' : perBox.toFixed(1)}</strong> per box
+      </span>
+    </p>
   )
 }
 
