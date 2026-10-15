@@ -19,6 +19,7 @@ from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 from pydantic import AwareDatetime, BaseModel
 
 from annotool import __version__
+from annotool.capture.dom import DOM_NAME, EXTRACT_JS, DomSnapshot
 from annotool.capture.urls import UrlEntry
 from annotool.capture.walls import (
     BOT_WALL_SELECTORS,
@@ -113,6 +114,7 @@ class CaptureMeta(BaseModel):
     width: int
     height: int
     file_size: int
+    dom_elements: int  # elements in dom.json
     viewport: Viewport
     captured_at: AwareDatetime
     duration_s: float
@@ -221,6 +223,8 @@ class Capturer:
                 returned_to_top = False  # capture anyway; meta.json records it
             page.wait_for_timeout(s.settle_ms)
 
+            # Same moment as the screenshot (scrolled to the top), so boxes match its pixels.
+            dom = DomSnapshot.model_validate(page.evaluate(EXTRACT_JS))
             bot_walls = page.evaluate(_VISIBLE_JS, BOT_WALL_SELECTORS)
             consent_banners = page.evaluate(_VISIBLE_JS, CONSENT_SELECTORS)
             text = page.evaluate("(document.body?.innerText || '').slice(0, 3000)")
@@ -274,6 +278,7 @@ class Capturer:
                 width=width,
                 height=height,
                 file_size=file_size,
+                dom_elements=len(dom.elements),
                 viewport=Viewport(width=s.viewport_width, height=s.viewport_height),
                 captured_at=datetime.now().astimezone(),
                 duration_s=round(time.monotonic() - started, 2),
@@ -294,6 +299,9 @@ class Capturer:
         finally:
             context.close()
 
+        # Defaults (href false, no text...) are left out to keep the file small.
+        dom_data = {"version": dom.version, **dom.model_dump(mode="json", exclude_defaults=True)}
+        write_json_atomic(out_dir / DOM_NAME, dom_data, indent=None)
         write_json_atomic(out_dir / META_NAME, meta.model_dump(mode="json", exclude_none=True))
         return meta
 

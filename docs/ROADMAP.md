@@ -41,7 +41,7 @@ Decisions only Bruno can make are marked **🟡 DECIDE**. Claude Code should sto
 - [x] **1.2b Assisted capture** (added after 1.2 found that about half of the URL list blocks headless browsers)
   - `annotool capture … --assist` (usually with `--retry-blocked`) opens a visible browser for each page. Bruno handles whatever the page asks for (country choice, "I'm not a robot", banners), then presses Enter in the terminal and the tool runs the normal capture on that same page. `s` skips a page, `q` stops. `meta.json` records `assisted: true`. The tool never solves or evades checks itself.
   - ✅ A test shows a page that starts as a 403 wall is captured as not blocked after a (simulated) human step. Manual check by Bruno: `--retry-blocked --assist` on `old-list` recovers most blocked pages.
-- [ ] **1.3 DOM extraction**
+- [x] **1.3 DOM extraction**
   - `dom_extract.js` produces `dom.json`: visible elements with a document-space bbox, tag, role, aria-label, input type, href presence, text length, font size/weight, background-image flag, position (static/fixed/sticky) and parent index. Use the same Playwright session as the screenshot so the coordinates match.
   - ✅ An overlay debug image (`annotool debug-dom <page>`) shows the DOM boxes aligned with the screenshot within 2 px.
 - [ ] **1.4 Politeness**

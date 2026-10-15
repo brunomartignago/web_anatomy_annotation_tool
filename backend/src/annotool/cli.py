@@ -301,3 +301,34 @@ def _was_blocked_or_failed(meta_path: Path) -> bool:
         return bool(json.loads(meta_path.read_text(encoding="utf-8")).get("blocked"))
     except (OSError, ValueError):
         return True
+
+
+@app.command("debug-dom")
+def debug_dom(
+    page: Annotated[
+        Path,
+        typer.Argument(
+            file_okay=False,
+            help="Page folder, e.g. data/projects/probe/pages/edition_cnn_com",
+        ),
+    ],
+) -> None:
+    """Draw dom.json boxes on page.png to check they line up (writes debug-dom.png)."""
+    from pydantic import ValidationError
+
+    from annotool.capture.browser import IMAGE_NAME
+    from annotool.capture.debug import render_dom_overlay
+    from annotool.capture.dom import DOM_NAME, DomSnapshot
+
+    dom_path, image_path = page / DOM_NAME, page / IMAGE_NAME
+    if not dom_path.exists() or not image_path.exists():
+        raise _fail(f"{page} needs {IMAGE_NAME} and {DOM_NAME}; capture the page first.")
+    try:
+        dom = DomSnapshot.model_validate_json(dom_path.read_text(encoding="utf-8"))
+    except ValidationError as exc:
+        raise _fail(f"{dom_path} is not a valid dom.json: {exc}") from exc
+
+    out = page / "debug-dom.png"
+    counts = render_dom_overlay(image_path, dom, out)
+    summary = ", ".join(f"{n} {kind}" for kind, n in counts.items())
+    typer.echo(f"{len(dom.elements)} elements ({summary}) -> {out}")

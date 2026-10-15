@@ -62,14 +62,18 @@ def load_project_config(data_dir: Path, name: str) -> dict[str, Any]:
     return data
 
 
-def write_json_atomic(path: Path, data: Any) -> None:
-    """Write JSON so readers never see a half-written file: temp file, then os.replace."""
+def write_json_atomic(path: Path, data: Any, indent: int | None = 2) -> None:
+    """Write JSON so readers never see a half-written file: temp file, then os.replace.
+
+    `indent=None` writes compact JSON (for large machine-read files like dom.json).
+    """
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     fd, tmp = tempfile.mkstemp(dir=path.parent, prefix=f".{path.name}.", suffix=".tmp")
     try:
         with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as f:
-            json.dump(data, f, indent=2, ensure_ascii=False)
+            separators = None if indent is not None else (",", ":")
+            json.dump(data, f, indent=indent, separators=separators, ensure_ascii=False)
             f.write("\n")
         os.replace(tmp, path)
     except BaseException:
