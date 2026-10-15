@@ -42,11 +42,13 @@ const responses: Record<string, unknown> = {
 function mockServer(ok = true) {
   vi.stubGlobal(
     'fetch',
-    vi.fn(async (path: string) =>
-      ok
-        ? new Response(JSON.stringify(responses[path]), { status: 200 })
-        : new Response(JSON.stringify({ detail: 'server down' }), { status: 503 }),
-    ),
+    vi.fn(async (path: string) => {
+      if (!ok) return new Response(JSON.stringify({ detail: 'server down' }), { status: 503 })
+      if (!(path in responses)) {
+        return new Response(JSON.stringify({ detail: 'not found' }), { status: 404 })
+      }
+      return new Response(JSON.stringify(responses[path]), { status: 200 })
+    }),
   )
 }
 

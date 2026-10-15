@@ -54,7 +54,7 @@ Decisions only Bruno can make are marked **🟡 DECIDE**. Claude Code should sto
   - Add `annotool serve --project <name>` to open the browser.
 - [x] **2.2 Frontend scaffold**
   - Set up Vite, React, TS, pnpm, ESLint, Vitest, zustand and immer. Generate types from the JSON Schema with `json-schema-to-typescript` as a `pnpm gen:types` script.
-- [ ] **2.3 Canvas**
+- [x] **2.3 Canvas**
   - Build a stage that lazy-loads strips in view, with zoom (Ctrl+wheel, `+`/`-`, Ctrl+0 to fit width) and pan (middle-drag or Space+drag). Boxes are colored by completeness (empty, partial, complete, selected) with small index tags.
   - ✅ The 91,086-px Unsplash page scrolls smoothly and uses less than 500 MB of browser memory.
 - [ ] **2.4 Tools**

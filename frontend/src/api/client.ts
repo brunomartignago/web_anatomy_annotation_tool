@@ -1,4 +1,4 @@
-import type { PageSummary, ProjectsResponse, Taxonomy } from './types'
+import type { PageResponse, PageSummary, ProjectsResponse, Taxonomy } from './types'
 
 export class ApiError extends Error {
   readonly status: number
@@ -30,4 +30,15 @@ export const api = {
   projects: () => getJson<ProjectsResponse>('/api/projects'),
   pages: (project: string) =>
     getJson<PageSummary[]>(`/api/projects/${encodeURIComponent(project)}/pages`),
+  page: (project: string, pageId: string) =>
+    getJson<PageResponse>(`/api/pages/${encodeURIComponent(pageId)}${projectQuery(project)}`),
+}
+
+/** URL of one 2048-px WebP strip of a page's screenshot. */
+export function stripUrl(project: string, pageId: string, n: number): string {
+  return `/api/pages/${encodeURIComponent(pageId)}/strips/${n}.webp${projectQuery(project)}`
+}
+
+function projectQuery(project: string): string {
+  return `?project=${encodeURIComponent(project)}`
 }

@@ -1,14 +1,45 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
+import { useShallow } from 'zustand/react/shallow'
 
 import { api } from './api/client'
 import type { PageSummary } from './api/types'
+import { Stage } from './canvas/Stage'
 import { useAppStore } from './state/store'
 
-// The shell: loads the served project and lists its pages. The canvas (2.3), tools (2.4)
-// and panels (2.5) plug in here.
+// The shell: loads the served project, lists its pages and shows the open one on the
+// canvas. Tools (2.4) and the label panel / page queue (2.5) plug in here.
 export default function App() {
-  const { status, error, taxonomy, project, pages, currentPageId } = useAppStore()
-  const { startLoading, loaded, failed, openPage } = useAppStore()
+  const { status, error, taxonomy, project, pages, currentPageId, page, pageStatus, pageError } =
+    useAppStore(
+      useShallow((s) => ({
+        status: s.status,
+        error: s.error,
+        taxonomy: s.taxonomy,
+        project: s.project,
+        pages: s.pages,
+        currentPageId: s.currentPageId,
+        page: s.pageId === s.currentPageId ? s.page : null,
+        pageStatus: s.pageStatus,
+        pageError: s.pageError,
+      })),
+    )
+  const { startLoading, loaded, failed, openPage, pageLoading, pageLoaded, pageFailed } =
+    useAppStore.getState()
+  const attributeIds = useMemo(() => taxonomy?.attributes.map((a) => a.id) ?? [], [taxonomy])
+
+  // Open the selected page.
+  useEffect(() => {
+    if (!project || !currentPageId) return
+    let cancelled = false
+    pageLoading()
+    api.page(project, currentPageId).then(
+      (loadedPage) => !cancelled && pageLoaded(currentPageId, loadedPage),
+      (exc: unknown) => !cancelled && pageFailed(exc instanceof Error ? exc.message : String(exc)),
+    )
+    return () => {
+      cancelled = true
+    }
+  }, [project, currentPageId, pageLoading, pageLoaded, pageFailed])
 
   useEffect(() => {
     let cancelled = false
@@ -48,7 +79,26 @@ export default function App() {
           </p>
         )}
         {status === 'ready' && (
-          <PageList pages={pages} currentPageId={currentPageId} onOpen={openPage} />
+          <>
+            <nav className="app__sidebar">
+              <PageList pages={pages} currentPageId={currentPageId} onOpen={openPage} />
+            </nav>
+            <section className="app__canvas">
+              {pageStatus === 'error' && (
+                <p role="alert" className="app__error">
+                  Couldn't open this page: {pageError}
+                </p>
+              )}
+              {page && project && currentPageId && pageStatus !== 'error' && (
+                <Stage
+                  project={project}
+                  pageId={currentPageId}
+                  page={page}
+                  attributeIds={attributeIds}
+                />
+              )}
+            </section>
+          </>
         )}
       </main>
     </div>
