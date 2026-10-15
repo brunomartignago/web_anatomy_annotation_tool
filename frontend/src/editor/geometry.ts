@@ -42,6 +42,43 @@ export function boxesCentredIn(boxes: Boxed[], rect: BBox): string[] {
     .map((box) => box.id)
 }
 
+/** How far apart (page px) sizes and centres may be for boxes to count as similar. */
+export const SIMILAR_TOLERANCE = 4
+
+interface Similar extends Boxed {
+  kind?: string
+  status?: string
+}
+
+/**
+ * Select similar (3.6a): the seeds plus every box of the same kind whose width and height
+ * are within SIMILAR_TOLERANCE of a found box, in its row (centres level) or column
+ * (centres lined up). The search repeats from each box found, so one card of a grid finds
+ * the whole grid. Rejected boxes are left out. Ids come back in file order.
+ */
+export function similarBoxes(boxes: Similar[], seedIds: string[]): string[] {
+  const live = boxes.filter((b) => b.status !== 'rejected')
+  const found = new Set(seedIds.filter((id) => live.some((b) => b.id === id)))
+  const queue = live.filter((b) => found.has(b.id))
+  const near = (a: number, b: number) => Math.abs(a - b) <= SIMILAR_TOLERANCE
+  while (queue.length > 0) {
+    const from = queue.pop()!
+    const [fx, fy, fw, fh] = from.bbox
+    for (const box of live) {
+      if (found.has(box.id) || box.kind !== from.kind) continue
+      const [x, y, w, h] = box.bbox
+      if (!near(w, fw) || !near(h, fh)) continue
+      const sameRow = near(y + h / 2, fy + fh / 2)
+      const sameColumn = near(x + w / 2, fx + fw / 2)
+      if (sameRow || sameColumn) {
+        found.add(box.id)
+        queue.push(box)
+      }
+    }
+  }
+  return boxes.filter((b) => found.has(b.id)).map((b) => b.id)
+}
+
 const round = (v: number) => Math.round(v * 10) / 10
 
 /** The box a drag from `a` to `b` draws: normalized, clamped to the page, or null if tiny. */

@@ -4,6 +4,7 @@ const GENERAL: [string, string][] = [
   ['D / S', 'Draw / select tool'],
   ['Shift+D', 'Draw template sections (boxes inside inherit them)'],
   ['Shift+click, drag', 'Add to selection, rubber band'],
+  ['Shift+A', 'Select similar: same size, same row or column'],
   ['Drag a box (select tool)', 'Move it, or the whole selection'],
   ['Drag an edge or corner', 'Resize the selected box (any tool)'],
   ['p, then 1–9', 'Paint with a preset: click or drag over boxes; Esc stops'],

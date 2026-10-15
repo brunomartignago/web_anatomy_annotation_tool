@@ -13,6 +13,7 @@ export const RESERVED_KEYS = new Set([
   '?', // cheat sheet
   '/', // command palette
   'p', // paint with a preset (3.5)
+  'a', // Shift+A: select similar (3.6a); keys are matched without case
   '[', // previous page
   ']', // next page
   '+',

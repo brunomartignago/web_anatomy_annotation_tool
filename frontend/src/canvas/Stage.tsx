@@ -145,6 +145,7 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
     setBBoxes,
     setPaint,
     paintBoxes,
+    selectSimilar,
     deleteSelected,
     undo,
     redo,
@@ -317,6 +318,8 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
         setTool(event.shiftKey ? 'section' : 'draw') // Shift+D: draw template sections
       } else if (key === 's') {
         setTool('select')
+      } else if (key === 'a' && event.shiftKey) {
+        selectSimilar() // Shift+A
       } else if (key === 'delete' || key === 'backspace' || key === 'x') {
         event.preventDefault()
         deleteSelected()
@@ -343,6 +346,7 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
     attributeIds,
     setTool,
     deleteSelected,
+    selectSimilar,
     select,
     focusBox,
     undo,
@@ -584,6 +588,14 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
         </button>
         <button type="button" title="Redo (Ctrl+Shift+Z)" disabled={!canRedo} onClick={redo}>
           Redo
+        </button>
+        <button
+          type="button"
+          title="Select similar (Shift+A): same size, same row or column"
+          disabled={selectedIds.length === 0}
+          onClick={selectSimilar}
+        >
+          Similar
         </button>
         <button
           type="button"

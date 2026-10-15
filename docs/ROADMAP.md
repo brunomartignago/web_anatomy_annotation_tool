@@ -82,8 +82,9 @@ Decisions only Bruno can make are marked **🟡 DECIDE**. Claude Code should sto
 - [x] **3.5 Sticky labels / paint mode**
   - Pick a preset, then each click on a box applies it. Esc exits.
   - ✅ `p` then a digit (or the brush next to a preset) starts painting, with no selection needed. Each click paints the element box under it, as one undo step. A drag paints the element boxes whose centre is inside the band. Section and component boxes are never painted. A digit switches the preset, and Esc, `p`, the toolbar × or picking a tool stops painting. The toolbar, status bar and preset panel show the preset being painted.
-- [ ] **3.6 Select similar**
-  - Shortcut Shift+A selects boxes with the same DOM signature (tag + role + class stem) or, failing that, the same size within 4 px in the same row or column.
+- [x] **3.6a Select similar by size and alignment** (3.6 was split in two)
+  - Shortcut Shift+A (and a toolbar button) adds boxes of the same kind with the same size within 4 px, in the same row or column as a selected box. It repeats from each box it finds, so one card selects the whole grid.
+  - ✅ Pure tests cover: size tolerance, row and column alignment, the repeated search across a grid, other kinds and rejected boxes left out, and nothing found leaves the selection as it was.
 - [ ] **3.7 Effort metrics**
   - Count actions per page in `history.actions` and show "actions per box" in the progress panel. This is the main KPI.
 
@@ -94,6 +95,8 @@ Decisions only Bruno can make are marked **🟡 DECIDE**. Claude Code should sto
 - [ ] **4.2 DOM suggester**
   - Turn `dom.json` into boxes and labels using `dom_hints`. Remove noise: drop boxes under 6×6 px or fully covered by others, and collapse wrappers that have one child and the same bbox.
   - ✅ On 5 hand-labeled pages: report box recall (IoU ≥ 0.5) and per-attribute accuracy in `docs/EVAL.md`.
+- [ ] **3.6b Select similar by DOM signature** (moved here from Phase 3: it needs boxes linked to DOM nodes, which 4.2 creates)
+  - Shift+A first matches boxes with the same DOM signature (tag + role + class stem), then falls back to 3.6a. A box's `dom` link has `index`, `tag`, `role` and `selector` but no classes, so the class stem comes from `dom.json` by `index` (a small endpoint, or the signature stored when 4.2 builds the box).
 - [ ] **4.3 Rule suggester**
   - Implement the section, column, panel and menu rules from `web-ui.yaml › rules.sections` in `geometry.py` and `suggest/rules.py`, with unit tests on synthetic layouts (1-col, 2-col + left panel, 3-col + right menu, header/sub-header/footer).
 - [ ] **4.4 Prior suggester**

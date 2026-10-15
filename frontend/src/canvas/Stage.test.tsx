@@ -361,6 +361,38 @@ describe('Stage editing', () => {
     expect(store().paint).toBeNull()
   })
 
+  // 3.6a: a and c have the same size and the same column (x 10, 300 wide); b is far below.
+  it('Shift+A adds same-size boxes in the same row or column', () => {
+    const { key, getByRole } = editing()
+    expect(getByRole('button', { name: 'Similar' })).toBeDisabled()
+    act(() => {
+      store().select(['a'])
+    })
+    key('A', { shiftKey: true })
+    expect(store().selectedIds).toEqual(['a', 'b', 'c']) // b is in the same column too
+    expect(store().history.undo).toHaveLength(0) // selecting is not an edit
+  })
+
+  it('the Similar button does the same', async () => {
+    useAppStore.getState().pageLoaded('tall', {
+      ...PAGE,
+      annotations: {
+        ...PAGE.annotations,
+        annotations: [
+          { ...box('card1', 0, {}), bbox: [0, 0, 200, 100] },
+          { ...box('card2', 0, {}), bbox: [220, 0, 200, 100] },
+          { ...box('other', 0, {}), bbox: [0, 300, 50, 50] },
+        ],
+      },
+    })
+    const { getByRole } = editing()
+    act(() => {
+      store().select(['card2'])
+    })
+    await userEvent.click(getByRole('button', { name: 'Similar' }))
+    expect(store().selectedIds).toEqual(['card1', 'card2'])
+  })
+
   it('shows the tool, selection and save state', () => {
     const { getByRole, click, key } = editing()
     expect(getByRole('status')).toHaveTextContent('Draw (D)')

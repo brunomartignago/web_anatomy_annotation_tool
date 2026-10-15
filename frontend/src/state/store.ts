@@ -5,6 +5,7 @@ import type { Annotation, PageAnnotationFileV1 } from '../api/annotation'
 import type { PageResponse, PageSummary, Progress, Taxonomy } from '../api/types'
 import type { BBox } from '../canvas/geometry'
 import { clampZoom } from '../canvas/geometry'
+import { similarBoxes } from '../editor/geometry'
 import { edit, emptyHistory, redo as redoStep, undo as undoStep } from '../editor/history'
 import type { History } from '../editor/history'
 import { newUlid } from '../editor/ids'
@@ -67,6 +68,8 @@ export interface AppState {
 
   setTool: (tool: Tool) => void
   select: (ids: string[], mode?: SelectMode) => void
+  /** Grow the selection to similar boxes: same size, same row or column (Shift+A, 3.6a). */
+  selectSimilar: () => void
   addBox: (bbox: BBox, kind?: BoxKind) => string | null
   /** Make the selected boxes elements, sections or components (one undo step). */
   setKind: (kind: BoxKind) => void
@@ -274,6 +277,12 @@ export const useAppStore = create<AppState>()(
             }
             s.selectedIds = [...current]
           }
+        }),
+
+      selectSimilar: () =>
+        set((s) => {
+          if (!s.page || s.selectedIds.length === 0) return
+          s.selectedIds = similarBoxes(s.page.annotations.annotations, s.selectedIds)
         }),
 
       addBox: (bbox, kind = 'element') => {

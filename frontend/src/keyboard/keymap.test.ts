@@ -162,6 +162,10 @@ describe('paint picker (3.5)', () => {
   it('p is reserved, so no attribute can take it', () => {
     expect(RESERVED_KEYS.has('p')).toBe(true)
   })
+
+  it('a is reserved for Shift+A, select similar (3.6a)', () => {
+    expect(RESERVED_KEYS.has('a')).toBe(true)
+  })
 })
 
 describe('conflicts in a custom taxonomy', () => {

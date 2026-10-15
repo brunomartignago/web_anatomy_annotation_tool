@@ -10,6 +10,7 @@ import {
   hitTest,
   rectFromDrag,
   resizeBBox,
+  similarBoxes,
   translate,
 } from './geometry'
 
@@ -48,6 +49,69 @@ describe('boxesCentredIn', () => {
     expect(boxesCentredIn(boxes, [0, 0, 120, 120])).toEqual([]) // touches the card only
     expect(boxesCentredIn(boxes, [140, 140, 120, 60])).toEqual(['link']) // centre (200, 165)
     expect(boxesCentredIn(boxes, [0, 0, 2000, 3000])).toEqual(['card', 'link', 'far'])
+  })
+})
+
+describe('similarBoxes (3.6a)', () => {
+  type Box = { id: string; bbox: BBox; kind?: string; status?: string }
+  const el = (id: string, bbox: BBox, extra: Partial<Box> = {}): Box => ({
+    id,
+    bbox,
+    kind: 'element',
+    status: 'accepted',
+    ...extra,
+  })
+  // A 3 x 2 grid of 200 x 100 cards (gap 20), slightly off, plus distractors.
+  const grid = [
+    el('r1c1', [0, 0, 200, 100]),
+    el('r1c2', [220, 2, 202, 98]),
+    el('r1c3', [440, 0, 197, 103]),
+    el('r2c1', [1, 120, 200, 100]),
+    el('r2c2', [221, 120, 200, 100]),
+    el('r2c3', [440, 121, 200, 101]),
+  ]
+
+  it('finds same-size boxes in the same row or column, then repeats from them', () => {
+    expect(similarBoxes(grid, ['r1c1'])).toEqual(grid.map((b) => b.id)) // the whole grid
+  })
+
+  it('keeps file order and the seeds themselves', () => {
+    expect(similarBoxes([...grid].reverse(), ['r2c3'])).toEqual(grid.map((b) => b.id).reverse())
+  })
+
+  it('needs the size within 4 px', () => {
+    const boxes = [el('a', [0, 0, 200, 100]), el('wide', [220, 0, 205, 100]), el('tall', [0, 120, 200, 105])]
+    expect(similarBoxes(boxes, ['a'])).toEqual(['a'])
+  })
+
+  it('needs the same row or column (centres within 4 px)', () => {
+    const boxes = [
+      el('a', [0, 0, 200, 100]),
+      el('diagonal', [900, 300, 200, 100]),
+      el('too-low', [300, 9, 200, 100]), // centre 9 px below a, 5 px below row
+      el('row', [600, 4, 200, 100]), // centre 4 px below a
+    ]
+    expect(similarBoxes(boxes, ['a'])).toEqual(['a', 'row'])
+  })
+
+  it('leaves out other kinds and rejected boxes', () => {
+    const boxes = [
+      el('a', [0, 0, 200, 100]),
+      el('sec', [220, 0, 200, 100], { kind: 'section' }),
+      el('gone', [440, 0, 200, 100], { status: 'rejected' }),
+    ]
+    expect(similarBoxes(boxes, ['a'])).toEqual(['a'])
+  })
+
+  it('works from several seeds and ignores unknown ids', () => {
+    const boxes = [
+      el('a', [0, 0, 50, 20]),
+      el('a2', [60, 0, 50, 20]),
+      el('b', [0, 500, 300, 40]),
+      el('b2', [0, 560, 300, 40]),
+    ]
+    expect(similarBoxes(boxes, ['a', 'b', 'missing'])).toEqual(['a', 'a2', 'b', 'b2'])
+    expect(similarBoxes(boxes, [])).toEqual([])
   })
 })
 
