@@ -91,3 +91,23 @@ def test_meta_json_matches_the_png(captured, test_page_url):
     assert datetime.fromisoformat(data["captured_at"]).tzinfo is not None
     assert data["scroll"]["reached_end"] and data["scroll"]["returned_to_top"]
     assert not list(out.glob("*.tmp"))
+
+
+def test_page_that_redirects_while_scrolling_is_captured(capturer, tmp_path):
+    # Like kayak.com: the page navigates away in the middle of the scroll pass.
+    (tmp_path / "landing.html").write_text(
+        "<!doctype html><title>Landing</title>"
+        '<body style="margin:0;height:4000px;background:#eee">',
+        encoding="utf-8",
+    )
+    start = tmp_path / "start.html"
+    start.write_text(
+        '<!doctype html><title>Start</title><body style="height:6000px">'
+        "<script>addEventListener('scroll', () => {"
+        "  if (scrollY > 2000) location.href = 'landing.html'; });</script>",
+        encoding="utf-8",
+    )
+    meta = capturer.capture(UrlEntry(url=start.as_uri()), tmp_path / "out")
+    assert meta.final_url.endswith("landing.html")
+    assert meta.title == "Landing"
+    assert meta.height == 4000

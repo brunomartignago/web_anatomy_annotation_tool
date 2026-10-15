@@ -29,6 +29,7 @@ def headless_assist(monkeypatch):
 def run_assist(site, data_dir, answers):
     urls = [site + "/", site + "/home"]
     args = ["capture", *urls, "--project", "demo", "--data-dir", str(data_dir), "--assist"]
+    args += ["--delay", "0"]
     return CliRunner().invoke(app, args, input=answers)
 
 

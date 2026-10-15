@@ -163,11 +163,23 @@ def capture(
         Path | None, typer.Option(file_okay=False, help="Default: data/ in the repo root.")
     ] = None,
     force: Annotated[
-        bool, typer.Option(help="Recapture pages that already have annotations.json.")
+        bool,
+        typer.Option(help="Recapture everything, even pages that already have annotations.json."),
     ] = False,
     retry_blocked: Annotated[
         bool,
-        typer.Option(help="Only capture pages that were blocked or failed last time."),
+        typer.Option(help="Also recapture pages that were flagged blocked last time."),
+    ] = False,
+    recapture: Annotated[
+        bool,
+        typer.Option(help="Recapture pages that already have a capture (default: skip them)."),
+    ] = False,
+    delay: Annotated[
+        float, typer.Option(min=0, help="Seconds between two pages on the same site.")
+    ] = 5.0,
+    obey_robots: Annotated[
+        bool,
+        typer.Option(help="Skip pages robots.txt disallows (default: capture and warn)."),
     ] = False,
     browser: Annotated[
         Browser,
@@ -186,10 +198,13 @@ def capture(
 ) -> None:
     """Take full-page screenshots (1920x1080 viewport) and write page.png + meta.json.
 
-    Pages showing a bot wall, error page or blank screen are flagged `blocked` in
-    meta.json. Consent banners are dismissed with project.yaml › consent_clicks.
+    Re-running resumes: pages that already have a capture are skipped. Pages showing a bot
+    wall, error page or blank screen are flagged `blocked` in meta.json. Consent banners are
+    dismissed with project.yaml › consent_clicks. Requests identify the project in their user
+    agent, wait `--delay` seconds between pages of one site, and check robots.txt.
     """
     from annotool.capture.browser import META_NAME, Capturer, CaptureSettings
+    from annotool.capture.polite import HostThrottle, RobotsChecker, fetch_robots
     from annotool.capture.urls import UrlListError, entries_from_sources
     from annotool.project import ensure_project, load_project_config, page_dir, project_dir
 
@@ -215,6 +230,7 @@ def capture(
     blocked: list[str] = []
     skipped: list[str] = []
     failed: list[str] = []
+    already = 0
     try:
         settings = CaptureSettings(
             headless=not assist, channel=None if browser == "chromium" else browser
@@ -224,6 +240,8 @@ def capture(
         raise _fail(
             f"can't start Chromium ({exc}). Run: uv run playwright install chromium"
         ) from exc
+    throttle = HostThrottle(delay)
+    robots = RobotsChecker(fetch=lambda url: fetch_robots(url, capturer.user_agent))
     try:
         for n, entry in enumerate(entries, start=1):
             prefix = f"[{n}/{len(entries)}] {entry.page_id}"
@@ -231,14 +249,24 @@ def capture(
             if (folder / "annotations.json").exists() and not force:
                 typer.echo(f"{prefix}: skipped (has annotations.json; use --force to recapture)")
                 continue
-            if retry_blocked and not _was_blocked_or_failed(folder / META_NAME):
+            meta_path = folder / META_NAME
+            if meta_path.exists() and not (force or recapture):
+                if not (retry_blocked and _was_blocked_or_failed(meta_path)):
+                    already += 1  # resume: this page already has a capture
+                    continue
+            robots_allowed = robots.allows(entry.url)
+            if robots_allowed is False and obey_robots:
+                skipped.append(entry.page_id)
+                typer.echo(f"{prefix}: skipped (disallowed by robots.txt)")
                 continue
+            throttle.wait(entry.url)
             try:
                 meta = capturer.capture(
                     entry,
                     folder,
                     consent_clicks=consent_clicks,
                     before_capture=_ask_person(prefix) if assist else None,
+                    robots_allowed=robots_allowed,
                 )
             except _StopBatch:
                 typer.echo(f"{prefix}: stopped; later pages were not captured")
@@ -264,8 +292,10 @@ def capture(
 
     typer.echo(
         f"Done: {len(captured)} captured, {len(blocked)} blocked, {len(skipped)} skipped, "
-        f"{len(failed)} failed -> {project_dir(data_dir, project)}"
+        f"{len(failed)} failed, {already} already captured -> {project_dir(data_dir, project)}"
     )
+    if already:
+        typer.echo("(already captured pages were left as they are; use --recapture to redo them)")
     if blocked:
         typer.echo(f"Blocked: {', '.join(blocked)} (retry later with --retry-blocked)")
     if failed:

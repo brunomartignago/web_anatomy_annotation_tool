@@ -42,7 +42,9 @@ uv run playwright install chromium
 uv run annotool capture ../examples/urls.csv --project demo
 ```
 
-Each page lands in `data/projects/demo/pages/<page id>/` as `page.png` plus `meta.json`. Pages that show a bot check, region block or error page instead of the real site get `"blocked": true` with the reasons. Recapture them later with `--retry-blocked`.
+Each page lands in `data/projects/demo/pages/<page id>/` as `page.png`, `meta.json` and `dom.json` (every visible element's box). Running the command again resumes: pages that already have a capture are skipped (use `--recapture` to redo them).
+
+Capture tries to be a polite visitor. Its user agent names the project and links to this repository. Pages on the same site are at least 5 seconds apart (`--delay`). It checks each site's robots.txt: by default it captures anyway and records a warning, and with `--obey-robots` it skips disallowed pages. Pages that show a bot check, region block or error page instead of the real site get `"blocked": true` with the reasons. Recapture them later with `--retry-blocked`.
 
 Many sites block automated browsers. For those, use **assisted capture**: a visible browser opens each blocked page, you handle whatever it asks for (choose a country, tick "I'm not a robot"), then press Enter in the terminal and the tool captures that page. `s` skips a page, `q` stops. The tool never solves these checks itself.
 

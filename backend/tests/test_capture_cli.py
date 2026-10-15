@@ -109,6 +109,50 @@ def test_consent_clicks_come_from_project_yaml(chromium_available, tmp_path):
     assert meta_of(data_dir, "file-news")["consent_clicked"] == "#reject"
 
 
+def test_resume_skips_pages_already_captured(chromium_available, tmp_path):
+    data_dir = tmp_path / "data"
+    url = write_page(tmp_path / "news.html", "News")
+    assert run_capture(url, data_dir).exit_code == 0
+    png = data_dir / "projects" / "demo" / "pages" / "file-news" / "page.png"
+    before = png.stat().st_mtime_ns
+
+    result = run_capture(url, data_dir)  # e.g. after an interrupted batch
+    assert result.exit_code == 0, result.output
+    assert "1 already captured" in result.output
+    assert png.stat().st_mtime_ns == before
+
+    result = run_capture(url, data_dir, "--recapture")
+    assert result.exit_code == 0, result.output
+    assert png.stat().st_mtime_ns != before
+
+
+def test_sends_identifying_user_agent(chromium_available, site, seen_user_agents, tmp_path):
+    result = run_capture(site + "/home", tmp_path / "data", "--delay", "0")
+    assert result.exit_code == 0, result.output
+    page_requests = [ua for ua in seen_user_agents if ua]
+    assert page_requests and all("annotool/" in ua for ua in page_requests)
+    meta = meta_of(tmp_path / "data", "127_0_0_1-home")
+    assert "annotool/" in meta["user_agent"]
+
+
+def test_robots_disallow_warns_but_captures(chromium_available, site, tmp_path):
+    result = run_capture(site + "/private", tmp_path / "data", "--delay", "0")
+    assert result.exit_code == 0, result.output
+    assert "robots.txt" in result.output
+    meta = meta_of(tmp_path / "data", "127_0_0_1-private")
+    assert meta["robots_allowed"] is False
+    assert any("robots.txt" in w for w in meta["warnings"])
+
+
+def test_obey_robots_skips_disallowed_pages(chromium_available, site, tmp_path):
+    args = ["--delay", "0", "--obey-robots"]
+    result = run_capture(site + "/private", tmp_path / "data", *args)
+    assert result.exit_code == 0, result.output
+    assert "disallowed by robots.txt" in result.output
+    page = tmp_path / "data" / "projects" / "demo" / "pages" / "127_0_0_1-private"
+    assert not (page / "page.png").exists()
+
+
 def test_rejects_unknown_browser(tmp_path):
     result = run_capture("https://example.com", tmp_path / "data", "--browser", "firefox")
     assert result.exit_code != 0

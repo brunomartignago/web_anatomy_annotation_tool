@@ -20,6 +20,7 @@ from pydantic import AwareDatetime, BaseModel
 
 from annotool import __version__
 from annotool.capture.dom import DOM_NAME, EXTRACT_JS, DomSnapshot
+from annotool.capture.polite import identifying_user_agent
 from annotool.capture.urls import UrlEntry
 from annotool.capture.walls import (
     BOT_WALL_SELECTORS,
@@ -125,6 +126,7 @@ class CaptureMeta(BaseModel):
     warnings: list[str] = []  # usable, but check it (consent banner, short page...)
     consent_clicked: str | None = None  # selector from project.yaml › consent_clicks
     assisted: bool = False  # a person handled the page's check before capture (--assist)
+    robots_allowed: bool | None = None  # robots.txt verdict for annotool; None = not checked
     browser: str  # e.g. "chromium 156.0.8078.4" or "msedge 141.0..."
     user_agent: str
     tool: str = f"annotool {__version__}"
@@ -137,6 +139,15 @@ class Capturer:
         self.settings = settings or CaptureSettings()
         self._playwright: Playwright | None = None
         self._browser: Browser | None = None
+        self.user_agent = ""  # set on start: the browser's own UA + annotool/<version>
+
+    def _identify(self) -> str:
+        assert self._browser is not None
+        page = self._browser.new_page()
+        try:
+            return identifying_user_agent(page.evaluate("navigator.userAgent"), __version__)
+        finally:
+            page.close()
 
     def __enter__(self) -> "Capturer":
         self._playwright = sync_playwright().start()
@@ -148,7 +159,10 @@ class Capturer:
                 # 1905 px wide instead of 1920 (headless already hides scrollbars).
                 args=["--hide-scrollbars"],
             )
+            self.user_agent = self._identify()
         except BaseException:
+            if self._browser:
+                self._browser.close()
             self._playwright.stop()
             raise
         return self
@@ -170,6 +184,7 @@ class Capturer:
         out_dir: Path,
         consent_clicks: Sequence[str] = (),
         before_capture: Callable[[Page], bool] | None = None,
+        robots_allowed: bool | None = None,
     ) -> CaptureMeta | None:
         """Capture one page into `out_dir/page.png` and `out_dir/meta.json`.
 
@@ -188,6 +203,7 @@ class Capturer:
             viewport={"width": s.viewport_width, "height": s.viewport_height},
             device_scale_factor=1,
             locale=s.locale,
+            user_agent=self.user_agent or None,
         )
         try:
             page = context.new_page()
@@ -206,15 +222,25 @@ class Capturer:
                 started = time.monotonic()  # time the capture, not the person
             out_dir.mkdir(parents=True, exist_ok=True)
 
-            consent_clicked = _click_first(page, consent_clicks)
-            scroll = page.evaluate(
-                _SCROLL_JS,
-                {
-                    "step": s.viewport_height,
-                    "delayMs": s.scroll_delay_ms,
-                    "maxSteps": s.max_scroll_steps,
-                },
-            )
+            # Some pages redirect themselves mid-scroll (kayak.com). Then the scroll script's
+            # page is gone: wait for the new document and scroll that one instead.
+            for attempt in range(3):
+                try:
+                    consent_clicked = _click_first(page, consent_clicks)
+                    scroll = page.evaluate(
+                        _SCROLL_JS,
+                        {
+                            "step": s.viewport_height,
+                            "delayMs": s.scroll_delay_ms,
+                            "maxSteps": s.max_scroll_steps,
+                        },
+                    )
+                    break
+                except PlaywrightError as exc:
+                    if "Execution context was destroyed" not in str(exc) or attempt == 2:
+                        raise
+                    page.wait_for_load_state("domcontentloaded", timeout=s.timeout_s * 1000)
+                    _wait_for_network_idle(page, s.network_idle_s)
             # Some pages scroll themselves (restored positions, scripted animations).
             try:
                 page.wait_for_function("window.scrollY === 0", timeout=5000)
@@ -265,6 +291,8 @@ class Capturer:
                 warnings.append(f"stopped scrolling after {s.max_scroll_steps} steps")
             if not returned_to_top:
                 warnings.append("page did not return to the top; sticky parts may be misplaced")
+            if robots_allowed is False:
+                warnings.append("robots.txt disallows this page for annotool")
 
             meta = CaptureMeta(
                 page_id=entry.page_id,
@@ -293,6 +321,7 @@ class Capturer:
                 warnings=warnings,
                 consent_clicked=consent_clicked,
                 assisted=before_capture is not None,
+                robots_allowed=robots_allowed,
                 browser=f"{s.channel or 'chromium'} {self._browser.version}",
                 user_agent=page.evaluate("navigator.userAgent"),
             )

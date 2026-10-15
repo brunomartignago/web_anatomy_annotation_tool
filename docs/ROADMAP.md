@@ -44,7 +44,7 @@ Decisions only Bruno can make are marked **🟡 DECIDE**. Claude Code should sto
 - [x] **1.3 DOM extraction**
   - `dom_extract.js` produces `dom.json`: visible elements with a document-space bbox, tag, role, aria-label, input type, href presence, text length, font size/weight, background-image flag, position (static/fixed/sticky) and parent index. Use the same Playwright session as the screenshot so the coordinates match.
   - ✅ An overlay debug image (`annotool debug-dom <page>`) shows the DOM boxes aligned with the screenshot within 2 px.
-- [ ] **1.4 Politeness**
+- [x] **1.4 Politeness**
   - Add a per-host delay, a user-agent string that identifies the project, a robots.txt check (warn, don't block), and resume support that skips already-captured pages.
 
 ## Phase 2: Web annotator with v2 parity

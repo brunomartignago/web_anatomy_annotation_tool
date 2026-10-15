@@ -18,19 +18,32 @@ _COLORFUL = "".join(
 )
 
 
+ROBOTS_TXT = "User-agent: annotool\nDisallow: /private\n"
+
+
 class _WallHandler(BaseHTTPRequestHandler):
-    """`/` is a 403 bot wall; `/home` is the real page a human reaches after the check."""
+    """`/` is a 403 bot wall; `/home` and `/private` are real pages; robots.txt disallows
+    `/private` for annotool. Every User-Agent header received is recorded."""
+
+    user_agents: list[str] = []
 
     def do_GET(self):  # noqa: N802 (http.server API)
-        if self.path == "/home":
+        self.user_agents.append(self.headers.get("User-Agent", ""))
+        if self.path == "/robots.txt":
+            self._send(200, ROBOTS_TXT, "text/plain")
+            return
+        if self.path in ("/home", "/private"):
             status, title, body = 200, "Real home page", _COLORFUL
         else:
             status, title, body = 403, "Just a moment...", "<p>Checking your browser</p>"
         html = f"<!doctype html><html lang='en'><title>{title}</title><body>{body}</body>"
+        self._send(status, html, "text/html")
+
+    def _send(self, status: int, text: str, content_type: str) -> None:
         self.send_response(status)
-        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Type", f"{content_type}; charset=utf-8")
         self.end_headers()
-        self.wfile.write(html.encode("utf-8"))
+        self.wfile.write(text.encode("utf-8"))
 
     def log_message(self, *args):  # keep test output quiet
         pass
@@ -43,6 +56,13 @@ def site():
     threading.Thread(target=server.serve_forever, daemon=True).start()
     yield f"http://127.0.0.1:{server.server_address[1]}"
     server.shutdown()
+
+
+@pytest.fixture
+def seen_user_agents():
+    """User-Agent headers the `site` server received during the test."""
+    _WallHandler.user_agents.clear()
+    return _WallHandler.user_agents
 
 
 def _skip_without_browser(exc: Exception) -> None:
