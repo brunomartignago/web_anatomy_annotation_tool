@@ -66,7 +66,7 @@ Decisions only Bruno can make are marked **🟡 DECIDE**. Claude Code should sto
 
 ## Phase 3: Fewer clicks
 
-- [ ] **3.1 Keymap from YAML**
+- [x] **3.1 Keymap from YAML**
   - Attribute hotkeys (`f` `n` `c` `t`) open a picker for that attribute, and the option mnemonic sets it. The focused attribute is always visible. A cheat-sheet overlay opens with `?`.
   - ✅ Every option, including Heading and Right Menu, takes at most 2 keystrokes.
 - [ ] **3.2 Presets**

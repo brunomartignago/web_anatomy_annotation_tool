@@ -42,6 +42,9 @@ export interface AppState {
   saveError: string | null
   /** A request for the canvas to scroll a box into view (the nonce repeats requests). */
   focus: { id: string; nonce: number } | null
+  /** Attribute whose keyboard picker is open (its hotkey was pressed), if any. */
+  picker: string | null
+  cheatSheet: boolean
 
   startLoading: () => void
   loaded: (taxonomy: Taxonomy, project: string, pages: PageSummary[]) => void
@@ -62,6 +65,8 @@ export interface AppState {
   /** Set (or with null, remove) one attribute on every selected box, as one undo step. */
   setLabel: (attrId: string, value: string | null) => void
   focusBox: (id: string) => void
+  setPicker: (attributeId: string | null) => void
+  setCheatSheet: (open: boolean) => void
   undo: () => void
   redo: () => void
 
@@ -94,6 +99,8 @@ export const initialState = {
   pageError: null,
   zoom: 1,
   tool: 'draw' as Tool,
+  picker: null as string | null,
+  cheatSheet: false,
   ...editingReset,
 }
 
@@ -182,6 +189,7 @@ export const useAppStore = create<AppState>()(
           s.page = page
           s.pageId = pageId
           s.pageStatus = 'ready'
+          s.picker = null
           Object.assign(s, editingReset, { history: emptyHistory() })
         }),
 
@@ -258,6 +266,16 @@ export const useAppStore = create<AppState>()(
       focusBox: (id) =>
         set((s) => {
           s.focus = { id, nonce: (s.focus?.nonce ?? 0) + 1 }
+        }),
+
+      setPicker: (attributeId) =>
+        set((s) => {
+          s.picker = attributeId
+        }),
+
+      setCheatSheet: (open) =>
+        set((s) => {
+          s.cheatSheet = open
         }),
 
       undo: () => step(undoStep),

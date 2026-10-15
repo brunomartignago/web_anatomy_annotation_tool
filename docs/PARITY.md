@@ -29,7 +29,7 @@ native browser scrolling (wheel, Shift+wheel), which needs no code of ours.
 | Inline label panel, one group per attribute, applies to all selected boxes | Same, built from `web-ui.yaml` (no hardcoded labels). Each click is one undo step. | ✅ |
 | Panel title "N boxes selected"; each group shows its value, `—` or `mixed` | Same, plus a count per value for mixed selections. | ✅ |
 | Clicking a value always sets it; no way to remove a value | Same, plus a per-attribute **×** to clear it. Clicking the value already set does nothing, so confirming can't delete. | ✅ |
-| `1`–`9` quick-pick in the "focused" group, auto-advancing (focus was invisible and went stale, AUDIT #1, #2) | Replaced by 3.1 (attribute hotkeys `f n c t` + one-letter mnemonics for **every** option) and 3.2 (presets `1`–`9`). Until then, labels are applied with the mouse. | ⏭ |
+| `1`–`9` quick-pick in the "focused" group, auto-advancing (focus was invisible and went stale, AUDIT #1, #2) | Replaced in 3.1: attribute hotkey (`f n c t`) then the option's letter, for **every** option in two keystrokes; the open picker is highlighted and the letters are shown on the buttons; `?` lists them all. Presets on `1`–`9` follow in 3.2. | ✅ |
 | `Enter` confirm, arrow keys between options (documented, never implemented, AUDIT #3) | Not needed: a click applies immediately. Keyboard picking is 3.1. | ➡️ |
 
 ## Box list and progress
@@ -68,5 +68,5 @@ native browser scrolling (wheel, Shift+wheel), which needs no code of ours.
 
 ## Not carried over
 
-Nothing from v2 is dropped without a replacement. The one temporary gap is **keyboard
-labeling** (v2's `1`–`9`), which returns, extended to every option, in roadmap 3.1–3.2.
+Nothing from v2 is dropped without a replacement. Keyboard labeling (v2's `1`–`9`) came
+back in 3.1, extended to every option; one-key presets on `1`–`9` follow in 3.2.

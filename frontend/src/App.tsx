@@ -5,6 +5,9 @@ import { api } from './api/client'
 import type { PageSummary } from './api/types'
 import { Stage } from './canvas/Stage'
 import { saveNow, useAutosave } from './editor/autosave'
+import { CheatSheet } from './keyboard/CheatSheet'
+import { buildKeymap } from './keyboard/keymap'
+import { useLabelKeys } from './keyboard/useLabelKeys'
 import { BoxList } from './panels/BoxList'
 import { LabelPanel } from './panels/LabelPanel'
 import { ProgressPanel } from './panels/ProgressPanel'
@@ -25,8 +28,10 @@ export default function App() {
     pageError,
     saveState,
     saveError,
+    cheatSheet,
   } = useAppStore(
     useShallow((s) => ({
+      cheatSheet: s.cheatSheet,
       status: s.status,
       error: s.error,
       taxonomy: s.taxonomy,
@@ -44,8 +49,14 @@ export default function App() {
     useAppStore.getState()
   const attributes = useMemo(() => taxonomy?.attributes ?? [], [taxonomy])
   const attributeIds = useMemo(() => attributes.map((a) => a.id), [attributes])
+  const keymap = useMemo(() => (taxonomy ? buildKeymap(taxonomy) : null), [taxonomy])
+  const hotkeys = useMemo(
+    () => Object.fromEntries((keymap?.attributes ?? []).map((a) => [a.id, a.hotkey])),
+    [keymap],
+  )
 
   useAutosave()
+  useLabelKeys(keymap)
 
   // Page queue: `]` next page, `[` previous (the page being left is saved first).
   useEffect(() => {
@@ -118,7 +129,28 @@ export default function App() {
             {taxonomy.name} v{taxonomy.version}
           </span>
         )}
+        {keymap && (
+          <button
+            type="button"
+            className="app__help"
+            title="Keyboard shortcuts (?)"
+            onClick={() => useAppStore.getState().setCheatSheet(true)}
+          >
+            Shortcuts <kbd aria-hidden="true">?</kbd>
+          </button>
+        )}
       </header>
+
+      {keymap && keymap.conflicts.length > 0 && (
+        <div role="alert" className="app__banner">
+          <span>
+            Some taxonomy shortcuts are disabled: {keymap.conflicts.join('; ')}.
+          </span>
+        </div>
+      )}
+      {keymap && cheatSheet && (
+        <CheatSheet keymap={keymap} onClose={() => useAppStore.getState().setCheatSheet(false)} />
+      )}
 
       <main className="app__main">
         {status === 'loading' && <p role="status">Loading…</p>}
@@ -162,7 +194,7 @@ export default function App() {
             <aside className="app__inspector" aria-label="Inspector">
               {page && (
                 <>
-                  <LabelPanel attributes={attributes} />
+                  <LabelPanel attributes={attributes} hotkeys={hotkeys} />
                   <ProgressPanel attributes={attributes} />
                   <BoxList attributeIds={attributeIds} />
                 </>

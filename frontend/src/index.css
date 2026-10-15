@@ -49,10 +49,12 @@ body {
   min-height: 0;
   display: grid;
   grid-template-columns: 220px 1fr 300px;
+  grid-template-rows: minmax(0, 1fr); /* never taller than the window */
 }
 
 .app__inspector {
   min-height: 0;
+  overflow-y: auto; /* on short windows the whole column scrolls */
   display: flex;
   flex-direction: column;
   border-left: 1px solid var(--border);
@@ -67,8 +69,9 @@ body {
 }
 
 .panel--grow {
-  flex: 1;
-  min-height: 0;
+  /* Fills what's left, but never less than this: the list scrolls inside itself. */
+  flex: 1 0 18rem;
+  min-height: 18rem;
   display: flex;
   flex-direction: column;
 }
@@ -102,6 +105,141 @@ body {
 
 .labels:disabled {
   opacity: 0.45;
+}
+
+.labels--active {
+  margin-left: -0.5rem;
+  margin-right: -0.5rem;
+  padding: 0.3rem 0.5rem 0.4rem;
+  border-radius: 4px;
+  outline: 2px solid var(--accent);
+  background: rgba(79, 142, 247, 0.08);
+}
+
+.labels__hotkey,
+.labels__key {
+  display: inline-block;
+  min-width: 1.1em;
+  margin-right: 0.3rem;
+  padding: 0 0.2rem;
+  border-radius: 2px;
+  background: var(--border);
+  color: var(--text-dim);
+  font: 600 0.7rem ui-monospace, monospace;
+  text-align: center;
+}
+
+.labels__hotkey {
+  margin-left: 0.4rem;
+  margin-right: 0;
+}
+
+.labels__option[aria-pressed='true'] .labels__key {
+  background: rgba(255, 255, 255, 0.25);
+  color: #fff;
+}
+
+.panel__prompt {
+  margin: 0 0 0.5rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: 3px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.8rem;
+}
+
+.app__help {
+  margin-left: auto;
+  padding: 0.15rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: none;
+  color: var(--text-dim);
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.cheatsheet__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.cheatsheet {
+  max-width: min(64rem, 92vw);
+  max-height: 88vh;
+  overflow: auto;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+}
+
+.cheatsheet__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cheatsheet__header h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.cheatsheet__header button {
+  border: 0;
+  background: none;
+  color: var(--text-dim);
+  font-size: 1.3rem;
+  cursor: pointer;
+}
+
+.cheatsheet__hint {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+}
+
+.cheatsheet__columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 1rem 1.5rem;
+}
+
+.cheatsheet h3 {
+  margin: 0 0 0.4rem;
+  font-size: 0.85rem;
+}
+
+.cheatsheet dl {
+  margin: 0;
+}
+
+.cheatsheet dl div {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+
+.cheatsheet dt {
+  min-width: 2.2rem;
+  white-space: nowrap;
+}
+
+.cheatsheet dd {
+  margin: 0;
+}
+
+.cheatsheet kbd {
+  padding: 0 0.3rem;
+  border-radius: 2px;
+  background: var(--border);
+  font: 600 0.75rem ui-monospace, monospace;
 }
 
 .labels legend {
