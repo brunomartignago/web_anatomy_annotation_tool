@@ -362,3 +362,57 @@ def debug_dom(
     counts = render_dom_overlay(image_path, dom, out)
     summary = ", ".join(f"{n} {kind}" for kind, n in counts.items())
     typer.echo(f"{len(dom.elements)} elements ({summary}) -> {out}")
+
+
+@app.command()
+def serve(
+    project: Annotated[str, typer.Option(help="Project to open (folder under data/projects/).")],
+    data_dir: Annotated[
+        Path | None, typer.Option(file_okay=False, help="Default: data/ in the repo root.")
+    ] = None,
+    taxonomy: Annotated[
+        Path | None, typer.Option(help="Taxonomy YAML. Default: taxonomies/web-ui.yaml.")
+    ] = None,
+    host: Annotated[
+        str, typer.Option(help="Address to listen on. Keep 127.0.0.1: there is no login.")
+    ] = "127.0.0.1",
+    port: Annotated[int, typer.Option(min=1, max=65535)] = 8000,
+    open_browser: Annotated[
+        bool, typer.Option("--open/--no-open", help="Open the annotator in your browser.")
+    ] = True,
+) -> None:
+    """Start the local annotator (API + UI) for one project and open it in the browser."""
+    import threading
+    import webbrowser
+
+    import uvicorn
+
+    from annotool.server.app import create_app
+    from annotool.taxonomy import TaxonomyError
+
+    root = _find_repo_root()
+    if data_dir is None:
+        if root is None:
+            raise _fail("can't find the repo's data/ folder. Pass --data-dir.")
+        data_dir = root / "data"
+    taxonomy_path = taxonomy or _find_default_taxonomy()
+    if taxonomy_path is None:
+        raise _fail("no taxonomy found. Pass --taxonomy <path to web-ui.yaml>.")
+    frontend = root / "frontend" / "dist" if root else None
+
+    try:
+        asgi_app = create_app(data_dir, project, taxonomy_path, frontend_dir=frontend)
+    except (TaxonomyError, ValueError) as exc:
+        projects = data_dir / "projects"
+        names = (
+            sorted(p.name for p in projects.iterdir() if p.is_dir()) if projects.is_dir() else []
+        )
+        hint = f" Projects: {', '.join(names)}." if names else ""
+        raise _fail(f"{exc}.{hint}") from exc
+
+    url = f"http://{'127.0.0.1' if host in ('0.0.0.0', '::') else host}:{port}"
+    typer.echo(f"annotool: serving project {project!r} at {url} (Ctrl+C to stop)")
+    if open_browser:
+        # uvicorn.run blocks, so open the page once the server has had a moment to start.
+        threading.Timer(1.0, webbrowser.open, args=[url]).start()
+    uvicorn.run(asgi_app, host=host, port=port, log_level="info")

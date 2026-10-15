@@ -49,7 +49,7 @@ Decisions only Bruno can make are marked **🟡 DECIDE**. Claude Code should sto
 
 ## Phase 2: Web annotator with v2 parity
 
-- [ ] **2.1 Server**
+- [x] **2.1 Server**
   - Build FastAPI with these routes: `GET /api/taxonomy`, `GET /api/projects`, `GET /api/projects/{p}/pages` (with progress counts), `GET /api/pages/{id}`, `PUT /api/pages/{id}/annotations` (atomic write plus ETag to block stale overwrites), and `GET /api/pages/{id}/strips/{n}.webp` (2048-px strips, cached).
   - Add `annotool serve --project <name>` to open the browser.
 - [ ] **2.2 Frontend scaffold**
