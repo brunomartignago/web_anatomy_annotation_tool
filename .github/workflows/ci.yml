@@ -50,3 +50,40 @@ jobs:
         env:
           # Browser tests fail here instead of being skipped (see backend/tests/conftest.py).
           ANNOTOOL_REQUIRE_BROWSER: "1"
+
+  frontend:
+    name: frontend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+        with:
+          package_json_file: frontend/package.json
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Types match the JSON Schema
+        # CLAUDE.md: schema changes regenerate the TS types in the same PR.
+        run: |
+          pnpm gen:types
+          git diff --exit-code -- src/api/annotation.ts
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build

@@ -1,0 +1,81 @@
+:root {
+  --bg: #0e0f11;
+  --surface: #16181c;
+  --border: #2a2d35;
+  --text: #d4d8e2;
+  --text-dim: #6b7280;
+  --accent: #4f8ef7;
+  --red: #f05252;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+.app__header {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.app__header h1 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.app__project {
+  color: var(--accent);
+}
+
+.app__taxonomy {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+}
+
+.app__main {
+  padding: 1.25rem;
+}
+
+.app__error {
+  color: var(--red);
+}
+
+.pages {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-width: 40rem;
+}
+
+.pages__item {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pages__item:hover {
+  border-color: var(--border);
+}
+
+.pages__item[aria-current='true'] {
+  border-color: var(--accent);
+}
+
+.pages__progress {
+  color: var(--text-dim);
+}
