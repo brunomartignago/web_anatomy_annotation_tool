@@ -10,6 +10,7 @@ import {
   filterBoxes,
   filterCounts,
   labelState,
+  nextIncomplete,
 } from './labels'
 
 function box(id: string, labels: Record<string, string>, extra: Partial<Annotation> = {}) {
@@ -123,6 +124,26 @@ describe('progress and filters', () => {
     expect(filterBoxes(boxes, IDS, 'partial')).toEqual([1])
     expect(filterBoxes(boxes, IDS, 'done')).toEqual([2])
     expect(filterCounts(boxes, IDS)).toEqual({ all: 3, empty: 1, partial: 1, done: 1 })
+  })
+
+  it('Tab finds the next box that still needs labels, wrapping around (v2 parity)', () => {
+    const list = [
+      box('done1', { Form: 'Typo', Function: 'Text' }),
+      box('todo1', {}),
+      box('done2', { Form: 'Typo', Function: 'Text' }),
+      box('todo2', { Form: 'Typo' }),
+      box('gone', {}, { status: 'rejected' }),
+    ]
+    expect(nextIncomplete(list, IDS, [], 1)).toBe('todo1') // nothing selected: from the start
+    expect(nextIncomplete(list, IDS, ['todo1'], 1)).toBe('todo2')
+    expect(nextIncomplete(list, IDS, ['todo2'], 1)).toBe('todo1') // wraps, skips rejected
+    expect(nextIncomplete(list, IDS, ['todo1'], -1)).toBe('todo2') // Shift+Tab wraps back
+    expect(nextIncomplete(list, IDS, [], -1)).toBe('todo2') // from the end
+    expect(nextIncomplete(list, IDS, ['done1', 'done2'], 1)).toBe('todo2') // after the last selected
+  })
+
+  it('Tab finds nothing when every box is complete', () => {
+    expect(nextIncomplete([box('a', { Form: 'Typo', Function: 'Text' })], IDS, [], 1)).toBeNull()
   })
 
   it('summarizes a box in taxonomy order', () => {

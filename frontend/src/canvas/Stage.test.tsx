@@ -1,5 +1,6 @@
 import { act, fireEvent, render } from '@testing-library/react'
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
+import userEvent from '@testing-library/user-event'
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { Annotation } from '../api/annotation'
 import type { PageResponse } from '../api/types'
@@ -242,6 +243,114 @@ describe('Stage editing', () => {
     expect(getByRole('status')).toHaveTextContent('Select (S) · 1 selected')
     key('x')
     expect(getByRole('status')).toHaveTextContent('Unsaved changes')
+  })
+})
+
+// v2 parity (2.6): Tab navigation, Ctrl+S, toolbar, cursor coordinates.
+describe('Stage parity with the legacy tool', () => {
+  beforeEach(() => {
+    useAppStore.setState({ ...initialState, project: 'demo' })
+    useAppStore.getState().pageLoaded('tall', PAGE)
+  })
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  const store = () => useAppStore.getState()
+
+  it('Tab / Shift+Tab select the next / previous box that needs labels', () => {
+    render(<StoreStage />)
+    const tab = (shiftKey = false) =>
+      act(() => {
+        fireEvent.keyDown(window, { key: 'Tab', shiftKey })
+      })
+    tab() // a is complete, so the first box needing labels is b
+    expect(store().selectedIds).toEqual(['b'])
+    expect(store().focus?.id).toBe('b')
+    tab()
+    expect(store().selectedIds).toEqual(['c'])
+    tab(true)
+    expect(store().selectedIds).toEqual(['b'])
+  })
+
+  it('Ctrl+S saves right away instead of opening the browser dialog', async () => {
+    const fetchMock = vi.fn(
+      async () =>
+        new Response(
+          JSON.stringify({
+            etag: '"v2"',
+            progress: { boxes: 4, empty: 1, partial: 1, complete: 2, suggested: 0, labeled: {} },
+          }),
+        ),
+    )
+    vi.stubGlobal('fetch', fetchMock)
+    render(<StoreStage />)
+    act(() => {
+      store().addBox([0, 0, 50, 50])
+    })
+    const event = new KeyboardEvent('keydown', { key: 's', ctrlKey: true, cancelable: true })
+    await act(async () => {
+      window.dispatchEvent(event)
+    })
+    expect(event.defaultPrevented).toBe(true)
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    expect(store().saveState).toBe('saved')
+  })
+
+  it('has clickable tools, undo/redo, delete and zoom', async () => {
+    const { getByRole } = render(<StoreStage />)
+    const button = (name: string) => getByRole('button', { name })
+    expect(button('Undo')).toBeDisabled()
+    expect(button('Delete')).toBeDisabled()
+
+    await userEvent.click(button('Select'))
+    expect(store().tool).toBe('select')
+    expect(button('Select')).toHaveAttribute('aria-pressed', 'true')
+
+    act(() => {
+      store().select(['a'])
+    })
+    await userEvent.click(button('Delete'))
+    expect(store().page!.annotations.annotations.map((b) => b.id)).toEqual(['b', 'c'])
+    await userEvent.click(button('Undo'))
+    expect(store().page!.annotations.annotations).toHaveLength(3)
+    await userEvent.click(button('Redo'))
+    expect(store().page!.annotations.annotations).toHaveLength(2)
+
+    await userEvent.click(button('Zoom in'))
+    expect(store().zoom).toBeCloseTo(0.625)
+    await userEvent.click(button('Fit'))
+    expect(store().zoom).toBe(0.5)
+  })
+
+  it('pans with middle-drag', () => {
+    const { getByLabelText } = render(<StoreStage />)
+    const viewport = getByLabelText('Page canvas')
+    viewport.scrollTop = 1000
+    act(() => {
+      fireEvent.pointerDown(viewport, { button: 1, clientX: 300, clientY: 300 })
+      fireEvent.pointerMove(viewport, { clientX: 250, clientY: 100 })
+      fireEvent.pointerUp(viewport, { clientX: 250, clientY: 100 })
+    })
+    expect(viewport.scrollTop).toBe(1200) // dragged up 200 px → content moves up
+    expect(store().page!.annotations.annotations).toHaveLength(3) // nothing drawn
+  })
+
+  it('draws index tags just above each box', () => {
+    const { container } = render(<StoreStage />)
+    const group = container.querySelector('[data-box-id="a"]')!
+    const box = Number(group.querySelectorAll('rect')[0].getAttribute('y'))
+    const tag = Number(group.querySelectorAll('rect')[1].getAttribute('y'))
+    expect(box).toBe(50) // y 100 at zoom 0.5
+    expect(tag).toBe(36) // 14 px tag, ending where the box starts
+  })
+
+  it('shows the cursor position in page pixels', () => {
+    const { getByLabelText } = render(<StoreStage />)
+    act(() => {
+      fireEvent.pointerMove(getByLabelText('Page canvas'), { clientX: 100, clientY: 50 })
+    })
+    expect(getByLabelText('Cursor position')).toHaveTextContent('x 200 · y 100') // zoom 0.5
   })
 })
 

@@ -327,6 +327,53 @@ body {
   flex-direction: column;
 }
 
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.35rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.toolbar button {
+  padding: 0.15rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.toolbar button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.toolbar button[aria-pressed='true'] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.toolbar__gap {
+  width: 0.75rem;
+}
+
+.toolbar__zoom {
+  min-width: 3.2em;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 0.8rem;
+}
+
+.stage__coords {
+  min-width: 9em;
+  font-variant-numeric: tabular-nums;
+}
+
 .stage__viewport {
   flex: 1;
   min-height: 0;

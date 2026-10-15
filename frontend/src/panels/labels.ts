@@ -108,6 +108,32 @@ export function filterCounts(boxes: Annotation[], attributeIds: string[]): Recor
   return counts
 }
 
+/**
+ * Tab / Shift+Tab (v2's "next unannotated"): the next box after the selection, in file
+ * order, that isn't complete. Wraps around; rejected boxes are skipped.
+ */
+export function nextIncomplete(
+  boxes: Annotation[],
+  attributeIds: string[],
+  selectedIds: string[],
+  direction: 1 | -1,
+): string | null {
+  const n = boxes.length
+  if (n === 0) return null
+  const selected = new Set(selectedIds)
+  const positions = boxes.flatMap((b, i) => (selected.has(b.id) ? [i] : []))
+  let start: number
+  if (positions.length === 0) start = direction === 1 ? -1 : n
+  else start = direction === 1 ? Math.max(...positions) : Math.min(...positions)
+  for (let step = 1; step <= n; step++) {
+    const box = boxes[(((start + direction * step) % n) + n) % n]
+    if (box.status !== 'rejected' && completeness(box.labels, attributeIds) !== 'complete') {
+      return box.id
+    }
+  }
+  return null
+}
+
 /** "Typo · Link · …" in taxonomy order. */
 export function boxSummary(box: Annotation, attributeIds: string[]): string {
   return attributeIds

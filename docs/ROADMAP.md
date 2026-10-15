@@ -61,8 +61,8 @@ Decisions only Bruno can make are marked **🟡 DECIDE**. Claude Code should sto
   - Draw (D), select (S), shift-click multi-select, rubber-band select, Delete/X, and smallest-box-wins hit testing. Undo/redo with Ctrl+Z / Ctrl+Shift+Z uses immer patches. Autosave is debounced at 800 ms, including after undo.
 - [x] **2.5 Panels**
   - Build the label panel from the taxonomy (showing mixed values for multi-select), a box list with All/Empty/Partial/Done filters, a progress bar per attribute, and a page queue with `]` / `[`.
-- [ ] **2.6 Parity check**
-  - Walk through every feature in the legacy v2 docstring and confirm it works or is intentionally replaced. Document the result in the PR.
+- [x] **2.6 Parity check**
+  - Walk through every feature in the legacy v2 docstring and confirm it works or is intentionally replaced. Document the result in the PR. → [`docs/PARITY.md`](PARITY.md)
 
 ## Phase 3: Fewer clicks
 

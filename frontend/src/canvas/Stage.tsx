@@ -4,7 +4,9 @@ import { useShallow } from 'zustand/react/shallow'
 
 import { stripUrl } from '../api/client'
 import type { PageResponse } from '../api/types'
+import { saveNow } from '../editor/autosave'
 import { boxesInRect, hitTest, rectFromDrag } from '../editor/geometry'
+import { nextIncomplete } from '../panels/labels'
 import { useAppStore } from '../state/store'
 import type { SaveState } from '../state/store'
 import {
@@ -66,7 +68,11 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
       focus: s.focus,
     })),
   )
-  const { setZoom, setTool, select, addBox, deleteSelected, undo, redo } = useAppStore.getState()
+  const { setZoom, setTool, select, focusBox, addBox, deleteSelected, undo, redo } =
+    useAppStore.getState()
+  const canUndo = useAppStore((s) => s.history.undo.length > 0)
+  const canRedo = useAppStore((s) => s.history.redo.length > 0)
+  const coordsRef = useRef<HTMLSpanElement>(null)
   const [view, setView] = useState({ scrollTop: 0, height: 0 })
   const [gestureKind, setGestureKind] = useState<Gesture['kind'] | null>(null)
   const [preview, setPreview] = useState<BBox | null>(null)
@@ -187,6 +193,24 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
       if (modifier && key === '0') {
         event.preventDefault()
         if (el) zoomTo(fitWidthZoom(el.clientWidth, pageWidth), 0)
+      } else if (modifier && key === 's') {
+        event.preventDefault() // not the browser's "Save page as…"
+        void saveNow()
+      } else if (key === 'tab' && !modifier && !event.altKey) {
+        // v2's "next unannotated": Tab / Shift+Tab select the next box that needs labels.
+        event.preventDefault()
+        const state = useAppStore.getState()
+        const boxesNow = state.page?.annotations.annotations ?? []
+        const id = nextIncomplete(
+          boxesNow,
+          attributeIds,
+          state.selectedIds,
+          event.shiftKey ? -1 : 1,
+        )
+        if (id) {
+          select([id])
+          focusBox(id)
+        }
       } else if (modifier && key === 'z') {
         event.preventDefault()
         if (event.shiftKey) redo()
@@ -226,7 +250,18 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
       window.removeEventListener('keydown', onKeyDown)
       window.removeEventListener('keyup', onKeyUp)
     }
-  }, [zoomTo, pageWidth, setTool, deleteSelected, select, undo, redo, cancelGesture])
+  }, [
+    zoomTo,
+    pageWidth,
+    attributeIds,
+    setTool,
+    deleteSelected,
+    select,
+    focusBox,
+    undo,
+    redo,
+    cancelGesture,
+  ])
 
   /** Pointer position in page px. */
   const toPage = (event: PointerEvent<HTMLDivElement>): Point => {
@@ -264,6 +299,12 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
   }
 
   const onPointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    // Cursor position in page px (v2 had this in its status bar). Written straight to the
+    // DOM so moving the mouse doesn't re-render the canvas.
+    if (coordsRef.current) {
+      const p = toPage(event)
+      coordsRef.current.textContent = `x ${Math.round(p.x)} · y ${Math.round(p.y)}`
+    }
     const el = containerRef.current
     const g = gesture.current
     if (!el || !g) return
@@ -331,8 +372,67 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
     .filter(Boolean)
     .join(' ')
 
+  const fitWidth = () => {
+    const el = containerRef.current
+    if (el) zoomTo(fitWidthZoom(el.clientWidth, pageWidth), 0)
+  }
+
   return (
     <div className="stage">
+      <div className="toolbar" role="toolbar" aria-label="Tools">
+        <button
+          type="button"
+          aria-pressed={tool === 'draw'}
+          title="Draw boxes (D)"
+          onClick={() => setTool('draw')}
+        >
+          Draw
+        </button>
+        <button
+          type="button"
+          aria-pressed={tool === 'select'}
+          title="Select boxes (S)"
+          onClick={() => setTool('select')}
+        >
+          Select
+        </button>
+        <span className="toolbar__gap" />
+        <button type="button" title="Undo (Ctrl+Z)" disabled={!canUndo} onClick={undo}>
+          Undo
+        </button>
+        <button type="button" title="Redo (Ctrl+Shift+Z)" disabled={!canRedo} onClick={redo}>
+          Redo
+        </button>
+        <button
+          type="button"
+          title="Delete selected (Delete / X)"
+          disabled={selectedIds.length === 0}
+          onClick={deleteSelected}
+        >
+          Delete
+        </button>
+        <span className="toolbar__gap" />
+        <button
+          type="button"
+          title="Zoom out (-)"
+          aria-label="Zoom out"
+          onClick={() => zoomTo(zoom / ZOOM_STEP)}
+        >
+          −
+        </button>
+        <span className="toolbar__zoom">{Math.round(zoom * 100)}%</span>
+        <button
+          type="button"
+          title="Zoom in (+)"
+          aria-label="Zoom in"
+          onClick={() => zoomTo(zoom * ZOOM_STEP)}
+        >
+          +
+        </button>
+        <button type="button" title="Fit width (Ctrl+0)" onClick={fitWidth}>
+          Fit
+        </button>
+      </div>
       <div
         ref={containerRef}
         className={viewportClass}
@@ -423,6 +523,7 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
           {tool === 'draw' ? 'Draw (D)' : 'Select (S)'}
           {selectedIds.length > 0 && ` · ${selectedIds.length} selected`}
         </span>
+        <span ref={coordsRef} className="stage__coords" aria-label="Cursor position" />
         <span className={`stage__save stage__save--${saveState}`} title={saveError ?? undefined}>
           {SAVE_LABELS[saveState]}
         </span>
