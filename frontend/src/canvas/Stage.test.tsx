@@ -235,6 +235,69 @@ describe('Stage editing', () => {
     expect(boxIds()).toEqual(['b', 'c'])
   })
 
+  // 3.4b: move and resize. Box a is [10, 100, 300, 50]: screen x 5-155, y 50-75.
+  const bboxOf = (id: string) => store().page!.annotations.annotations.find((b) => b.id === id)!.bbox
+
+  it('dragging a box in select mode moves it, as one undo step', () => {
+    const { drag, key } = editing()
+    key('s')
+    drag([50, 60], [100, 110]) // +50 screen px = +100 page px
+    expect(bboxOf('a')).toEqual([110, 200, 300, 50])
+    expect(store().selectedIds).toEqual(['a'])
+    expect(store().history.undo).toHaveLength(1)
+    key('z', { ctrlKey: true })
+    expect(bboxOf('a')).toEqual([10, 100, 300, 50])
+  })
+
+  it('dragging inside the selection moves every selected box', () => {
+    const { drag, key } = editing()
+    key('s')
+    act(() => {
+      store().select(['a', 'c'])
+    })
+    drag([50, 105], [50, 115]) // grab c, move both down 20 page px
+    expect(bboxOf('a')).toEqual([10, 120, 300, 50])
+    expect(bboxOf('c')).toEqual([10, 220, 300, 50])
+    expect(store().selectedIds).toEqual(['a', 'c'])
+  })
+
+  it('Shift-drag from a box still rubber-bands instead of moving', () => {
+    const { drag, key } = editing()
+    key('s')
+    drag([50, 60], [200, 130], true)
+    expect(bboxOf('a')).toEqual([10, 100, 300, 50])
+    expect(store().selectedIds).toEqual(['a', 'c'])
+  })
+
+  it('the selected box has resize handles, even in draw mode', () => {
+    const { drag, container } = editing()
+    act(() => {
+      store().select(['a'])
+    })
+    expect(container.querySelectorAll('.stage__handle')).toHaveLength(8)
+    drag([155, 60], [205, 60]) // the right edge, +100 page px
+    expect(bboxOf('a')).toEqual([10, 100, 400, 50])
+    expect(boxIds()).toEqual(['a', 'b', 'c']) // resized, nothing drawn
+    drag([5, 50], [0, 40]) // the top-left corner
+    expect(bboxOf('a')).toEqual([0, 80, 410, 70])
+  })
+
+  it('Escape cancels a move in progress', () => {
+    const { getByLabelText, key } = editing()
+    key('s')
+    const viewport = getByLabelText('Page canvas')
+    act(() => {
+      fireEvent.pointerDown(viewport, { button: 0, clientX: 50, clientY: 60 })
+      fireEvent.pointerMove(viewport, { clientX: 150, clientY: 160 })
+    })
+    key('Escape')
+    act(() => {
+      fireEvent.pointerUp(viewport, { clientX: 150, clientY: 160 })
+    })
+    expect(bboxOf('a')).toEqual([10, 100, 300, 50])
+    expect(store().history.undo).toHaveLength(0)
+  })
+
   it('shows the tool, selection and save state', () => {
     const { getByRole, click, key } = editing()
     expect(getByRole('status')).toHaveTextContent('Draw (D)')

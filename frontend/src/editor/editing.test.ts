@@ -146,6 +146,17 @@ describe('editing', () => {
     expect(store().page!.annotations.annotations[0].labels.Taxonomy).toBe('Header')
   })
 
+  it('moving a box marks a legacy box as edited and records nothing for no change', () => {
+    store().setBBoxes({ a: [5, 5, 100, 50] })
+    const a = store().page!.annotations.annotations[0]
+    expect(a.bbox).toEqual([5, 5, 100, 50])
+    expect(a.status).toBe('edited')
+    expect(a.updated_at).toMatch(/Z$/)
+    store().setBBoxes({ a: [5, 5, 100, 50] })
+    store().setBBoxes({ missing: [0, 0, 10, 10] })
+    expect(store().history.undo).toHaveLength(1)
+  })
+
   it('a preset with nothing selected does nothing', () => {
     store().applyPreset({ Form: 'Typo' })
     expect(store().docVersion).toBe(0)
@@ -191,6 +202,34 @@ describe('editing', () => {
       const id = store().addBox([10, 50, 100, 30])!
       const added = store().page!.annotations.annotations.find((x) => x.id === id)!
       expect(added.labels.Taxonomy).toBe('Footer')
+    })
+
+    // 3.4b: moving or resizing re-runs inheritance in the same step.
+    const find = (id: string) => store().page!.annotations.annotations.find((x) => x.id === id)!
+
+    it('shrinking a section drops the boxes that leave it, as one undo step', () => {
+      const sec = store().addBox([0, 0, 1920, 400], 'section')! // around a, b and c
+      store().setLabel('Taxonomy', 'Header')
+      store().setBBoxes({ [sec]: [0, 0, 1920, 130] }) // still holds the centres of a and b
+      expect(find('a').labels.Taxonomy).toBe('Header')
+      expect(find('b').labels.Taxonomy).toBe('Header') // centre y 125
+      expect(find('c').labels.Taxonomy).toBeUndefined() // centre y 225 has left
+      expect(store().history.undo).toHaveLength(3) // add, label, resize
+      expect(find('c').parent_id).toBeUndefined()
+      store().undo()
+      expect(find(sec).bbox).toEqual([0, 0, 1920, 400])
+      expect(find('c').labels.Taxonomy).toBe('Header')
+    })
+
+    it('moving a box into or out of a section gains or loses what it passes on', () => {
+      store().addBox([0, 500, 1920, 300], 'section')
+      store().setLabel('Taxonomy', 'Footer')
+      expect(find('a').labels.Taxonomy).toBeUndefined()
+      store().setBBoxes({ a: [0, 600, 100, 50] })
+      expect(find('a').labels.Taxonomy).toBe('Footer')
+      expect(find('a').label_sources?.Taxonomy).toBe('inherited')
+      store().setBBoxes({ a: [0, 0, 100, 50] })
+      expect(find('a').labels.Taxonomy).toBeUndefined()
     })
 
     it('turning a box into a component passes its Component on', () => {

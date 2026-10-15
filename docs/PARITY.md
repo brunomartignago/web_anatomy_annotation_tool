@@ -16,7 +16,7 @@ native browser scrolling (wheel, Shift+wheel), which needs no code of ours.
 | Click selects the **smallest** box under the cursor | Same hit test (`editor/geometry.ts › hitTest`). | ✅ |
 | Shift+click adds/removes | Same. | ✅ |
 | Rubber-band drag selects boxes it touches; Shift adds | Same. | ✅ |
-| Click on an already selected box keeps a multi-selection ("allow drag in future") | Replaced: a click selects just that box; Shift+click keeps the others. Moving boxes isn't in v2 either; it's a later feature. | ➡️ |
+| Click on an already selected box keeps a multi-selection ("allow drag in future") | Replaced: a click selects just that box; Shift+click keeps the others. Moving boxes isn't in v2 either. Since 3.4b, dragging a box in select mode moves it (dragging inside the selection moves all of it), and the single selected box resizes from its edges and corners. | ➡️ |
 | `Escape` deselects / cancels a draw | Same (cancels a drag in progress first). | ✅ |
 | `Delete` / `X` deletes the selection; toolbar Delete | Same, plus `Backspace` and a toolbar **Delete** button. | ✅ |
 | `Ctrl+Z` undo, `Ctrl+Shift+Z` redo, toolbar buttons, 60 steps | Same, plus `Ctrl+Y`; 200 steps stored as immer patches. The first undo now always does something (AUDIT #8). | ✅ |

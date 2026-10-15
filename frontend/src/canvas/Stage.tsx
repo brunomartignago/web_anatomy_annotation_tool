@@ -6,7 +6,16 @@ import type { Annotation } from '../api/annotation'
 import { stripUrl } from '../api/client'
 import type { PageResponse } from '../api/types'
 import { saveNow } from '../editor/autosave'
-import { boxesInRect, hitTest, rectFromDrag } from '../editor/geometry'
+import {
+  boxesInRect,
+  clampMove,
+  handleAt,
+  hitTest,
+  rectFromDrag,
+  resizeBBox,
+  translate,
+} from '../editor/geometry'
+import type { Handle } from '../editor/geometry'
 import { isContainer } from '../editor/inheritance'
 import { nextIncomplete } from '../panels/labels'
 import { useAppStore } from '../state/store'
@@ -43,6 +52,22 @@ interface StageProps {
 type Gesture =
   | { kind: 'pan'; x: number; y: number; left: number; top: number }
   | { kind: 'draw' | 'section' | 'select'; x: number; y: number; start: Point; shift: boolean }
+  | { kind: 'move'; x: number; y: number; start: Point; origin: Record<string, BBox> }
+  | { kind: 'resize'; x: number; y: number; start: Point; id: string; handle: Handle; origin: BBox }
+
+/** Screen px around an edge of the selected box that grab it for resizing. */
+const HANDLE_REACH_PX = 6
+const HANDLE_SIZE_PX = 8
+const HANDLE_CURSORS: Record<Handle, string> = {
+  n: 'ns-resize',
+  s: 'ns-resize',
+  e: 'ew-resize',
+  w: 'ew-resize',
+  ne: 'nesw-resize',
+  sw: 'nesw-resize',
+  nw: 'nwse-resize',
+  se: 'nwse-resize',
+}
 
 interface Point {
   x: number
@@ -61,6 +86,29 @@ const TOOL_LABELS: Record<Tool, string> = {
   draw: 'Draw (D)',
   section: 'Section (Shift+D)',
   select: 'Select (S)',
+}
+
+/** Corner and edge-midpoint squares on the selected box (the whole edge can be dragged). */
+function Handles({ bbox: [x, y, w, h], zoom }: { bbox: BBox; zoom: number }) {
+  const xs = [x, x + w / 2, x + w]
+  const ys = [y, y + h / 2, y + h]
+  const points = ys.flatMap((py, row) =>
+    xs.flatMap((px, col) => (row === 1 && col === 1 ? [] : [[px, py]])),
+  )
+  return (
+    <g aria-hidden="true">
+      {points.map(([px, py]) => (
+        <rect
+          key={`${px},${py}`}
+          className="stage__handle"
+          x={px * zoom - HANDLE_SIZE_PX / 2}
+          y={py * zoom - HANDLE_SIZE_PX / 2}
+          width={HANDLE_SIZE_PX}
+          height={HANDLE_SIZE_PX}
+        />
+      ))}
+    </g>
+  )
 }
 
 /** The inheritable values a container holds itself (not ones it inherited), joined. */
@@ -85,7 +133,7 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
       focus: s.focus,
     })),
   )
-  const { setZoom, setTool, select, focusBox, addBox, deleteSelected, undo, redo } =
+  const { setZoom, setTool, select, focusBox, addBox, setBBoxes, deleteSelected, undo, redo } =
     useAppStore.getState()
   const canUndo = useAppStore((s) => s.history.undo.length > 0)
   const canRedo = useAppStore((s) => s.history.redo.length > 0)
@@ -93,6 +141,8 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
   const [view, setView] = useState({ scrollTop: 0, height: 0 })
   const [gestureKind, setGestureKind] = useState<Gesture['kind'] | null>(null)
   const [preview, setPreview] = useState<BBox | null>(null)
+  /** Boxes being moved or resized, drawn at their new place until the pointer is released. */
+  const [draft, setDraft] = useState<Record<string, BBox> | null>(null)
   const pendingScroll = useRef<{ scrollLeft: number; scrollTop: number } | null>(null)
   const gesture = useRef<Gesture | null>(null)
   const spaceDown = useRef(false)
@@ -198,6 +248,7 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
     gesture.current = null
     setGestureKind(null)
     setPreview(null)
+    setDraft(null)
   }, [])
 
   // View: + / - / Ctrl+0, Space to pan. Editing: D / S, Delete / X, Esc, Ctrl+Z / Ctrl+Y.
@@ -292,26 +343,51 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
     return { x: (event.clientX - (rect?.left ?? 0)) / z, y: (event.clientY - (rect?.top ?? 0)) / z }
   }
 
+  /** The resize handle under the pointer, on the single selected box (any tool). */
+  const handleUnder = (p: Point): { id: string; handle: Handle; bbox: BBox } | null => {
+    const { selectedIds: ids, zoom: z } = useAppStore.getState()
+    const box = ids.length === 1 ? boxes.find((b) => b.id === ids[0]) : undefined
+    const handle = box && handleAt(box.bbox, p.x, p.y, HANDLE_REACH_PX / z)
+    return box && handle ? { id: box.id, handle, bbox: box.bbox } : null
+  }
+
+  /**
+   * In select mode, the boxes a drag from `p` would move: the selection if `p` is inside a
+   * selected box (so a selected section can be dragged from over its children), otherwise
+   * the smallest box under `p`.
+   */
+  const boxesToMove = (p: Point): string[] => {
+    const ids = useAppStore.getState().selectedIds
+    const chosen = new Set(ids)
+    if (hitTest(boxes.filter((b) => chosen.has(b.id)), p.x, p.y)) return ids
+    const hit = hitTest(boxes, p.x, p.y)
+    return hit ? [hit] : []
+  }
+
   const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
     const el = containerRef.current
     if (!el) return
     const wantsPan = event.button === 1 || (event.button === 0 && spaceDown.current)
+    const base = { x: event.clientX, y: event.clientY }
     if (wantsPan) {
       event.preventDefault()
-      gesture.current = {
-        kind: 'pan',
-        x: event.clientX,
-        y: event.clientY,
-        left: el.scrollLeft,
-        top: el.scrollTop,
-      }
+      el.style.cursor = ''
+      gesture.current = { kind: 'pan', ...base, left: el.scrollLeft, top: el.scrollTop }
     } else if (event.button === 0) {
-      gesture.current = {
-        kind: tool,
-        x: event.clientX,
-        y: event.clientY,
-        start: toPage(event),
-        shift: event.shiftKey,
+      const start = toPage(event)
+      const grabbed = event.shiftKey ? null : handleUnder(start)
+      const moving = tool === 'select' && !event.shiftKey && !grabbed ? boxesToMove(start) : []
+      if (grabbed) {
+        gesture.current = { kind: 'resize', ...base, start, ...grabbed, origin: grabbed.bbox }
+      } else if (moving.length > 0) {
+        const chosen = new Set(moving)
+        const origin = Object.fromEntries(
+          boxes.filter((b) => chosen.has(b.id)).map((b) => [b.id, b.bbox]),
+        )
+        gesture.current = { kind: 'move', ...base, start, origin }
+        if (!useAppStore.getState().selectedIds.includes(moving[0])) select(moving)
+      } else {
+        gesture.current = { kind: tool, ...base, start, shift: event.shiftKey }
       }
     } else {
       return
@@ -320,19 +396,52 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
     setGestureKind(gesture.current.kind)
   }
 
+  /** Where a move or resize puts the boxes for a pointer at (clientX, clientY). */
+  const draftFor = (g: Gesture, clientX: number, clientY: number): Record<string, BBox> | null => {
+    if (g.kind !== 'move' && g.kind !== 'resize') return null
+    if (Math.hypot(clientX - g.x, clientY - g.y) < CLICK_SLOP_PX) return null
+    const z = useAppStore.getState().zoom
+    const dx = (clientX - g.x) / z
+    const dy = (clientY - g.y) / z
+    const pageSize = page.annotations.page
+    if (g.kind === 'resize') return { [g.id]: resizeBBox(g.origin, g.handle, dx, dy, pageSize) }
+    const [mx, my] = clampMove(Object.values(g.origin), dx, dy, pageSize)
+    return Object.fromEntries(
+      Object.entries(g.origin).map(([id, bbox]) => [id, translate(bbox, mx, my)]),
+    )
+  }
+
+  /** Show what the pointer would grab: a resize cursor on handles, move over boxes. */
+  const updateCursor = (p: Point) => {
+    const el = containerRef.current
+    if (!el) return
+    const grabbed = handleUnder(p)
+    if (grabbed) el.style.cursor = HANDLE_CURSORS[grabbed.handle]
+    else if (tool === 'select' && hitTest(boxes, p.x, p.y)) el.style.cursor = 'move'
+    else el.style.cursor = ''
+  }
+
   const onPointerMove = (event: PointerEvent<HTMLDivElement>) => {
     // Cursor position in page px (v2 had this in its status bar). Written straight to the
     // DOM so moving the mouse doesn't re-render the canvas.
+    const p = toPage(event)
     if (coordsRef.current) {
-      const p = toPage(event)
       coordsRef.current.textContent = `x ${Math.round(p.x)} · y ${Math.round(p.y)}`
     }
     const el = containerRef.current
     const g = gesture.current
-    if (!el || !g) return
+    if (!el) return
+    if (!g) {
+      if (!spaceDown.current) updateCursor(p)
+      return
+    }
     if (g.kind === 'pan') {
       el.scrollLeft = g.left - (event.clientX - g.x)
       el.scrollTop = g.top - (event.clientY - g.y)
+      return
+    }
+    if (g.kind === 'move' || g.kind === 'resize') {
+      setDraft(draftFor(g, event.clientX, event.clientY))
       return
     }
     const moved = Math.hypot(event.clientX - g.x, event.clientY - g.y) >= CLICK_SLOP_PX
@@ -348,16 +457,23 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
 
     const end = toPage(event)
     const isClick = Math.hypot(event.clientX - g.x, event.clientY - g.y) < CLICK_SLOP_PX
-    if (g.kind === 'draw' || g.kind === 'section') {
-      const bbox = rectFromDrag(g.start, end, page.annotations.page)
-      if (bbox) addBox(bbox, g.kind === 'section' ? 'section' : 'element')
-    } else if (isClick) {
+    const clickSelect = (shift: boolean) => {
       const hit = hitTest(boxes, end.x, end.y)
-      if (g.shift) {
+      if (shift) {
         if (hit) select([hit], 'toggle')
       } else {
         select(hit ? [hit] : [])
       }
+    }
+    if (g.kind === 'move' || g.kind === 'resize') {
+      const moved = draftFor(g, event.clientX, event.clientY)
+      if (moved) setBBoxes(moved)
+      else if (tool === 'select') clickSelect(false) // a click on a box still just selects it
+    } else if (g.kind === 'draw' || g.kind === 'section') {
+      const bbox = rectFromDrag(g.start, end, page.annotations.page)
+      if (bbox) addBox(bbox, g.kind === 'section' ? 'section' : 'element')
+    } else if (isClick) {
+      clickSelect(g.shift)
     } else {
       const rect = rectFromDrag(g.start, end, page.annotations.page)
       const ids = rect ? boxesInRect(boxes, rect) : []
@@ -389,6 +505,10 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
       ...inView.filter((i) => !isContainer(boxes[i])),
     ]
   }, [boxes, viewTop, viewBottom])
+
+  // A single selected box gets resize handles (several selected boxes can only be moved).
+  const handleBox =
+    selectedIds.length === 1 ? boxes.find((b) => b.id === selectedIds[0]) : undefined
 
   const viewportClass = [
     'stage__viewport',
@@ -507,7 +627,7 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
           >
             {visibleBoxes.map((i) => {
               const box = boxes[i]
-              const [x, y, w, h] = box.bbox
+              const [x, y, w, h] = draft?.[box.id] ?? box.bbox
               const isSelected = selected.has(box.id)
               const container = isContainer(box)
               const color = container
@@ -547,6 +667,7 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
                 </g>
               )
             })}
+            {handleBox && <Handles bbox={draft?.[handleBox.id] ?? handleBox.bbox} zoom={zoom} />}
             {preview && (
               <rect
                 className={

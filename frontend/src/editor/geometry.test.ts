@@ -1,7 +1,16 @@
 import { describe, expect, it } from 'vitest'
 
 import type { BBox } from '../canvas/geometry'
-import { MIN_BOX_SIZE, boxesInRect, hitTest, rectFromDrag } from './geometry'
+import {
+  MIN_BOX_SIZE,
+  boxesInRect,
+  clampMove,
+  handleAt,
+  hitTest,
+  rectFromDrag,
+  resizeBBox,
+  translate,
+} from './geometry'
 
 const card = { id: 'card', bbox: [100, 100, 400, 300] as BBox }
 const link = { id: 'link', bbox: [150, 150, 100, 30] as BBox } // inside the card
@@ -58,5 +67,68 @@ describe('rectFromDrag', () => {
   it('rejects drags smaller than the minimum size', () => {
     expect(rectFromDrag({ x: 10, y: 10 }, { x: 10 + MIN_BOX_SIZE - 1, y: 50 }, page)).toBeNull()
     expect(rectFromDrag({ x: 10, y: 10 }, { x: 50, y: 11 }, page)).toBeNull()
+  })
+})
+
+// Move and resize (3.4b). The card is [100, 100, 400, 300]: edges x 100/500, y 100/400.
+describe('handleAt', () => {
+  const tol = 6
+
+  it('finds corners first, then whole edges', () => {
+    expect(handleAt(card.bbox, 100, 100, tol)).toBe('nw')
+    expect(handleAt(card.bbox, 503, 404, tol)).toBe('se')
+    expect(handleAt(card.bbox, 497, 98, tol)).toBe('ne')
+    expect(handleAt(card.bbox, 104, 400, tol)).toBe('sw')
+    expect(handleAt(card.bbox, 300, 98, tol)).toBe('n') // anywhere along an edge
+    expect(handleAt(card.bbox, 300, 405, tol)).toBe('s')
+    expect(handleAt(card.bbox, 95, 250, tol)).toBe('w')
+    expect(handleAt(card.bbox, 501, 120, tol)).toBe('e')
+  })
+
+  it('finds nothing inside the box or away from it', () => {
+    expect(handleAt(card.bbox, 300, 250, tol)).toBeNull()
+    expect(handleAt(card.bbox, 300, 90, tol)).toBeNull()
+    expect(handleAt(card.bbox, 520, 250, tol)).toBeNull()
+    expect(handleAt(card.bbox, 100, 420, tol)).toBeNull() // below the corner, off the edge
+  })
+
+  it('keeps corners reachable on tiny boxes', () => {
+    expect(handleAt([10, 10, 4, 4], 14, 14, tol)).toBe('se')
+  })
+})
+
+describe('resizeBBox', () => {
+  const page = { width: 1920, height: 5000 }
+
+  it('moves only the edges the handle owns', () => {
+    expect(resizeBBox(card.bbox, 'e', 50, 999, page)).toEqual([100, 100, 450, 300])
+    expect(resizeBBox(card.bbox, 'n', 999, -20, page)).toEqual([100, 80, 400, 320])
+    expect(resizeBBox(card.bbox, 'sw', -10, 30, page)).toEqual([90, 100, 410, 330])
+    expect(resizeBBox(card.bbox, 'ne', 25.25, 10, page)).toEqual([100, 110, 425.3, 290])
+  })
+
+  it('stops at the opposite edge instead of flipping', () => {
+    expect(resizeBBox(card.bbox, 'w', 1000, 0, page)).toEqual([500 - MIN_BOX_SIZE, 100, MIN_BOX_SIZE, 300])
+    expect(resizeBBox(card.bbox, 's', 0, -1000, page)).toEqual([100, 100, 400, MIN_BOX_SIZE])
+  })
+
+  it('stays on the page', () => {
+    expect(resizeBBox(card.bbox, 'nw', -500, -500, page)).toEqual([0, 0, 500, 400])
+    expect(resizeBBox(card.bbox, 'se', 5000, 9000, page)).toEqual([100, 100, 1820, 4900])
+  })
+})
+
+describe('clampMove and translate', () => {
+  const page = { width: 1920, height: 5000 }
+
+  it('moves freely inside the page', () => {
+    expect(clampMove([card.bbox, link.bbox], 30, -40, page)).toEqual([30, -40])
+    expect(translate(card.bbox, 30.04, -40)).toEqual([130, 60, 400, 300])
+  })
+
+  it('stops the whole group at the page edges', () => {
+    // The card's left edge (x 100) can go 100 px left; the far box's bottom has 2950 px.
+    expect(clampMove([card.bbox, far.bbox], -500, 9000, page)).toEqual([-100, 2950])
+    expect(clampMove([card.bbox, far.bbox], 9000, -9000, page)).toEqual([870, -100])
   })
 })

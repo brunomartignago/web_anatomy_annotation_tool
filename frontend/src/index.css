@@ -692,6 +692,13 @@ body {
   stroke-dasharray: 6 4;
 }
 
+.stage__handle {
+  fill: #fff;
+  stroke: #4f8ef7;
+  stroke-width: 1.5;
+  pointer-events: none; /* grabbing is hit-tested in page px, along the whole edge */
+}
+
 .stage__draft--section {
   fill: rgba(167, 139, 250, 0.12);
   stroke: #a78bfa;

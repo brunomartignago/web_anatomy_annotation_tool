@@ -1,4 +1,5 @@
-// Pure editing geometry, in page px: hit testing, rubber-band selection, drawing.
+// Pure editing geometry, in page px: hit testing, rubber-band selection, drawing, moving
+// and resizing.
 
 import type { BBox } from '../canvas/geometry'
 
@@ -47,4 +48,74 @@ export function rectFromDrag(
   const bottom = clampY(Math.max(a.y, b.y))
   if (right - left < MIN_BOX_SIZE || bottom - top < MIN_BOX_SIZE) return null
   return [round(left), round(top), round(right - left), round(bottom - top)]
+}
+
+/** A resize handle: an edge (n, s, e, w) or a corner (ne, nw, se, sw). */
+export type Handle = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw'
+
+/**
+ * The handle under a point: a corner, or anywhere along an edge, within `tolerance` page px.
+ * When both edges of a small box are in reach, the closer one wins.
+ */
+export function handleAt(
+  [x, y, w, h]: BBox,
+  px: number,
+  py: number,
+  tolerance: number,
+): Handle | null {
+  const nearest = (lo: number, hi: number, p: number, a: string, b: string) => {
+    const dLo = Math.abs(p - lo)
+    const dHi = Math.abs(p - hi)
+    if (Math.min(dLo, dHi) > tolerance) return ''
+    return dHi <= dLo ? b : a
+  }
+  const withinX = px >= x - tolerance && px <= x + w + tolerance
+  const withinY = py >= y - tolerance && py <= y + h + tolerance
+  if (!withinX || !withinY) return null
+  const vertical = nearest(y, y + h, py, 'n', 's')
+  const horizontal = nearest(x, x + w, px, 'w', 'e')
+  return ((vertical + horizontal) as Handle) || null
+}
+
+/** The box after dragging `handle` by (dx, dy): clamped to the page, never flipped. */
+export function resizeBBox(
+  [x, y, w, h]: BBox,
+  handle: Handle,
+  dx: number,
+  dy: number,
+  page: { width: number; height: number },
+): BBox {
+  let left = x
+  let top = y
+  let right = x + w
+  let bottom = y + h
+  if (handle.includes('w')) left = Math.max(0, Math.min(left + dx, right - MIN_BOX_SIZE))
+  if (handle.includes('e')) right = Math.min(page.width, Math.max(right + dx, left + MIN_BOX_SIZE))
+  if (handle.includes('n')) top = Math.max(0, Math.min(top + dy, bottom - MIN_BOX_SIZE))
+  if (handle.includes('s')) {
+    bottom = Math.min(page.height, Math.max(bottom + dy, top + MIN_BOX_SIZE))
+  }
+  return [round(left), round(top), round(right - left), round(bottom - top)]
+}
+
+/** (dx, dy) cut down so every box in the group stays on the page. */
+export function clampMove(
+  bboxes: BBox[],
+  dx: number,
+  dy: number,
+  page: { width: number; height: number },
+): [number, number] {
+  if (bboxes.length === 0) return [dx, dy]
+  const left = Math.min(...bboxes.map(([x]) => x))
+  const top = Math.min(...bboxes.map(([, y]) => y))
+  const right = Math.max(...bboxes.map(([x, , w]) => x + w))
+  const bottom = Math.max(...bboxes.map(([, y, , h]) => y + h))
+  return [
+    Math.min(Math.max(dx, -left), page.width - right),
+    Math.min(Math.max(dy, -top), page.height - bottom),
+  ]
+}
+
+export function translate([x, y, w, h]: BBox, dx: number, dy: number): BBox {
+  return [round(x + dx), round(y + dy), w, h]
 }

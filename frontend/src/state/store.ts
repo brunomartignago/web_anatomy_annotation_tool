@@ -67,6 +67,8 @@ export interface AppState {
   addBox: (bbox: BBox, kind?: BoxKind) => string | null
   /** Make the selected boxes elements, sections or components (one undo step). */
   setKind: (kind: BoxKind) => void
+  /** Move or resize boxes (id → new bbox) as one undo step; inheritance follows. */
+  setBBoxes: (changes: Record<string, BBox>) => void
   deleteSelected: () => void
   /** Set (or with null, remove) one attribute on every selected box, as one undo step. */
   setLabel: (attrId: string, value: string | null) => void
@@ -273,6 +275,20 @@ export const useAppStore = create<AppState>()(
               box.kind = kind
               box.updated_at = now
             }
+          }
+        })
+      },
+
+      setBBoxes: (changes) => {
+        const now = new Date().toISOString()
+        editDoc((doc) => {
+          for (const box of doc.annotations) {
+            const bbox = changes[box.id]
+            if (!bbox || bbox.every((v, i) => v === box.bbox[i])) continue
+            box.bbox = bbox
+            // Like a relabel: a moved legacy or machine box is now a corrected one.
+            if (box.source !== 'human' || box.status === 'suggested') box.status = 'edited'
+            box.updated_at = now
           }
         })
       },

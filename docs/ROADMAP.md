@@ -76,8 +76,9 @@ Decisions only Bruno can make are marked **🟡 DECIDE**. Claude Code should sto
 - [x] **3.4a Section boxes and inheritance** (3.4 was split in two)
   - Add a "section" draw mode (Shift+D) and a way to set a box's kind (element / section / component). `kind=section` boxes carry Taxonomy. Elements inside inherit Taxonomy (and Component from `kind=component` boxes) with `label_sources: inherited` and `parent_id`. An explicit label from any other source always wins over inheritance. Inheritance is recomputed inside the edit that changes it (one undo step) and never on load.
   - ✅ Pure tests cover: smallest containing box wins, human labels win, relabeling or deleting a section updates or clears inherited children. Section and component boxes don't count as unfinished elements in progress, filters or Tab navigation (front end and server).
-- [ ] **3.4b Keep children in sync when a section moves or resizes**
+- [x] **3.4b Keep children in sync when a section moves or resizes**
   - Needs move and resize handles for boxes first (2.4 only draws, selects and deletes). Moving or resizing a section re-runs inheritance, so elements that leave it lose its inherited labels and elements that enter it gain them.
+  - ✅ In select mode, dragging a box moves it (or the whole selection). The single selected box can be resized from any edge or corner in any tool. Each move or resize is one undo step and stays on the page. Tests cover boxes leaving and entering a section, a section shrinking and undo.
 - [ ] **3.5 Sticky labels / paint mode**
   - Pick a preset, then each click on a box applies it. Esc exits.
 - [ ] **3.6 Select similar**
