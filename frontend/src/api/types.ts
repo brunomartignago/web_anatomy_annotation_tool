@@ -72,6 +72,11 @@ export interface PageSummary {
   error?: string | null
 }
 
+export interface SaveResponse {
+  etag: string
+  progress: Progress
+}
+
 export interface PageResponse {
   project: string
   etag: string

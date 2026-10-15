@@ -74,6 +74,25 @@ body {
   padding: 0 1.25rem;
 }
 
+.app__banner {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0.75rem;
+  background: #4a1515;
+  color: var(--text);
+}
+
+.app__banner button {
+  font: inherit;
+  padding: 0.2rem 0.6rem;
+  border: 1px solid var(--red);
+  border-radius: 4px;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+
 /* ── Canvas ── */
 
 .stage {
@@ -92,8 +111,26 @@ body {
   outline: none;
 }
 
+.stage__viewport.is-drawing {
+  cursor: crosshair;
+}
+
 .stage__viewport.is-panning {
   cursor: grabbing;
+}
+
+.stage__draft {
+  fill: rgba(79, 142, 247, 0.15);
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-dasharray: 6 4;
+}
+
+.stage__band {
+  fill: rgba(255, 255, 255, 0.08);
+  stroke: #fff;
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
 }
 
 .stage__world {
@@ -114,6 +151,15 @@ body {
   pointer-events: none;
 }
 
+.stage__save {
+  margin-left: auto;
+}
+
+.stage__save--error,
+.stage__save--conflict {
+  color: var(--red);
+}
+
 .stage__tag {
   fill: var(--bg);
   font-size: 11px;
@@ -121,6 +167,8 @@ body {
 }
 
 .stage__status {
+  display: flex;
+  gap: 1.5rem;
   padding: 0.3rem 0.75rem;
   border-top: 1px solid var(--border);
   background: var(--surface);

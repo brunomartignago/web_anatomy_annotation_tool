@@ -1,12 +1,19 @@
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 
-import type { PageResponse, PageSummary, Taxonomy } from '../api/types'
+import type { Annotation, PageAnnotationFileV1 } from '../api/annotation'
+import type { PageResponse, PageSummary, Progress, Taxonomy } from '../api/types'
+import type { BBox } from '../canvas/geometry'
 import { clampZoom } from '../canvas/geometry'
-
-// App-wide state. Annotation editing (draw/select, undo/redo via immer patches) is 2.4.
+import { edit, emptyHistory, redo as redoStep, undo as undoStep } from '../editor/history'
+import type { History } from '../editor/history'
+import { newUlid } from '../editor/ids'
 
 export type LoadStatus = 'idle' | 'loading' | 'ready' | 'error'
+export type Tool = 'draw' | 'select'
+/** saved: on disk · pending: edited, waiting for autosave · conflict: changed elsewhere. */
+export type SaveState = 'saved' | 'pending' | 'saving' | 'error' | 'conflict'
+export type SelectMode = 'replace' | 'add' | 'toggle'
 
 export interface AppState {
   status: LoadStatus
@@ -22,7 +29,16 @@ export interface AppState {
   pageStatus: LoadStatus
   pageError: string | null
   zoom: number
+
+  // Editing
+  tool: Tool
   selectedIds: string[]
+  history: History
+  /** Bumped by every change to the annotations, undo/redo included; autosave watches it. */
+  docVersion: number
+  savedVersion: number
+  saveState: SaveState
+  saveError: string | null
 
   startLoading: () => void
   loaded: (taxonomy: Taxonomy, project: string, pages: PageSummary[]) => void
@@ -35,6 +51,27 @@ export interface AppState {
   pageLoaded: (pageId: string, page: PageResponse) => void
   pageFailed: (message: string) => void
   setZoom: (zoom: number) => void
+
+  setTool: (tool: Tool) => void
+  select: (ids: string[], mode?: SelectMode) => void
+  addBox: (bbox: BBox) => string | null
+  deleteSelected: () => void
+  undo: () => void
+  redo: () => void
+
+  saveStarted: () => void
+  saveSucceeded: (pageId: string, version: number, etag: string, progress: Progress) => void
+  saveFailed: (message: string) => void
+  saveConflict: (message: string) => void
+}
+
+const editingReset = {
+  selectedIds: [] as string[],
+  history: emptyHistory(),
+  docVersion: 0,
+  savedVersion: 0,
+  saveState: 'saved' as SaveState,
+  saveError: null,
 }
 
 export const initialState = {
@@ -49,72 +86,190 @@ export const initialState = {
   pageStatus: 'idle' as LoadStatus,
   pageError: null,
   zoom: 1,
-  selectedIds: [],
+  tool: 'draw' as Tool,
+  ...editingReset,
+}
+
+/** After an edit: autosave should run, unless the file changed elsewhere (keep the warning). */
+function markEdited(s: { saveState: SaveState }) {
+  if (s.saveState !== 'conflict') s.saveState = 'pending'
 }
 
 export const useAppStore = create<AppState>()(
-  immer((set) => ({
-    ...initialState,
-
-    startLoading: () =>
+  immer((set, get) => {
+    /** Apply an edit to the open page's annotations, recording it for undo. */
+    const editDoc = (recipe: (doc: PageAnnotationFileV1) => void, selectAfter?: string[]) => {
+      const { page, history } = get()
+      if (!page) return
+      const result = edit(page.annotations, history, recipe)
+      if (result.history === history) return // nothing changed
       set((s) => {
-        s.status = 'loading'
-        s.error = null
-      }),
+        s.page!.annotations = result.doc
+        s.history = result.history
+        s.docVersion += 1
+        markEdited(s)
+        if (selectAfter) s.selectedIds = selectAfter
+      })
+    }
 
-    loaded: (taxonomy, project, pages) =>
+    const step = (fn: typeof undoStep) => {
+      const { page, history } = get()
+      if (!page) return
+      const result = fn(page.annotations, history)
+      if (!result) return
       set((s) => {
-        s.status = 'ready'
-        s.taxonomy = taxonomy
-        s.project = project
-        s.pages = pages
-        const stillThere = pages.some((p) => p.id === s.currentPageId)
-        if (!stillThere) s.currentPageId = pages[0]?.id ?? null
-      }),
+        s.page!.annotations = result.doc
+        s.history = result.history
+        s.docVersion += 1
+        markEdited(s)
+        const ids = new Set(result.doc.annotations.map((a) => a.id))
+        s.selectedIds = s.selectedIds.filter((id) => ids.has(id))
+      })
+    }
 
-    failed: (message) =>
-      set((s) => {
-        s.status = 'error'
-        s.error = message
-      }),
+    return {
+      ...initialState,
 
-    openPage: (pageId) =>
-      set((s) => {
-        if (s.pages.some((p) => p.id === pageId)) s.currentPageId = pageId
-      }),
+      startLoading: () =>
+        set((s) => {
+          s.status = 'loading'
+          s.error = null
+        }),
 
-    stepPage: (delta) =>
-      set((s) => {
-        const index = s.pages.findIndex((p) => p.id === s.currentPageId)
-        const next = s.pages[index + delta]
-        if (index >= 0 && next) s.currentPageId = next.id
-      }),
+      loaded: (taxonomy, project, pages) =>
+        set((s) => {
+          s.status = 'ready'
+          s.taxonomy = taxonomy
+          s.project = project
+          s.pages = pages
+          const stillThere = pages.some((p) => p.id === s.currentPageId)
+          if (!stillThere) s.currentPageId = pages[0]?.id ?? null
+        }),
 
-    pageLoading: () =>
-      set((s) => {
-        s.pageStatus = 'loading'
-        s.pageError = null
-      }),
+      failed: (message) =>
+        set((s) => {
+          s.status = 'error'
+          s.error = message
+        }),
 
-    pageLoaded: (pageId, page) =>
-      set((s) => {
-        s.page = page
-        s.pageId = pageId
-        s.pageStatus = 'ready'
-        s.selectedIds = []
-      }),
+      openPage: (pageId) =>
+        set((s) => {
+          if (s.pages.some((p) => p.id === pageId)) s.currentPageId = pageId
+        }),
 
-    pageFailed: (message) =>
-      set((s) => {
-        s.page = null
-        s.pageId = null
-        s.pageStatus = 'error'
-        s.pageError = message
-      }),
+      stepPage: (delta) =>
+        set((s) => {
+          const index = s.pages.findIndex((p) => p.id === s.currentPageId)
+          const next = s.pages[index + delta]
+          if (index >= 0 && next) s.currentPageId = next.id
+        }),
 
-    setZoom: (zoom) =>
-      set((s) => {
-        s.zoom = clampZoom(zoom)
-      }),
-  })),
+      pageLoading: () =>
+        set((s) => {
+          s.pageStatus = 'loading'
+          s.pageError = null
+        }),
+
+      pageLoaded: (pageId, page) =>
+        set((s) => {
+          s.page = page
+          s.pageId = pageId
+          s.pageStatus = 'ready'
+          Object.assign(s, editingReset, { history: emptyHistory() })
+        }),
+
+      pageFailed: (message) =>
+        set((s) => {
+          s.page = null
+          s.pageId = null
+          s.pageStatus = 'error'
+          s.pageError = message
+        }),
+
+      setZoom: (zoom) =>
+        set((s) => {
+          s.zoom = clampZoom(zoom)
+        }),
+
+      setTool: (tool) =>
+        set((s) => {
+          s.tool = tool
+        }),
+
+      select: (ids, mode = 'replace') =>
+        set((s) => {
+          if (mode === 'replace') {
+            s.selectedIds = [...new Set(ids)]
+          } else if (mode === 'add') {
+            s.selectedIds = [...new Set([...s.selectedIds, ...ids])]
+          } else {
+            const current = new Set(s.selectedIds)
+            for (const id of ids) {
+              if (current.has(id)) current.delete(id)
+              else current.add(id)
+            }
+            s.selectedIds = [...current]
+          }
+        }),
+
+      addBox: (bbox) => {
+        if (!get().page) return null
+        const box: Annotation = {
+          id: newUlid(),
+          kind: 'element',
+          bbox,
+          labels: {},
+          source: 'human',
+          status: 'accepted',
+          created_at: new Date().toISOString(),
+        }
+        editDoc((doc) => {
+          doc.annotations.push(box)
+        }, [box.id])
+        return box.id
+      },
+
+      deleteSelected: () => {
+        const selected = new Set(get().selectedIds)
+        if (selected.size === 0) return
+        editDoc((doc) => {
+          doc.annotations = doc.annotations.filter((a) => !selected.has(a.id))
+        }, [])
+      },
+
+      undo: () => step(undoStep),
+      redo: () => step(redoStep),
+
+      saveStarted: () =>
+        set((s) => {
+          s.saveState = 'saving'
+          s.saveError = null
+        }),
+
+      saveSucceeded: (pageId, version, etag, progress) =>
+        set((s) => {
+          const row = s.pages.find((p) => p.id === pageId)
+          if (row) {
+            row.progress = progress
+            row.has_annotations = true
+          }
+          if (s.pageId !== pageId || !s.page) return // the user has moved to another page
+          s.page.etag = etag
+          s.savedVersion = Math.max(s.savedVersion, version)
+          s.saveState = s.savedVersion === s.docVersion ? 'saved' : 'pending'
+        }),
+
+      saveFailed: (message) =>
+        set((s) => {
+          s.saveState = 'error'
+          s.saveError = message
+        }),
+
+      saveConflict: (message) =>
+        set((s) => {
+          s.saveState = 'conflict'
+          s.saveError = message
+        }),
+    }
+  }),
 )

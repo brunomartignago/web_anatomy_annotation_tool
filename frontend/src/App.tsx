@@ -4,32 +4,63 @@ import { useShallow } from 'zustand/react/shallow'
 import { api } from './api/client'
 import type { PageSummary } from './api/types'
 import { Stage } from './canvas/Stage'
+import { saveNow, useAutosave } from './editor/autosave'
 import { useAppStore } from './state/store'
 
 // The shell: loads the served project, lists its pages and shows the open one on the
-// canvas. Tools (2.4) and the label panel / page queue (2.5) plug in here.
+// canvas. The label panel and page queue (2.5) plug in here.
 export default function App() {
-  const { status, error, taxonomy, project, pages, currentPageId, page, pageStatus, pageError } =
-    useAppStore(
-      useShallow((s) => ({
-        status: s.status,
-        error: s.error,
-        taxonomy: s.taxonomy,
-        project: s.project,
-        pages: s.pages,
-        currentPageId: s.currentPageId,
-        page: s.pageId === s.currentPageId ? s.page : null,
-        pageStatus: s.pageStatus,
-        pageError: s.pageError,
-      })),
-    )
+  const {
+    status,
+    error,
+    taxonomy,
+    project,
+    pages,
+    currentPageId,
+    page,
+    pageStatus,
+    pageError,
+    saveState,
+    saveError,
+  } = useAppStore(
+    useShallow((s) => ({
+      status: s.status,
+      error: s.error,
+      taxonomy: s.taxonomy,
+      project: s.project,
+      pages: s.pages,
+      currentPageId: s.currentPageId,
+      page: s.pageId === s.currentPageId ? s.page : null,
+      pageStatus: s.pageStatus,
+      pageError: s.pageError,
+      saveState: s.saveState,
+      saveError: s.saveError,
+    })),
+  )
   const { startLoading, loaded, failed, openPage, pageLoading, pageLoaded, pageFailed } =
     useAppStore.getState()
   const attributeIds = useMemo(() => taxonomy?.attributes.map((a) => a.id) ?? [], [taxonomy])
 
-  // Open the selected page.
+  useAutosave()
+
+  /** After a save conflict: drop local edits and load the version on disk. */
+  const reloadPage = async () => {
+    if (!project || !currentPageId) return
+    const ok = window.confirm(
+      'This page was changed elsewhere. Reload it from disk? Your unsaved edits on it are lost.',
+    )
+    if (!ok) return
+    try {
+      pageLoaded(currentPageId, await api.page(project, currentPageId))
+    } catch (exc) {
+      pageFailed(exc instanceof Error ? exc.message : String(exc))
+    }
+  }
+
+  // Open the selected page, saving the one being left first.
   useEffect(() => {
     if (!project || !currentPageId) return
+    void saveNow() // reads the old page synchronously, before it is replaced
     let cancelled = false
     pageLoading()
     api.page(project, currentPageId).then(
@@ -84,6 +115,17 @@ export default function App() {
               <PageList pages={pages} currentPageId={currentPageId} onOpen={openPage} />
             </nav>
             <section className="app__canvas">
+              {saveState === 'conflict' && (
+                <div role="alert" className="app__banner">
+                  <span title={saveError ?? undefined}>
+                    Not saved: this page's annotations.json was changed elsewhere (another tab or
+                    a script). Nothing was overwritten.
+                  </span>
+                  <button type="button" onClick={() => void reloadPage()}>
+                    Reload page
+                  </button>
+                </div>
+              )}
               {pageStatus === 'error' && (
                 <p role="alert" className="app__error">
                   Couldn't open this page: {pageError}

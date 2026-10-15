@@ -135,3 +135,117 @@ describe('Stage', () => {
     expect(getByRole('status')).toHaveTextContent('50% · 3 boxes · 1920×10000 px')
   })
 })
+
+// Editing (2.4). At zoom 0.5 a screen point (cx, cy) is page point (2cx, 2cy).
+describe('Stage editing', () => {
+  beforeEach(() => {
+    useAppStore.setState(initialState)
+    useAppStore.getState().pageLoaded('tall', PAGE)
+  })
+
+  const editing = () => {
+    // Render against the store's page so edits show up.
+    const utils = render(<StoreStage />)
+    const viewport = utils.getByLabelText('Page canvas')
+    const drag = (from: [number, number], to: [number, number], shiftKey = false) => {
+      act(() => {
+        fireEvent.pointerDown(viewport, { button: 0, clientX: from[0], clientY: from[1], shiftKey })
+        fireEvent.pointerMove(viewport, { clientX: to[0], clientY: to[1] })
+        fireEvent.pointerUp(viewport, { clientX: to[0], clientY: to[1] })
+      })
+    }
+    const click = (x: number, y: number, shiftKey = false) => drag([x, y], [x, y], shiftKey)
+    const key = (k: string, extra: Record<string, boolean> = {}) =>
+      act(() => {
+        fireEvent.keyDown(window, { key: k, ...extra })
+      })
+    return { ...utils, drag, click, key }
+  }
+
+  const store = () => useAppStore.getState()
+  const boxIds = () => store().page!.annotations.annotations.map((a) => a.id)
+
+  it('draws a box in draw mode (the default)', () => {
+    const { drag } = editing()
+    drag([100, 100], [300, 250])
+    const added = store().page!.annotations.annotations.at(-1)!
+    expect(added.bbox).toEqual([200, 200, 400, 300])
+    expect(store().selectedIds).toEqual([added.id])
+  })
+
+  it('ignores tiny drags when drawing', () => {
+    const { drag } = editing()
+    drag([100, 100], [101, 101])
+    expect(boxIds()).toEqual(['a', 'b', 'c'])
+  })
+
+  it('selects the smallest box under a click, Shift toggles', () => {
+    useAppStore.getState().pageLoaded('tall', {
+      ...PAGE,
+      annotations: {
+        ...PAGE.annotations,
+        annotations: [
+          { ...box('card', 0, {}), bbox: [0, 0, 1000, 1000] },
+          { ...box('link', 0, {}), bbox: [100, 100, 200, 40] },
+        ],
+      },
+    })
+    const { click, key } = editing()
+    key('s')
+    click(60, 60) // page (120, 120): inside both, the link is smaller
+    expect(store().selectedIds).toEqual(['link'])
+    click(400, 400, true) // page (800, 800): only the card
+    expect(store().selectedIds).toEqual(['link', 'card'])
+    click(60, 60, true)
+    expect(store().selectedIds).toEqual(['card'])
+    click(900, 900) // empty space clears
+    expect(store().selectedIds).toEqual([])
+  })
+
+  it('rubber-band selects every box it touches', () => {
+    const { drag, key } = editing()
+    key('s')
+    drag([0, 0], [200, 130]) // page (0,0)-(400,260): boxes a (y 100) and c (y 200)
+    expect(store().selectedIds).toEqual(['a', 'c'])
+  })
+
+  it('deletes the selection and Ctrl+Z / Ctrl+Shift+Z undo and redo it', () => {
+    const { drag, key } = editing()
+    key('s')
+    drag([0, 0], [200, 130])
+    key('Delete')
+    expect(boxIds()).toEqual(['b'])
+    key('z', { ctrlKey: true })
+    expect(boxIds()).toEqual(['a', 'b', 'c'])
+    key('z', { ctrlKey: true, shiftKey: true })
+    expect(boxIds()).toEqual(['b'])
+    key('y', { ctrlKey: true })
+    expect(boxIds()).toEqual(['b']) // nothing left to redo
+  })
+
+  it('X deletes too, and Escape clears the selection', () => {
+    const { click, key } = editing()
+    key('s')
+    click(50, 60) // box a
+    key('Escape')
+    expect(store().selectedIds).toEqual([])
+    click(50, 60)
+    key('x')
+    expect(boxIds()).toEqual(['b', 'c'])
+  })
+
+  it('shows the tool, selection and save state', () => {
+    const { getByRole, click, key } = editing()
+    expect(getByRole('status')).toHaveTextContent('Draw (D)')
+    key('s')
+    click(50, 60)
+    expect(getByRole('status')).toHaveTextContent('Select (S) · 1 selected')
+    key('x')
+    expect(getByRole('status')).toHaveTextContent('Unsaved changes')
+  })
+})
+
+function StoreStage() {
+  const page = useAppStore((s) => s.page)!
+  return <Stage project="demo" pageId="tall" page={page} attributeIds={ATTRIBUTES} />
+}
