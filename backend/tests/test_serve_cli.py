@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 
 from typer.testing import CliRunner
@@ -6,12 +7,13 @@ from annotool.cli import app
 
 runner = CliRunner()
 REPO = Path(__file__).resolve().parents[2]
+ANSI = re.compile(r"\x1b\[[0-9;]*m")  # Rich colours help output on CI (GitHub Actions)
 
 
 def test_serve_help():
     result = runner.invoke(app, ["serve", "--help"])
     assert result.exit_code == 0
-    assert "--project" in result.stdout
+    assert "--project" in ANSI.sub("", result.stdout)
 
 
 def test_serve_unknown_project_lists_the_real_ones(tmp_path):
