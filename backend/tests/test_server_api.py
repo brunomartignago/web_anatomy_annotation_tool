@@ -184,6 +184,89 @@ def test_strips(client, data_dir):
     assert client.get("/api/pages/missing/strips/0.webp").status_code == 404
 
 
+# ── Suggestions (4.1) ──
+
+
+class _Header:
+    """A stand-in suggester: one box across the top, labeled Header."""
+
+    id = "rule"
+
+    def suggest(self, context):
+        from annotool.suggest.base import AddBox
+
+        width = context.page.page.width
+        return [
+            AddBox(
+                bbox=(0, 0, width, 100), labels={"Taxonomy": "Header"}, confidence={"Taxonomy": 0.8}
+            )
+        ]
+
+
+@pytest.fixture
+def suggest_client(data_dir):
+    app = create_app(data_dir, "demo", TAXONOMY, frontend_dir=None, suggesters=[_Header()])
+    return TestClient(app)
+
+
+def test_suggesters_are_listed(client, suggest_client):
+    assert client.get("/api/suggesters").json() == []  # none registered yet (4.2+ add them)
+    assert suggest_client.get("/api/suggesters").json() == ["rule"]
+
+
+def test_suggest_merges_saves_and_reports(suggest_client, data_dir):
+    page = suggest_client.get("/api/pages/captured_page").json()
+    response = suggest_client.post(
+        "/api/pages/captured_page/suggest", headers={"If-Match": page["etag"]}
+    )
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["etag"] == response.headers["etag"] != page["etag"]
+    [box] = body["annotations"]["annotations"]
+    assert (box["source"], box["status"], box["labels"]) == (
+        "rule",
+        "suggested",
+        {"Taxonomy": "Header"},
+    )
+    assert body["reports"][0] == {
+        "suggester": "rule",
+        "boxes_added": 1,
+        "boxes_matched": 0,
+        "labels_set": 1,
+        "kept_human": 0,
+        "kept_better": 0,
+        "skipped_rejected": 0,
+        "dropped": [],
+        "error": None,
+        "changed": True,
+    }
+    assert body["progress"]["boxes"] == 1
+    saved = data_dir / "projects" / "demo" / "pages" / "captured_page" / "annotations.json"
+    assert json.loads(saved.read_text(encoding="utf-8"))["annotations"][0]["source"] == "rule"
+
+    again = suggest_client.post(
+        "/api/pages/captured_page/suggest", headers={"If-Match": body["etag"]}
+    ).json()
+    assert again["etag"] == body["etag"]  # nothing new: the file isn't rewritten
+    assert again["reports"][0]["changed"] is False
+
+
+def test_suggest_needs_a_current_etag(suggest_client):
+    url = "/api/pages/captured_page/suggest"
+    assert suggest_client.post(url).status_code == 428
+    stale = suggest_client.post(url, headers={"If-Match": '"old"'})
+    assert stale.status_code == 412 and stale.json()["etag"]
+
+
+def test_suggest_can_run_only_some_suggesters(suggest_client):
+    page = suggest_client.get("/api/pages/captured_page").json()
+    url = "/api/pages/captured_page/suggest"
+    headers = {"If-Match": page["etag"]}
+    assert suggest_client.post(url, params={"only": "dom"}, headers=headers).status_code == 422
+    body = suggest_client.post(url, params={"only": "rule"}, headers=headers).json()
+    assert [r["suggester"] for r in body["reports"]] == ["rule"]
+
+
 def test_root_without_a_built_frontend(client):
     response = client.get("/")
     assert response.status_code == 200

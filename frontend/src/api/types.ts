@@ -77,6 +77,28 @@ export interface SaveResponse {
   progress: Progress
 }
 
+/** What one suggester did to a page (server/suggest/base.py › MergeReport). */
+export interface SuggestReport {
+  suggester: string
+  boxes_added: number
+  boxes_matched: number
+  labels_set: number
+  kept_human: number
+  kept_better: number
+  skipped_rejected: number
+  dropped: string[]
+  error: string | null
+  changed: boolean
+}
+
+/** POST /api/pages/{id}/suggest: the merged, saved file and a report per suggester. */
+export interface SuggestResponse {
+  etag: string
+  annotations: PageAnnotationFileV1
+  reports: SuggestReport[]
+  progress: Progress
+}
+
 export interface PageResponse {
   project: string
   etag: string

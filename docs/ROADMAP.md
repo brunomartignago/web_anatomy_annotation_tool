@@ -91,8 +91,16 @@ Decisions only Bruno can make are marked **🟡 DECIDE**. Claude Code should sto
 
 ## Phase 4: Intelligence v1 (DOM + rules + priors)
 
-- [ ] **4.1 Suggester framework**
+- [x] **4.1 Suggester framework**
   - Add the `suggest/base.py` protocol, merge policy (never overwrite human labels) and `POST /api/pages/{id}/suggest`. Add a "Suggest" button and `annotool suggest <project>` for batch runs.
+  - ✅ Tests with stand-in suggesters cover the merge rules:
+    - labels with source human, preset, legacy, inherited or no source are kept;
+    - between suggesters, higher confidence wins and ties go to the later one;
+    - a matching box (IoU ≥ 0.9, same kind) is labeled instead of duplicated, so a second run adds nothing;
+    - rejected boxes are never proposed again;
+    - only active values are accepted.
+
+    They also cover run order and crash isolation, the endpoint (If-Match, 412, `only`) and the CLI (`--page`, `--only`, `--dry-run`). The button saves first and applies the result as one undo step. The registry is empty until 4.2.
 - [ ] **4.2 DOM suggester**
   - Turn `dom.json` into boxes and labels using `dom_hints`. Remove noise: drop boxes under 6×6 px or fully covered by others, and collapse wrappers that have one child and the same bbox.
   - ✅ On 5 hand-labeled pages: report box recall (IoU ≥ 0.5) and per-attribute accuracy in `docs/EVAL.md`.

@@ -1,5 +1,12 @@
 import type { PageAnnotationFileV1 } from './annotation'
-import type { PageResponse, PageSummary, ProjectsResponse, SaveResponse, Taxonomy } from './types'
+import type {
+  PageResponse,
+  PageSummary,
+  ProjectsResponse,
+  SaveResponse,
+  SuggestResponse,
+  Taxonomy,
+} from './types'
 
 export class ApiError extends Error {
   readonly status: number
@@ -51,6 +58,14 @@ export const api = {
         },
         body: JSON.stringify(doc),
       },
+    ),
+  /** Ids of the registered suggesters, in run order. */
+  suggesters: () => getJson<string[]>('/api/suggesters'),
+  /** Run the suggesters on the saved page and save the result. `etag` must be current. */
+  suggest: (project: string, pageId: string, etag: string) =>
+    requestJson<SuggestResponse>(
+      `/api/pages/${encodeURIComponent(pageId)}/suggest${projectQuery(project)}`,
+      { method: 'POST', headers: { Accept: 'application/json', 'If-Match': etag } },
     ),
 }
 

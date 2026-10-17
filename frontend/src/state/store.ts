@@ -3,7 +3,7 @@ import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 
 import type { Annotation, PageAnnotationFileV1 } from '../api/annotation'
-import type { PageResponse, PageSummary, Progress, Taxonomy } from '../api/types'
+import type { PageResponse, PageSummary, Progress, SuggestResponse, Taxonomy } from '../api/types'
 import type { BBox } from '../canvas/geometry'
 import { clampZoom } from '../canvas/geometry'
 import { countAction } from '../editor/effort'
@@ -55,6 +55,11 @@ export interface AppState {
   palette: boolean
   /** The preset being painted with (3.5): each clicked box gets it. Null when not painting. */
   paint: KeymapPreset | null
+  /** Ids of the server's registered suggesters (4.1); empty disables the Suggest button. */
+  suggesters: string[]
+  suggesting: boolean
+  /** A one-line message for the person (e.g. what Suggest did), until dismissed. */
+  notice: string | null
 
   startLoading: () => void
   loaded: (taxonomy: Taxonomy, project: string, pages: PageSummary[]) => void
@@ -82,6 +87,11 @@ export interface AppState {
   setLabel: (attrId: string, value: string | null) => void
   /** Set several attributes at once (a preset) on every selected box, as one undo step. */
   applyPreset: (labels: Record<string, string>) => void
+  setSuggesters: (ids: string[]) => void
+  setSuggesting: (on: boolean) => void
+  setNotice: (message: string | null) => void
+  /** Take the server's merged file after Suggest: one undo step, and its new ETag. */
+  applySuggestions: (pageId: string, result: SuggestResponse) => void
   /** Start painting with a preset, or stop (null). */
   setPaint: (preset: KeymapPreset | null) => void
   /** Apply the paint preset to these boxes and select them, as one undo step. */
@@ -126,6 +136,9 @@ export const initialState = {
   cheatSheet: false,
   palette: false,
   paint: null as KeymapPreset | null,
+  suggesters: [] as string[],
+  suggesting: false,
+  notice: null as string | null,
   ...editingReset,
 }
 
@@ -246,6 +259,7 @@ export const useAppStore = create<AppState>()(
           s.pageId = pageId
           s.pageStatus = 'ready'
           s.picker = null
+          s.notice = null
           Object.assign(s, editingReset, { history: emptyHistory() })
         }),
 
@@ -360,6 +374,38 @@ export const useAppStore = create<AppState>()(
         set((s) => {
           s.paint = preset
         }),
+
+      setSuggesters: (ids) =>
+        set((s) => {
+          s.suggesters = ids
+        }),
+
+      setSuggesting: (on) =>
+        set((s) => {
+          s.suggesting = on
+        }),
+
+      setNotice: (message) =>
+        set((s) => {
+          s.notice = message
+        }),
+
+      applySuggestions: (pageId, result) => {
+        if (get().pageId !== pageId || !get().page) return
+        set((s) => {
+          s.page!.etag = result.etag // the server saved the merged file
+          const row = s.pages.find((p) => p.id === pageId)
+          if (row) {
+            row.progress = result.progress
+            row.has_annotations = true
+          }
+        })
+        if (!result.reports.some((r) => r.changed)) return
+        // One undo step: Ctrl+Z takes the suggestions back (and autosave saves that).
+        editDoc((doc) => {
+          doc.annotations = result.annotations.annotations
+        })
+      },
 
       paintBoxes: (ids) => {
         const { paint } = get()

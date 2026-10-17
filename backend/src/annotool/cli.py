@@ -365,6 +365,114 @@ def debug_dom(
 
 
 @app.command()
+def suggest(
+    project: Annotated[str, typer.Argument(help="Project name (folder under data/projects/).")],
+    data_dir: Annotated[
+        Path | None, typer.Option(file_okay=False, help="Default: data/ in the repo root.")
+    ] = None,
+    taxonomy: Annotated[
+        Path | None, typer.Option(help="Taxonomy YAML. Default: taxonomies/web-ui.yaml.")
+    ] = None,
+    page: Annotated[
+        list[str] | None, typer.Option(help="Only this page id (repeat for several).")
+    ] = None,
+    only: Annotated[
+        list[str] | None, typer.Option(help="Only this suggester, e.g. dom (repeatable).")
+    ] = None,
+    dry_run: Annotated[
+        bool, typer.Option(help="Report what would change without writing anything.")
+    ] = False,
+) -> None:
+    """Run the suggesters on every page of a project and save their proposals.
+
+    A person's labels are never overwritten, boxes they rejected are not proposed again,
+    and running it twice adds nothing new. Blocked captures are skipped.
+    """
+    from annotool import suggest as suggest_package
+    from annotool.server.store import PageNotFound, PageStore, StaleWrite
+    from annotool.suggest.base import run_suggesters
+    from annotool.taxonomy import TaxonomyError, load_taxonomy
+
+    if data_dir is None:
+        root = _find_repo_root()
+        if root is None:
+            raise _fail("can't find the repo's data/ folder. Pass --data-dir.")
+        data_dir = root / "data"
+    taxonomy_path = taxonomy or _find_default_taxonomy()
+    if taxonomy_path is None:
+        raise _fail("no taxonomy found. Pass --taxonomy <path to web-ui.yaml>.")
+    try:
+        tax = load_taxonomy(taxonomy_path)
+    except TaxonomyError as exc:
+        raise _fail(str(exc)) from exc
+
+    suggesters = suggest_package.default_suggesters(tax)
+    if not suggesters:
+        typer.echo(
+            "No suggesters are registered yet: the DOM, rule and prior suggesters arrive in "
+            "roadmap 4.2-4.4. Nothing to do."
+        )
+        return
+    if only:
+        unknown = sorted(set(only) - {s.id for s in suggesters})
+        if unknown:
+            known = ", ".join(s.id for s in suggesters)
+            raise _fail(f"unknown suggester(s) {', '.join(unknown)} (registered: {known})")
+        suggesters = [s for s in suggesters if s.id in only]
+
+    store = PageStore(data_dir, tax)
+    try:
+        summaries = {s.id: s for s in store.list_pages(project)}
+    except PageNotFound as exc:
+        raise _fail(str(exc)) from exc
+    page_ids = page or list(summaries)
+    missing = [p for p in page_ids if p not in summaries]
+    if missing:
+        raise _fail(f"no page(s) {', '.join(missing)} in project {project!r}")
+
+    changed_pages = 0
+    failed = False
+    for page_id in page_ids:
+        if summaries[page_id].blocked:
+            typer.echo(f"{page_id}: skipped (blocked capture)")
+            continue
+        try:
+            loaded = store.load(project, page_id)
+        except (PageNotFound, ValueError) as exc:
+            typer.echo(f"{page_id}: skipped ({str(exc).splitlines()[0]})")
+            continue
+        result, reports = run_suggesters(
+            loaded.page, suggesters, taxonomy=tax, folder=loaded.folder
+        )
+        parts = []
+        for r in reports:
+            if r.error:
+                failed = True
+                parts.append(f"{r.suggester} FAILED: {r.error}")
+                continue
+            boxes = f"+{r.boxes_added} box{'' if r.boxes_added == 1 else 'es'}"
+            labels = f"{r.labels_set} label{'' if r.labels_set == 1 else 's'}"
+            kept = f", kept {r.kept_human} of yours" if r.kept_human else ""
+            parts.append(f"{r.suggester} {boxes}, {labels}{kept}")
+            for problem in r.dropped:
+                typer.echo(f"{page_id}: {r.suggester} dropped: {problem}")
+        if any(r.changed for r in reports):
+            changed_pages += 1
+            if not dry_run:
+                try:
+                    store.save(project, page_id, result, if_match=loaded.etag)
+                except StaleWrite:
+                    failed = True
+                    parts.append("NOT SAVED: the file changed while suggesting")
+        typer.echo(f"{page_id}: {'; '.join(parts)}")
+
+    note = " (dry run: nothing written)" if dry_run else ""
+    typer.echo(f"Done: {len(page_ids)} pages, {changed_pages} changed{note}")
+    if failed:
+        raise typer.Exit(code=1)
+
+
+@app.command()
 def serve(
     project: Annotated[str, typer.Option(help="Project to open (folder under data/projects/).")],
     data_dir: Annotated[

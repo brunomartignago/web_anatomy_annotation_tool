@@ -660,6 +660,15 @@ body {
   cursor: pointer;
 }
 
+.app__banner--notice {
+  background: #16304f;
+}
+
+.app__banner--notice button {
+  margin-left: auto;
+  border-color: var(--accent);
+}
+
 /* ── Canvas ── */
 
 .stage {

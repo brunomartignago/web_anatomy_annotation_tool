@@ -34,6 +34,7 @@ uv run annotool debug-dom ../data/projects/<name>/pages/<page_id>   # writes deb
 uv run annotool migrate <legacy.json>... --image <png> --out <page folder> --meta <meta.json>
 cd frontend; pnpm install; pnpm dev; pnpm test; pnpm lint; pnpm build; pnpm gen:types
 uv run annotool serve --project legacy    # backend + built frontend (frontend/dist)
+uv run annotool suggest <project> [--page <id>] [--only dom] [--dry-run]
 ```
 
 ## Non-negotiable rules
@@ -92,5 +93,14 @@ Form, Function, Component: the element axes. *Taxonomy* (attribute name) means t
   - the denominator excludes untouched legacy boxes, otherwise CNN reads 1/210.
 
   Live on CNN: 2 draws plus one paint drag gave 3 actions for 2 boxes, 1.5 per box. `seconds_active` is still unused, and the server's page list doesn't show effort yet (stats is a later item).
+- 4.1: `suggest/base.py` holds the `Suggester` protocol (`id` + `suggest(SuggestContext)`), the `AddBox` / `LabelBox` proposals, `merge` and `run_suggesters`. The registry is `annotool.suggest.default_suggesters` and is empty until 4.2. Tests monkeypatch it, and `create_app(suggesters=...)` injects stand-ins.
+  - **Protected labels:** human, preset, legacy, inherited and source-less values are never overwritten. Legacy counts as human because people labeled it in v2. Inherited counts too, so a person's section beats a rule.
+  - **Matching:** IoU ≥ 0.9 with the same kind, which keeps re-runs idempotent. A match on a rejected box suppresses the proposal.
+  - **Statuses:** a reviewed box keeps its status when a suggester fills an empty attribute; `label_sources` shows which labels are unreviewed.
+  - **The endpoint** needs `If-Match`, rewrites only if something changed, and returns a JSONResponse built by hand, so reports keep `error: null` while the file still omits empty optional fields.
+  - **The front end** waits for an in-flight autosave, saves, POSTs, and applies the result with `editDoc`, so Ctrl+Z takes suggestions back and autosave writes that.
+  - **Edits during the request** become a conflict rather than being silently replaced.
+
+  Live on a CNN copy with a stand-in suggester: the suggested element also inherited the suggested section's Header (client-side inheritance), the legacy Form was kept, and Ctrl+Z restored the file exactly.
 - GitHub: `origin` = https://github.com/brunomartignago/web_anatomy_annotation_tool (public). The repo name differs from the package/CLI name `annotool`, and that's intentional. Push to `main` after each committed roadmap item.
 <!-- Claude Code: append dated, one-line learnings here -->

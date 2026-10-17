@@ -33,8 +33,10 @@ export default function App() {
     saveError,
     cheatSheet,
     palette,
+    notice,
   } = useAppStore(
     useShallow((s) => ({
+      notice: s.notice,
       cheatSheet: s.cheatSheet,
       palette: s.palette,
       status: s.status,
@@ -118,7 +120,13 @@ export default function App() {
         if (!cancelled) loaded(tax, projects.current, list)
       } catch (exc) {
         if (!cancelled) failed(exc instanceof Error ? exc.message : String(exc))
+        return
       }
+      // Optional: without it the Suggest button just stays disabled.
+      api.suggesters().then(
+        (ids) => !cancelled && useAppStore.getState().setSuggesters(ids),
+        () => {},
+      )
     })()
     return () => {
       cancelled = true
@@ -186,6 +194,18 @@ export default function App() {
                   </span>
                   <button type="button" onClick={() => void reloadPage()}>
                     Reload page
+                  </button>
+                </div>
+              )}
+              {notice && (
+                <div role="status" className="app__banner app__banner--notice">
+                  <span>{notice}</span>
+                  <button
+                    type="button"
+                    aria-label="Dismiss"
+                    onClick={() => useAppStore.getState().setNotice(null)}
+                  >
+                    ×
                   </button>
                 </div>
               )}

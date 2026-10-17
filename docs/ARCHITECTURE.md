@@ -99,13 +99,17 @@ These are plain files, so a project can be zipped, shared or diffed. There's no 
 ```python
 class Suggester(Protocol):
     id: str                       # "dom" | "rule" | "prior" | "model" | "llm"
-    def suggest(self, page: Page, annotations: list[Annotation]) -> list[Proposal]: ...
+    def suggest(self, context: SuggestContext) -> Sequence[Proposal]: ...
+    # context.page: the page as merged so far · context.taxonomy · context.folder (dom.json…)
 ```
 
-- A `Proposal` either adds a box (bbox + labels + confidence) or labels an existing box.
-- Suggesters run in a fixed order (**dom → rule → prior**) and are merged by `suggest/base.py`.
-- Merge rules: a **human label is never overwritten**; otherwise higher confidence wins, and ties go to the later suggester.
-- New suggesters (a trained model, an optional vision LLM) are drop-in modules registered in `cli.py`. This is the main extension point for contributors.
+- A `Proposal` is either `AddBox` (bbox, kind, labels, confidence, optional DOM link) or `LabelBox` (labels for an existing box id).
+- Suggesters run in a fixed order (**dom → rule → prior**), each seeing the result of the ones before it. `suggest/base.py` merges them, and a suggester that crashes is reported and skipped.
+- **Merge rules:**
+  - A **human label is never overwritten**. That covers the sources `human`, `preset`, `legacy`, `inherited`, and values with no recorded source.
+  - Otherwise higher confidence wins, and ties go to the later suggester.
+  - A proposed box overlapping an existing one of the same kind (IoU ≥ 0.9) labels it instead, so re-running adds nothing. Boxes the person rejected are never proposed again.
+- New suggesters (a trained model, an optional vision LLM) are drop-in modules listed in `annotool.suggest.default_suggesters`. This is the main extension point for contributors. The Suggest button (`POST /api/pages/{id}/suggest`) and `annotool suggest <project>` both run that list.
 
 ### DOM suggester (Phase 4, depends on Phase 1 capture)
 `dom_extract.js` walks the rendered page and keeps elements that are visible, non-zero in size, not fully covered, and either leaf-like (text, media, form controls) or semantic containers (`nav`, `header`, `footer`, `article`, `table`, `[role]`). It records document-space boxes, so they line up exactly with `page.png` because both come from the same Playwright session. Fixed and sticky elements are flagged as Overlay candidates.

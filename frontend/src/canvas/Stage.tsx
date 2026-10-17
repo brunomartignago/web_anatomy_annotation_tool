@@ -6,6 +6,7 @@ import type { Annotation } from '../api/annotation'
 import { stripUrl } from '../api/client'
 import type { PageResponse } from '../api/types'
 import { saveNow } from '../editor/autosave'
+import { runSuggest } from '../editor/suggest'
 import {
   boxesCentredIn,
   boxesInRect,
@@ -125,17 +126,20 @@ function ownValues(box: Annotation, inheritable: string[]): string {
 export function Stage({ project, pageId, page, attributeIds }: StageProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const worldRef = useRef<HTMLDivElement>(null)
-  const { zoom, tool, paint, selectedIds, saveState, saveError, focus } = useAppStore(
-    useShallow((s) => ({
-      zoom: s.zoom,
-      tool: s.tool,
-      paint: s.paint,
-      selectedIds: s.selectedIds,
-      saveState: s.saveState,
-      saveError: s.saveError,
-      focus: s.focus,
-    })),
-  )
+  const { zoom, tool, paint, suggesters, suggesting, selectedIds, saveState, saveError, focus } =
+    useAppStore(
+      useShallow((s) => ({
+        zoom: s.zoom,
+        tool: s.tool,
+        paint: s.paint,
+        suggesters: s.suggesters,
+        suggesting: s.suggesting,
+        selectedIds: s.selectedIds,
+        saveState: s.saveState,
+        saveError: s.saveError,
+        focus: s.focus,
+      })),
+    )
   const {
     setZoom,
     setTool,
@@ -588,6 +592,19 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
         </button>
         <button type="button" title="Redo (Ctrl+Shift+Z)" disabled={!canRedo} onClick={redo}>
           Redo
+        </button>
+        <button
+          type="button"
+          disabled={suggesters.length === 0 || suggesting || saveState === 'conflict'}
+          title={
+            suggesters.length === 0
+              ? 'No suggesters yet: the DOM, rule and prior suggesters arrive in roadmap 4.2–4.4'
+              : `Propose boxes and labels (${suggesters.join(', ')}). Your labels are never ` +
+                'overwritten, and Ctrl+Z takes the suggestions back.'
+          }
+          onClick={() => void runSuggest()}
+        >
+          {suggesting ? 'Suggesting…' : 'Suggest'}
         </button>
         <button
           type="button"

@@ -12,6 +12,7 @@ from pydantic import BaseModel
 
 from annotool.models import PageFile
 from annotool.server.store import (
+    EMPTY_ETAG,
     IMAGE_NAME,
     InvalidPage,
     PageNotFound,
@@ -20,9 +21,11 @@ from annotool.server.store import (
     Progress,
     ProjectSummary,
     StaleWrite,
+    etag_matches,
     page_progress,
 )
 from annotool.server.tiles import STRIP_HEIGHT, StripCache
+from annotool.suggest.base import run_suggesters
 
 router = APIRouter(prefix="/api")
 
@@ -143,6 +146,74 @@ def save_annotations(
         )
     response.headers["ETag"] = etag
     return SaveResponse(etag=etag, progress=page_progress(page, store.attribute_ids))
+
+
+@router.get("/suggesters")
+def list_suggesters(request: Request) -> list[str]:
+    """Ids of the registered suggesters, in the order they run (dom → rule → prior)."""
+    return [s.id for s in request.app.state.suggesters]
+
+
+@router.post(
+    "/pages/{page_id}/suggest",
+    responses={
+        412: {"description": "The file changed since it was loaded; reload first."},
+        428: {"description": "If-Match header missing."},
+    },
+)
+def suggest(
+    request: Request,
+    page_id: str,
+    if_match: Annotated[str | None, Header()] = None,
+    project: ProjectParam = None,
+    only: Annotated[list[str] | None, Query(description="Run only these suggesters.")] = None,
+) -> JSONResponse:
+    """Run the suggesters on the saved page, merge their proposals (a person's labels are
+    never overwritten) and save. Returns the new file, its ETag and what each suggester did.
+    Send the ETag of the page as last saved, so unsaved edits can't be lost."""
+    if not if_match:
+        raise HTTPException(status_code=428, detail="send the page's ETag in If-Match")
+    suggesters = request.app.state.suggesters
+    if only:
+        unknown = sorted(set(only) - {s.id for s in suggesters})
+        if unknown:
+            raise HTTPException(status_code=422, detail=f"unknown suggester(s): {unknown}")
+        suggesters = [s for s in suggesters if s.id in only]
+    store = _store(request)
+    name = _project(request, project)
+    try:
+        loaded = store.load(name, page_id)
+    except PageNotFound as exc:
+        raise _not_found(exc) from exc
+    if not etag_matches(if_match, loaded.etag, exists=loaded.etag != EMPTY_ETAG):
+        return _stale(loaded.etag)
+
+    page, reports = run_suggesters(
+        loaded.page, suggesters, taxonomy=store.taxonomy, folder=loaded.folder
+    )
+    etag = loaded.etag
+    if any(r.changed for r in reports):
+        try:
+            etag = store.save(name, page_id, page, if_match=loaded.etag)
+        except StaleWrite as exc:  # edited elsewhere while the suggesters ran
+            return _stale(exc.current_etag)
+        except InvalidPage as exc:
+            raise HTTPException(status_code=422, detail=exc.errors) from exc
+    body = {
+        "etag": etag,
+        "annotations": page.to_json_dict(),
+        "reports": [r.model_dump(mode="json") for r in reports],
+        "progress": page_progress(page, store.attribute_ids).model_dump(mode="json"),
+    }
+    return JSONResponse(body, headers={"ETag": etag, "Cache-Control": "no-store"})
+
+
+def _stale(current_etag: str) -> JSONResponse:
+    return JSONResponse(
+        status_code=412,
+        content={"detail": "the page changed since it was loaded", "etag": current_etag},
+        headers={"ETag": current_etag},
+    )
 
 
 @router.get(

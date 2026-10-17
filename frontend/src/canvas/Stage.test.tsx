@@ -393,6 +393,18 @@ describe('Stage editing', () => {
     expect(store().selectedIds).toEqual(['card1', 'card2'])
   })
 
+  it('the Suggest button explains itself while no suggester is registered (4.1)', () => {
+    const { getByRole } = editing()
+    const button = getByRole('button', { name: 'Suggest' })
+    expect(button).toBeDisabled()
+    expect(button).toHaveAttribute('title', expect.stringMatching(/No suggesters yet/))
+    act(() => {
+      useAppStore.setState({ suggesters: ['dom', 'rule'] })
+    })
+    expect(button).toBeEnabled()
+    expect(button).toHaveAttribute('title', expect.stringMatching(/dom, rule/))
+  })
+
   it('shows the tool, selection and save state', () => {
     const { getByRole, click, key } = editing()
     expect(getByRole('status')).toHaveTextContent('Draw (D)')
