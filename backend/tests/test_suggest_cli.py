@@ -47,7 +47,8 @@ def _boxes(data_dir, page_id):
     return json.loads(path.read_text(encoding="utf-8"))["annotations"] if path.exists() else []
 
 
-def test_without_suggesters_it_says_so(data_dir):
+def test_without_suggesters_it_says_so(data_dir, monkeypatch):
+    monkeypatch.setattr(suggest_package, "default_suggesters", lambda taxonomy: [])
     result = _run("demo", "--data-dir", str(data_dir))
     assert result.exit_code == 0, result.output
     assert "No suggesters" in result.output

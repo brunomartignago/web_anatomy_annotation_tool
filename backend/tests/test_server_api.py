@@ -210,7 +210,7 @@ def suggest_client(data_dir):
 
 
 def test_suggesters_are_listed(client, suggest_client):
-    assert client.get("/api/suggesters").json() == []  # none registered yet (4.2+ add them)
+    assert client.get("/api/suggesters").json() == ["dom"]  # the registry (4.2a)
     assert suggest_client.get("/api/suggesters").json() == ["rule"]
 
 

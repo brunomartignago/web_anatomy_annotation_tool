@@ -12,6 +12,8 @@ from annotool.taxonomy import Taxonomy
 def default_suggesters(taxonomy: Taxonomy) -> list[Suggester]:
     """The registered suggesters, in run order: dom → rule → prior.
 
-    Empty until the DOM (roadmap 4.2), rule (4.3) and prior (4.4) suggesters exist.
+    The rule (roadmap 4.3) and prior (4.4) suggesters will join the DOM one here.
     """
-    return []
+    from annotool.suggest.dom import DomSuggester
+
+    return [DomSuggester.from_taxonomy(taxonomy)]

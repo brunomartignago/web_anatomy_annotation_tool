@@ -598,7 +598,7 @@ export function Stage({ project, pageId, page, attributeIds }: StageProps) {
           disabled={suggesters.length === 0 || suggesting || saveState === 'conflict'}
           title={
             suggesters.length === 0
-              ? 'No suggesters yet: the DOM, rule and prior suggesters arrive in roadmap 4.2–4.4'
+              ? 'No suggesters yet: the server has none registered (annotool.suggest)'
               : `Propose boxes and labels (${suggesters.join(', ')}). Your labels are never ` +
                 'overwritten, and Ctrl+Z takes the suggestions back.'
           }

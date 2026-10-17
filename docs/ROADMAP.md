@@ -101,9 +101,13 @@ Decisions only Bruno can make are marked **🟡 DECIDE**. Claude Code should sto
     - only active values are accepted.
 
     They also cover run order and crash isolation, the endpoint (If-Match, 412, `only`) and the CLI (`--page`, `--only`, `--dry-run`). The button saves first and applies the result as one undo step. The registry is empty until 4.2.
-- [ ] **4.2 DOM suggester**
+- [x] **4.2a DOM suggester and `annotool eval`** (4.2 was split in two: no page had both a DOM and hand labels)
   - Turn `dom.json` into boxes and labels using `dom_hints`. Remove noise: drop boxes under 6×6 px or fully covered by others, and collapse wrappers that have one child and the same bbox.
-  - ✅ On 5 hand-labeled pages: report box recall (IoU ≥ 0.5) and per-attribute accuracy in `docs/EVAL.md`.
+  - `annotool eval <project>` compares DOM suggestions with hand-made boxes: box recall and precision (IoU ≥ 0.5) and per-attribute accuracy, with `--markdown` for EVAL.md.
+  - ✅ Tests on synthetic DOMs cover hints, ancestors, collapsing, noise and the selector matcher. The eval math is tested. The suggester is registered, so Suggest works on captured pages.
+- [ ] **4.2b Evaluate the DOM suggester on 5 hand-labeled pages**
+  - Bruno hand-labels 5 captured pages that have `dom.json` (e.g. from `ua-check`) **without pressing Suggest**, so the ground truth isn't biased by the suggester.
+  - ✅ `annotool eval` results (box recall at IoU ≥ 0.5, per-attribute accuracy) are written to `docs/EVAL.md`, with the 3 `dom_hints` changes that would help most.
 - [ ] **3.6b Select similar by DOM signature** (moved here from Phase 3: it needs boxes linked to DOM nodes, which 4.2 creates)
   - Shift+A first matches boxes with the same DOM signature (tag + role + class stem), then falls back to 3.6a. A box's `dom` link has `index`, `tag`, `role` and `selector` but no classes, so the class stem comes from `dom.json` by `index` (a small endpoint, or the signature stored when 4.2 builds the box).
 - [ ] **4.3 Rule suggester**

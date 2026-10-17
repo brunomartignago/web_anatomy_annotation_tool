@@ -35,6 +35,7 @@ uv run annotool migrate <legacy.json>... --image <png> --out <page folder> --met
 cd frontend; pnpm install; pnpm dev; pnpm test; pnpm lint; pnpm build; pnpm gen:types
 uv run annotool serve --project legacy    # backend + built frontend (frontend/dist)
 uv run annotool suggest <project> [--page <id>] [--only dom] [--dry-run]
+uv run annotool eval <project> [--page <id>] [--markdown]   # suggestions vs hand-made boxes
 ```
 
 ## Non-negotiable rules
@@ -102,5 +103,13 @@ Form, Function, Component: the element axes. *Taxonomy* (attribute name) means t
   - **Edits during the request** become a conflict rather than being silently replaced.
 
   Live on a CNN copy with a stand-in suggester: the suggested element also inherited the suggested section's Header (client-side inheritance), the legacy Form was kept, and Ctrl+Z restored the file exactly.
+- 4.2a: 4.2 was split, because no page had both a DOM and hand labels; 4.2b is Bruno labeling 5 captured pages without Suggest, then EVAL.md. `suggest/dom.py` is registered, so Suggest works on captured pages.
+  - **Matching:** `dom_hints` are CSS selectors, run by our own matcher (`suggest/selectors.py`) over the fields dom.json keeps. Attributes it doesn't capture (`src`, `data-ad-slot`, `aria-haspopup`, `aria-roledescription`) never match, and `annotool eval` lists them. Unsupported syntax raises.
+  - **Ancestor matching** is decided by the attribute's `inherit_from_parent` flag (Component, Template section), not by name. `dom_hints.defaults` gives Component Blank at 0.4.
+  - **Wrappers:** same-box single-child chains collapse onto their deepest element (`a > picture > img` = one Image·Link box). A wrapper with exactly one box inside passes its hints down (h2 > a gets Heading at 0.95, beating Link's 0.85). Plain text uses `text_bbox`, while interactive and media elements use their own box.
+  - **Overlays:** boxes fully inside a fixed or sticky overlay (≤ 50% of the viewport) that isn't their ancestor are dropped.
+  - **Speed:** `annotool suggest ua-check --dry-run` took 9.5 s for 87 pages (46 not blocked). CNN got 370 boxes, Wikipedia 112, the Guardian 942. Re-running Suggest live said "nothing new".
+  - **Capture gap:** CNN's section nav links (US, World…) are visible in page.png but missing from dom.json. The header's left block only has the menu button and logo, so dom_extract never saw them (shadow DOM or late render). It's a 1.3 capture issue, not a suggester issue.
+  - **Eval ground truth:** `ground_truth` takes element boxes with source human/legacy that are accepted or edited. Suggested-then-accepted boxes are excluded because they're biased.
 - GitHub: `origin` = https://github.com/brunomartignago/web_anatomy_annotation_tool (public). The repo name differs from the package/CLI name `annotool`, and that's intentional. Push to `main` after each committed roadmap item.
 <!-- Claude Code: append dated, one-line learnings here -->

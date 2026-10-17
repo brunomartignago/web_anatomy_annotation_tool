@@ -409,8 +409,8 @@ def suggest(
     suggesters = suggest_package.default_suggesters(tax)
     if not suggesters:
         typer.echo(
-            "No suggesters are registered yet: the DOM, rule and prior suggesters arrive in "
-            "roadmap 4.2-4.4. Nothing to do."
+            "No suggesters are registered (see annotool.suggest.default_suggesters). "
+            "Nothing to do."
         )
         return
     if only:
@@ -470,6 +470,117 @@ def suggest(
     typer.echo(f"Done: {len(page_ids)} pages, {changed_pages} changed{note}")
     if failed:
         raise typer.Exit(code=1)
+
+
+@app.command("eval")
+def evaluate_suggestions(
+    project: Annotated[str, typer.Argument(help="Project name (folder under data/projects/).")],
+    data_dir: Annotated[
+        Path | None, typer.Option(file_okay=False, help="Default: data/ in the repo root.")
+    ] = None,
+    taxonomy: Annotated[
+        Path | None, typer.Option(help="Taxonomy YAML. Default: taxonomies/web-ui.yaml.")
+    ] = None,
+    page: Annotated[
+        list[str] | None, typer.Option(help="Only this page id (repeat for several).")
+    ] = None,
+    only: Annotated[
+        list[str] | None, typer.Option(help="Only this suggester, e.g. dom (repeatable).")
+    ] = None,
+    markdown: Annotated[
+        bool, typer.Option(help="Print Markdown tables (for docs/EVAL.md).")
+    ] = False,
+) -> None:
+    """Compare the suggesters' boxes with your hand-made ones (nothing is written).
+
+    Uses pages that have dom.json and boxes you drew or labeled yourself. Box recall and
+    precision count matches with IoU >= 0.5; accuracy is per attribute on matched boxes.
+    """
+    from annotool import suggest as suggest_package
+    from annotool.server.store import PageNotFound, PageStore
+    from annotool.suggest.base import run_suggesters
+    from annotool.suggest.dom import DomSuggester
+    from annotool.suggest.evaluate import (
+        confusion_markdown,
+        evaluate,
+        fraction,
+        ground_truth,
+        summarize,
+    )
+    from annotool.suggest.evaluate import (
+        markdown as as_markdown,
+    )
+    from annotool.taxonomy import TaxonomyError, load_taxonomy
+
+    if data_dir is None:
+        root = _find_repo_root()
+        if root is None:
+            raise _fail("can't find the repo's data/ folder. Pass --data-dir.")
+        data_dir = root / "data"
+    taxonomy_path = taxonomy or _find_default_taxonomy()
+    if taxonomy_path is None:
+        raise _fail("no taxonomy found. Pass --taxonomy <path to web-ui.yaml>.")
+    try:
+        tax = load_taxonomy(taxonomy_path)
+    except TaxonomyError as exc:
+        raise _fail(str(exc)) from exc
+    suggesters = suggest_package.default_suggesters(tax)
+    if only:
+        suggesters = [s for s in suggesters if s.id in only]
+    attribute_ids = [a.id for a in tax.attributes]
+
+    store = PageStore(data_dir, tax)
+    try:
+        summaries = store.list_pages(project)
+    except PageNotFound as exc:
+        raise _fail(str(exc)) from exc
+    wanted = set(page or [])
+    results = []
+    for summary in summaries:
+        if wanted and summary.id not in wanted:
+            continue
+        if not (summary.has_dom and summary.has_annotations):
+            continue
+        loaded = store.load(project, summary.id)
+        truth = ground_truth(loaded.page.annotations)
+        if not truth:
+            continue
+        blank = loaded.page.model_copy(update={"annotations": []})
+        suggested, _ = run_suggesters(blank, suggesters, taxonomy=tax, folder=loaded.folder)
+        result = evaluate(truth, suggested.annotations, attribute_ids)
+        results.append((summary.id, result))
+
+    if not results:
+        raise _fail(
+            f"no page in {project!r} has both dom.json and boxes made by hand. Label a few "
+            "captured pages yourself (without Suggest), then run this again."
+        )
+    for page_id, result in results:
+        if markdown:
+            typer.echo(as_markdown(page_id, result, attribute_ids) + "\n")
+        else:
+            accuracies = ", ".join(
+                f"{a} {fraction(s.correct, s.suggested)}" for a, s in result.attributes.items()
+            )
+            typer.echo(
+                f"{page_id}: recall {fraction(result.matched, result.truth)}, precision "
+                f"{fraction(result.matched, result.proposed)}; accuracy: {accuracies}"
+            )
+    total = summarize([r for _, r in results])
+    if markdown:
+        typer.echo(as_markdown(f"All {len(results)} pages", total, attribute_ids) + "\n")
+        typer.echo(confusion_markdown("Function", total) + "\n")
+    else:
+        typer.echo(
+            f"All {len(results)} pages: recall {fraction(total.matched, total.truth)}, "
+            f"precision {fraction(total.matched, total.proposed)}"
+        )
+    dom = next((s for s in suggesters if isinstance(s, DomSuggester)), None)
+    if dom and dom.uncaptured:
+        typer.echo(
+            "Note: dom_hints test attributes dom.json doesn't capture, so those tests never "
+            f"match: {', '.join(dom.uncaptured)}"
+        )
 
 
 @app.command()

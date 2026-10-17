@@ -143,3 +143,9 @@ rules:
       - { match: "header,[role=banner]",                                      value: Header,       confidence: 0.8 }
       - { match: "footer,[role=contentinfo]",                                 value: Footer,       confidence: 0.85 }
     # NOTE: [role=banner] is the HTML *header landmark*, not the "Banner" component.
+    # Used when no rule above matches an element (Blank is 77% of legacy Components).
+    defaults:
+      Component: { value: Blank, confidence: 0.4 }
+    # dom.json records only tag, id, the first 3 classes, role, aria-label, input type,
+    # href and background-image, so tests on other attributes (src, data-*, aria-haspopup…)
+    # never match. `annotool eval` lists them.

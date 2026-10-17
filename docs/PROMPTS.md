@@ -39,13 +39,16 @@ Then generate the debug overlay for each and show me the PNG paths. I want to
 check alignment myself before we build suggesters on top of it.
 ```
 
-### Task 4.2: measuring the DOM suggester
+### Task 4.2b: measuring the DOM suggester
 ```
-Do roadmap 4.2. Use the migrated CNN page as ground truth. Report box recall at IoU≥0.5,
-precision, and per-attribute accuracy for Form/Function/Component, plus a confusion
-table for Function. Put the numbers in docs/EVAL.md and propose the 3 dom_hints
-changes with the biggest expected gain. Don't apply them without asking me.
+Do roadmap 4.2b. I hand-labeled these 5 captured pages without Suggest: <project/page ids>.
+Run `annotool eval <project> --markdown`. Report box recall at IoU≥0.5, precision, and
+per-attribute accuracy for Form/Function/Component, plus the confusion table for Function.
+Put the numbers in docs/EVAL.md and propose the 3 dom_hints changes with the biggest
+expected gain. Don't apply them without asking me.
 ```
+(The migrated CNN page can't be the ground truth: its screenshot is from June 2025 and has
+no dom.json, so no capture lines up with its boxes.)
 
 ### When something feels off
 ```
